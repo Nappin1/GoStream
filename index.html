@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Stream - All in One</title>
+    <link rel="icon" type="image/x-icon" href="images/G-icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome & Material Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#cae962',
+                        'dark-bg': '#202125',
+                        'card-bg': '#2a2c31',
+                        'netflix-red': '#E50914'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- GLOBAL STYLES --- */
+        body {
+            background-color: #202125;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #222;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Selection */
+        ::selection {
+            background-color: #cae962;
+            color: #000;
+        }
+
+        /* Loader */
+        #global-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid #cae962;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden-loader {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Nav Link Active State */
+        .nav-link.active {
+            color: #cae962;
+            font-weight: 700;
+        }
+
+        .nav-link {
+            cursor: pointer;
+        }
+
+        /* Movie Card & Utilities */
+        .vline {
+            display: inline-block;
+            width: 4px;
+            background-color: #cae962;
+            margin-right: 10px;
+            height: 1.5rem;
+            vertical-align: middle;
+        }
+
+        .movie-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            overflow: hidden;
+            background-color: #222;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            border-color: #cae962;
+        }
+
+        .movie-card img {
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .movie-card:hover img {
+            opacity: 0.8;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .horizontal-scroll-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            scroll-behavior: smooth;
+        }
+
+        .horizontal-scroll-container .movie-card {
+            min-width: 200px;
+            max-width: 200px;
+        }
+
+        /* Filter Selects */
+        .filter-select {
+            background-color: #2a2c31;
+            color: #fff;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #333;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .filter-select:hover {
+            border-color: #cae962;
+        }
+
+        /* Utilities */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Anime Section Specifics */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-6 {
+            display: -webkit-box;
+            -webkit-line-clamp: 6;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- Global Loader -->
+    <div id="global-loader" class="hidden-loader">
+        <div class="flex flex-col items-center gap-4">
+            <div class="spinner"></div>
+            <p class="text-primary font-bold tracking-widest animate-pulse">LOADING</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 bg-[#1a1b1e]/95 backdrop-blur-md border-b border-[#333]">
+        <div class="px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+            <a onclick="router('home')" class="cursor-pointer">
+                <h1 class="text-2xl outline-none tracking-tight font-extrabold text-white">Go<span
+                        class="text-primary">Stream</span></h1>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-6 items-center outline-none">
+                <a onclick="router('home')" class="nav-link text-white font-medium" data-target="home">HOME</a>
+                <a onclick="router('movies')" class="nav-link text-white font-medium" data-target="movies">MOVIES</a>
+                <a onclick="router('tv')" class="nav-link text-white font-medium" data-target="tv">TV SHOWS</a>
+                <a onclick="router('kdrama')" class="nav-link text-white font-medium" data-target="kdrama">K-DRAMA</a>
+                <a onclick="router('anime-anilist')" class="nav-link text-white font-medium"
+                    data-target="anime-anilist">ANIME</a>
+                <a onclick="router('watchlist')" class="nav-link text-white font-medium"
+                    data-target="watchlist">WATCHLIST</a>
+            </div>
+
+            <!-- Search & Mobile Toggle -->
+            <div class="flex items-center space-x-4">
+                <div class="relative hidden sm:block">
+                    <input id="global-search-input" type="text" placeholder="Search + Enter"
+                        class="bg-[#111] border border-[#333] text-white text-sm rounded-full py-1.5 pl-8 pr-3 w-40 md:w-56 focus:outline-none focus:border-primary transition-colors">
+                    <i class="fas fa-search text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+                </div>
+                <button id="mobile-nav-toggle" class="md:hidden outline-none text-white text-xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-nav-menu" class="md:hidden bg-[#202940] hidden py-2 text-center border-t border-[#333]">
+            <a onclick="router('home')" class="nav-link block text-white text-sm py-2 px-4">HOME</a>
+            <a onclick="router('movies')" class="nav-link block text-white text-sm py-2 px-4">MOVIES</a>
+            <a onclick="router('tv')" class="nav-link block text-white text-sm py-2 px-4">TV SHOWS</a>
+            <a onclick="router('kdrama')" class="nav-link block text-white text-sm py-2 px-4">K-DRAMA</a>
+            <a onclick="router('anime-anilist')" class="nav-link block text-white text-sm py-2 px-4">ANIME</a>
+            <a onclick="router('watchlist')" class="nav-link block text-white text-sm py-2 px-4">WATCHLIST</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="pt-16 flex-1 min-h-screen">
+
+        <!-- Shared Banner -->
+        <section id="shared-banner"
+            class="relative h-[45vh] md:h-[60vh] flex items-end p-4 md:p-12 bg-cover bg-center bg-no-repeat transition-all duration-500 hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#202125] via-transparent to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#202125] via-[#202125]/60 to-transparent"></div>
+            <div id="banner-content" class="z-10 max-w-4xl relative fade-in"></div>
+        </section>
+
+        <!-- VIEW: HOME -->
+        <section id="view-home" class="view-section px-4 sm:px-6 lg:px-8 py-8 space-y-8 hidden">
+            <div class="discovery-row">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 px-2 flex items-center"><span
+                        class="vline"></span>Trending Now</h2>
+                <div id="row-trending" class="horizontal-scroll-container pb-4"></div>
+            </div>
+            <div class="discovery-row">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 px-2 flex items-center"><span
+                        class="vline"></span>Top Rated Movies</h2>
+                <div id="row-top-rated" class="horizontal-scroll-container pb-4"></div>
+            </div>
+            <div class="discovery-row">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 px-2 flex items-center"><span
+                        class="vline"></span>Popular Action</h2>
+                <div id="row-action" class="horizontal-scroll-container pb-4"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: MOVIES -->
+        <section id="view-movies" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-2xl md:text-3xl font-bold flex text-primary"></span>Discover Movies<sup
+                        class="text-sm text-white">TMDB</sup></h2>
+                <div id="movies-filters" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div id="grid-movies" class="results-grid"></div>
+            <div id="pag-movies" class="pagination-controls mt-8 flex justify-center gap-2"></div>
+        </section>
+
+        <!-- VIEW: TV SHOWS -->
+        <section id="view-tv" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-2xl md:text-3xl font-bold flex text-primary">Discover TV Shows<sup
+                        class="text-sm text-white">TMDB</sup></h2>
+                <div id="tv-filters" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div id="grid-tv" class="results-grid"></div>
+            <div id="pag-tv" class="pagination-controls mt-8 flex justify-center gap-2"></div>
+        </section>
+
+        <!-- VIEW: K-DRAMA -->
+        <section id="view-kdrama" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-2xl md:text-3xl font-bold flex text-primary">Discover K-Drama<sup
+                        class="text-sm text-white">TMDB</sup></h2>
+                <div id="kdrama-filters" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div id="grid-kdrama" class="results-grid"></div>
+            <div id="pag-kdrama" class="pagination-controls mt-8 flex justify-center gap-2"></div>
+        </section>
+
+        <!-- VIEW: ANIME ANILIST -->
+        <section id="view-anime-anilist" class="view-section hidden w-full px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-2xl md:text-3xl font-bold flex text-primary">Discover Anime <sup
+                        class="text-sm text-white">ANILIST</sup></h2>
+                <div id="anilist-filters" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div id="grid-anilist" class="results-grid"></div>
+
+            <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
+                <button onclick="changeAnilistPage(-1)"
+                    class="px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black">
+                    < </button>
+                        <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
+                        <button onclick="changeAnilistPage(1)"
+                            class="px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black">></button>
+            </div>
+        </section>
+
+        <!-- VIEW: WATCHLIST -->
+        <section id="view-watchlist" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <h2 class="text-2xl md:text-3xl font-bold flex text-primary mb-6"></span>My Watchlist</h2>
+            <div id="grid-watchlist" class="results-grid"></div>
+        </section>
+
+        <!-- VIEW: SEARCH RESULTS -->
+        <section id="view-search" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <h2 class="text-2xl font-bold text-white mb-6">Search Results</h2>
+            <div id="grid-search" class="results-grid"></div>
+        </section>
+
+        <!-- VIEW: DETAILS (Shared TMDB) -->
+        <section id="view-details" class="view-section hidden w-full">
+            <div id="details-content" class="animate-fade-in"></div>
+        </section>
+
+        <!-- VIEW: ANILIST PLAYER/DETAILS -->
+        <section id="view-anilist-player" class="view-section hidden w-full">
+            <div id="anilist-info-banner" class="relative h-[50vh] w-full bg-cover bg-center">
+                <div class="absolute inset-0 bg-black/60"></div>
+                <div
+                    class="absolute bottom-0 left-0 w-full p-6 md:p-12 bg-gradient-to-t from-[#202125] to-transparent flex items-end">
+                    <div class="max-w-4xl">
+                        <button onclick="router('anime-anilist')"
+                            class="mb-4 text-gray-300 hover:text-white flex items-center gap-2"><i
+                                class="fas fa-arrow-left"></i>
+                            Back</button>
+                        <h1 id="anilist-player-title" class="text-4xl md:text-6xl font-bold text-white mb-2">Title</h1>
+                        <div class="flex items-center gap-4 text-sm text-gray-300">
+                            <span id="anilist-banner-score" class="text-primary font-bold"></span>
+                            <span id="anilist-banner-type" class="uppercase border px-1 rounded"></span>
+                            <span id="anilist-banner-year"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-4 md:px-12 py-8 flex flex-col lg:flex-row gap-8">
+                <!-- Sidebar -->
+                <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
+                    <img id="anilist-info-img" src=""
+                        class="w-full hidden lg:block rounded-lg shadow-xl border border-[#333]">
+                    <button id="anilist-watchlist-btn" class="w-full py-3 bg-[#333] hover:bg-[#444] rounded font-bold">
+                        <i class="fas fa-plus"></i> Add to List
+                    </button>
+                    <!-- More Details Panel -->
+                    <div class="bg-[#2a2c31] p-4 rounded-md border border-[#333] text-sm space-y-3">
+                        <div class="space-y-2">
+                            <div><span class="text-white font-medium">Type:</span> <span
+                                    id="anilist-info-Type">...</span></div>
+                            <div><span class="text-white font-medium">Studios:</span> <span
+                                    id="anilist-info-Studio">...</span>
+                            </div>
+                            <div><span class="text-white font-medium">Date:</span> <span
+                                    id="anilist-info-Date">...</span></div>
+                            <div><span class="text-white font-medium">Status:</span> <span
+                                    id="anilist-info-Status">...</span>
+                            </div>
+                            <div><span class="text-white font-medium">Genre:</span> <span id="anilist-info-Genres"
+                                    class="text-primary">...</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="flex-1 space-y-8 min-w-0">
+                    <!-- Player -->
+                    <div class="bg-black rounded-xl overflow-hidden border border-[#333] shadow-2xl">
+                        <div class="bg-black rounded-t-xl overflow-hidden border-b border-[#333] relative">
+                            <!-- Server Buttons -->
+                            <div class="bg-[#2a2c31] p-2 flex items-center gap-3 border-b border-[#333]">
+                                <span class="text-primary font-bold text-xs uppercase tracking-wider ml-2">Select
+                                    Server:</span>
+                                <div id="anime-server-buttons" class="flex gap-2"></div>
+                            </div>
+                            <div class="aspect-video relative">
+                                <iframe id="anilist-iframe" class="w-full h-full" src="" frameborder="0"
+                                    allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#2a2c31] p-4">
+                            <!-- <h2 id="anilist-player-title" class="text-xl font-bold text-white mb-2">Anime Title</h2> -->
+                            <div class="flex items-center justify-between">
+                                <span id="anilist-player-ep" class="text-primary">Episode 1</span>
+                                <div class="flex gap-2">
+                                    <button onclick="changeAnilistEp(-1)"
+                                        class="px-3 py-1 bg-[#111] rounded-md text-xs hover:text-primary">Prev</button>
+                                    <button onclick="changeAnilistEp(1)"
+                                        class="px-3 py-1 bg-[#111] rounded-md text-xs hover:text-primary">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Episodes Grid -->
+                        <div class="bg-[#2a2c31] p-4 rounded-b-xl border-t border-[#333]">
+                            <h3 class="text-sm font-bold text-white mb-3">Episodes</h3>
+                            <div id="anilist-episodes-grid"
+                                class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto custom-scroll pr-2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text Info -->
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-2">Overview</h3>
+                        <p id="anilist-info-desc" class="text-gray-300 leading-relaxed"></p>
+                    </div>
+                    <div class="mt-6 bg-[#2a2c31] p-4 rounded-md">
+                        <h3 class="text-xl font-bold text-white mb-4"><span class="vline"></span>Cast</h3>
+                        <div id="anilist-cast-grid"
+                            class="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        </div>
+                    </div>
+
+                    <!-- Recommendations Grid -->
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-white mb-4"><span class="vline"></span>You may also like</h3>
+                        <div id="anilist-recommendations-grid" class="horizontal-scroll-container pb-4"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#1a1b1e] py-6 border-t border-[#333] mt-auto w-full">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <h2 class="text-lg font-bold text-white">Go<span class="text-[#cae962]">Stream</span></h2>
+            </div>
+            <p class="text-xs text-gray-500">
+                GoStream does not store any files on our server, we only linked to the media which is hosted on 3rd
+                party services.
+            </p>
+            <p id="credits" class="block text-sm text-[#9CA3AF] sm:text-center">© <span
+                    id="current-year-copyright">GoStream</span>. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        /**
+         * GLOBAL CONFIGURATION & DATA
+         */
+        const API_KEY = 'bea92ea47a50fb9e1cd25ca8443c5718';
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        const IMG_URL = 'https://image.tmdb.org/t/p/w500';
+        const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
+        const ANILIST_API_URL = 'https://graphql.anilist.co';
+
+        const STREAM_SOURCES = [
+            { url: 'https://vid-src-embeds-no-ads-demo.vercel.app/embed?url=https://vidlink.pro', name: 'Server 1 (VidLink)' },
+            { url: 'https://vid-src-embeds-no-ads-demo.vercel.app/embed?url=https://vidsrc.icu/embed', name: 'Server 2 (VidSrc)' },
+            { url: 'https://vid-src-embeds-no-ads-demo.vercel.app/embed?url=https://vidsrc.cc/v2/embed', name: 'Server 3 (CC)' }
+        ];
+
+        const ANIME_SOURCES = [
+            { name: 'Server 1 (CC)', url: (id, ep) => `https://vid-src-embeds-no-ads-demo.vercel.app/embed?url=https://vidsrc.cc/v2/embed/anime/ani${id}/${ep}/sub` },
+            { name: 'Server 2 (ICU)', url: (id, ep) => `https://vid-src-embeds-no-ads-demo.vercel.app/embed?url=https://vidsrc.icu/embed/anime/${id}/${ep}/0` }
+        ];
+
+        // Constants for Filters
+        const COUNTRIES = [
+            { code: '', name: 'All Countries' },
+            { code: 'US', name: 'United States' },
+            { code: 'JP', name: 'Japan' },
+            { code: 'KR', name: 'South Korea' },
+            { code: 'GB', name: 'United Kingdom' },
+            { code: 'FR', name: 'France' },
+            { code: 'CN', name: 'China' },
+            { code: 'IN', name: 'India' }
+        ];
+
+        const TMDB_GENRES = [
+            { id: '', name: 'All Genres' },
+            { id: 28, name: 'Action' },
+            { id: 12, name: 'Adventure' },
+            { id: 16, name: 'Animation' },
+            { id: 35, name: 'Comedy' },
+            { id: 80, name: 'Crime' },
+            { id: 99, name: 'Documentary' },
+            { id: 18, name: 'Drama' },
+            { id: 10751, name: 'Family' },
+            { id: 14, name: 'Fantasy' },
+            { id: 36, name: 'History' },
+            { id: 27, name: 'Horror' },
+            { id: 10402, name: 'Music' },
+            { id: 9648, name: 'Mystery' },
+            { id: 10749, name: 'Romance' },
+            { id: 878, name: 'Sci-Fi' },
+            { id: 53, name: 'Thriller' }
+        ];
+
+        const ANILIST_GENRES = [
+            'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Fantasy',
+            'Horror', 'Mecha', 'Music', 'Mystery', 'Psychological',
+            'Romance', 'Sci-Fi', 'Slice of Life', 'Sports', 'Supernatural', 'Thriller'
+        ];
+
+        // Global State
+        const appState = {
+            currentView: 'home',
+            lastView: 'home', // For simple back navigation
+            watchlist: JSON.parse(localStorage.getItem('goStreamWatchlist')) || [],
+            tmdb: {
+                movies: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '' }, data: [] },
+                tv: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '' }, data: [] },
+                kdrama: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '' }, data: [] }
+            },
+            anilist: {
+                page: 1,
+                filters: { sort: 'TRENDING_DESC', genre: '', country: '' }, // countryOfOrigin in Anilist
+                data: [],
+                hero: [],
+                currentAnime: null,
+                currentEp: 1,
+                currentServerIdx: 0
+            }
+        };
+
+        /**
+         * CORE UTILITIES
+         */
+        const loader = {
+            show: () => document.getElementById('global-loader').classList.remove('hidden-loader'),
+            hide: () => document.getElementById('global-loader').classList.add('hidden-loader')
+        };
+
+        // Helper to handle mixed URL types (Anilist absolute vs TMDB relative)
+        const getPosterUrl = (path) => {
+            if (!path) return 'https://placehold.co/500x750/333/FFF?text=No+Image';
+            return path.startsWith('http') ? path : IMG_URL + path;
+        };
+
+        const getBackdropUrl = (path) => {
+            if (!path) return 'https://placehold.co/1920x1080/202125/FFF?text=No+Image';
+            return path.startsWith('http') ? path : BACKDROP_URL + path;
+        };
+
+        function router(viewName) {
+            // STOP STREAMS by clearing iframe sources
+            const tmdbFrame = document.getElementById('tmdb-player');
+            const aniFrame = document.getElementById('anilist-iframe');
+            if (tmdbFrame) tmdbFrame.src = "";
+            if (aniFrame) aniFrame.src = "";
+
+            // Update UI
+            document.querySelectorAll('.nav-link').forEach(l => {
+                if (l.dataset.target === viewName) l.classList.add('active');
+                else l.classList.remove('active');
+            });
+
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('shared-banner').classList.add('hidden');
+            document.getElementById('mobile-nav-menu').classList.add('hidden');
+
+            // Save last main view if navigating to something else
+            const mainViews = ['home', 'movies', 'tv', 'kdrama', 'anime-anilist', 'watchlist', 'search'];
+            if (mainViews.includes(appState.currentView) && viewName === 'details') {
+                appState.lastView = appState.currentView;
+            }
+
+            appState.currentView = viewName;
+            window.scrollTo(0, 0);
+
+            switch (viewName) {
+                case 'home':
+                    document.getElementById('view-home').classList.remove('hidden');
+                    document.getElementById('shared-banner').classList.remove('hidden');
+                    loadHomeData();
+                    break;
+                case 'movies':
+                    document.getElementById('view-movies').classList.remove('hidden');
+                    document.getElementById('shared-banner').classList.remove('hidden');
+                    renderFilters('movies');
+                    loadTMDBSection('movies', '/discover/movie');
+                    break;
+                case 'tv':
+                    document.getElementById('view-tv').classList.remove('hidden');
+                    document.getElementById('shared-banner').classList.remove('hidden');
+                    renderFilters('tv');
+                    loadTMDBSection('tv', '/discover/tv');
+                    break;
+                case 'kdrama':
+                    document.getElementById('view-kdrama').classList.remove('hidden');
+                    document.getElementById('shared-banner').classList.remove('hidden');
+                    renderFilters('kdrama');
+                    loadTMDBSection('kdrama', '/discover/tv', { with_original_language: 'ko' });
+                    break;
+                case 'anime-anilist':
+                    document.getElementById('view-anime-anilist').classList.remove('hidden');
+                    document.getElementById('shared-banner').classList.remove('hidden'); // Enable shared banner
+                    renderFilters('anilist');
+                    loadAnilistSection();
+                    break;
+                case 'watchlist':
+                    document.getElementById('view-watchlist').classList.remove('hidden');
+                    renderWatchlist();
+                    break;
+                case 'search':
+                    document.getElementById('view-search').classList.remove('hidden');
+                    break;
+                case 'details':
+                    document.getElementById('view-details').classList.remove('hidden');
+                    break;
+                case 'anilist-player':
+                    document.getElementById('view-anilist-player').classList.remove('hidden');
+                    break;
+            }
+        }
+
+        /**
+         * FILTER LOGIC
+         */
+        function renderFilters(section) {
+            const containerId = section === 'anilist' ? 'anilist-filters' : `${section}-filters`;
+            const container = document.getElementById(containerId);
+            if (!container || container.innerHTML !== '') return;
+
+            const isAnilist = section === 'anilist';
+            const stateRef = isAnilist ? appState.anilist.filters : appState.tmdb[section].filters;
+
+            // Sort Select
+            const sortSelect = document.createElement('select');
+            sortSelect.className = 'filter-select';
+
+            // Fix Sort for TV Shows (Using first_air_date instead of primary_release_date)
+            const dateSort = (section === 'movies') ? 'primary_release_date.desc' : 'first_air_date.desc';
+
+            sortSelect.innerHTML = isAnilist
+                ? `<option value="TRENDING_DESC">Trending</option><option value="POPULARITY_DESC">Popular</option><option value="SCORE_DESC">Top Rated</option>`
+                : `<option value="popularity.desc">Popularity</option><option value="vote_average.desc">Rating</option><option value="${dateSort}">Newest</option>`;
+            sortSelect.value = stateRef.sort;
+            sortSelect.onchange = (e) => {
+                stateRef.sort = e.target.value;
+                resetAndLoad(section);
+            };
+
+            // Genre Select
+            const genreSelect = document.createElement('select');
+            genreSelect.className = 'filter-select';
+            if (isAnilist) {
+                genreSelect.innerHTML = `<option value="">All Genres</option>` + ANILIST_GENRES.map(g => `<option value="${g}">${g}</option>`).join('');
+            } else {
+                genreSelect.innerHTML = TMDB_GENRES.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            }
+            genreSelect.value = stateRef.genre;
+            genreSelect.onchange = (e) => {
+                stateRef.genre = e.target.value;
+                resetAndLoad(section);
+            };
+
+            // Country Select
+            const countrySelect = document.createElement('select');
+            countrySelect.className = 'filter-select';
+            countrySelect.innerHTML = COUNTRIES.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+            countrySelect.value = stateRef.country;
+            countrySelect.onchange = (e) => {
+                stateRef.country = e.target.value;
+                resetAndLoad(section);
+            };
+
+            container.append(sortSelect, genreSelect, countrySelect);
+        }
+
+        function resetAndLoad(section) {
+            if (section === 'anilist') {
+                appState.anilist.page = 1;
+                loadAnilistSection();
+            } else {
+                appState.tmdb[section].page = 1;
+                const endpoint = section === 'movies' ? '/discover/movie' : '/discover/tv';
+                const extra = section === 'kdrama' ? { with_original_language: 'ko' } : {};
+                loadTMDBSection(section, endpoint, extra);
+            }
+        }
+
+        /**
+         * TMDB API
+         */
+        async function fetchTMDB(endpoint, params = {}) {
+            loader.show();
+            params.api_key = API_KEY;
+            const qs = new URLSearchParams(params).toString();
+            try {
+                const res = await fetch(`${TMDB_BASE_URL}${endpoint}?${qs}`);
+                const data = await res.json();
+                loader.hide();
+                return data;
+            } catch (e) {
+                console.error("TMDB Error", e);
+                loader.hide();
+                return null;
+            }
+        }
+
+        async function loadHomeData() {
+            const container = document.getElementById('row-trending');
+            if (container.innerHTML !== '') return;
+            const trending = await fetchTMDB('/trending/all/day');
+            if (trending) renderHorizontalGrid('row-trending', trending.results);
+            if (trending && trending.results.length > 0) updateSharedBanner(trending.results[0]);
+            const topRated = await fetchTMDB('/movie/top_rated');
+            if (topRated) renderHorizontalGrid('row-top-rated', topRated.results);
+            const action = await fetchTMDB('/discover/movie', { with_genres: 28 });
+            if (action) renderHorizontalGrid('row-action', action.results);
+        }
+
+        async function loadTMDBSection(key, endpoint, extraParams = {}) {
+            const stateRef = appState.tmdb[key];
+            const gridId = `grid-${key}`;
+            const grid = document.getElementById(gridId);
+
+            const params = {
+                page: stateRef.page,
+                sort_by: stateRef.filters.sort,
+                language: 'en-US',
+                'vote_count.gte': 50,
+                ...extraParams
+            };
+
+            if (stateRef.filters.genre) params.with_genres = stateRef.filters.genre;
+            if (stateRef.filters.country) params.with_origin_country = stateRef.filters.country;
+
+            const data = await fetchTMDB(endpoint, params);
+
+            if (data && data.results) {
+                if (stateRef.page === 1) {
+                    grid.innerHTML = '';
+                    if (data.results.length > 0) updateSharedBanner(data.results[Math.floor(Math.random() * Math.min(5, data.results.length))]);
+                }
+                renderGrid(gridId, data.results, key === 'movies' ? 'movie' : 'tv');
+                renderPagination(`pag-${key}`, data.page, data.total_pages, (p) => {
+                    stateRef.page = p;
+                    loadTMDBSection(key, endpoint, extraParams);
+                });
+            }
+        }
+
+        /**
+         * ANILIST API
+         */
+        async function fetchAnilist(query, variables = {}) {
+            loader.show();
+            try {
+                const res = await fetch(ANILIST_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ query, variables })
+                });
+                const json = await res.json();
+                loader.hide();
+                return json.data;
+            } catch (e) {
+                console.error("Anilist Error", e);
+                loader.hide();
+                return null;
+            }
+        }
+
+        function mapAnilistToShared(anime) {
+            return {
+                id: anime.id,
+                title: anime.title.english || anime.title.romaji,
+                name: anime.title.english || anime.title.romaji,
+                overview: anime.description,
+                backdrop_path: anime.bannerImage || anime.coverImage.extraLarge,
+                poster_path: anime.coverImage.large,
+                vote_average: (anime.averageScore || 0) / 10,
+                media_type: 'anime',
+                release_date: anime.seasonYear ? String(anime.seasonYear) : 'N/A',
+                status: anime.status
+            };
+        }
+
+        async function loadAnilistSection() {
+            const state = appState.anilist;
+            const gridId = 'grid-anilist';
+
+            // 1. Fetch Hero Data if empty
+            if (state.hero.length === 0) {
+                const heroQuery = `query { Page(page: 1, perPage: 1) { media(sort: TRENDING_DESC, type: ANIME)
+                { id title { romaji english } 
+                bannerImage 
+                coverImage { extraLarge large } 
+                description 
+                averageScore 
+                seasonYear 
+                } } }`;
+                const data = await fetchAnilist(heroQuery);
+                if (data && data.Page.media) {
+                    state.hero = data.Page.media;
+                    // Use Shared Banner
+                    if (state.hero.length > 0) {
+                        updateSharedBanner(mapAnilistToShared(state.hero[0]));
+                    }
+                }
+            } else {
+                // Update banner with existing data if we navigated back
+                if (state.hero.length > 0) updateSharedBanner(mapAnilistToShared(state.hero[0]));
+            }
+
+            const query = `
+            query ($page: Int, $sort: [MediaSort], $genre: String, $country: CountryCode) {
+                Page(page: $page, perPage: 24) {
+                    pageInfo { hasNextPage }
+                    media(sort: $sort, genre: $genre, countryOfOrigin: $country, type: ANIME, isAdult: false) {
+                        id title { romaji english } coverImage { large } format averageScore status episodes seasonYear
+                    }
+                }
+            }`;
+
+            const vars = { page: state.page, sort: state.filters.sort };
+            if (state.filters.genre) vars.genre = state.filters.genre;
+            if (state.filters.country) vars.country = state.filters.country;
+
+            const data = await fetchAnilist(query, vars);
+            if (data && data.Page.media) {
+                state.data = data.Page.media;
+                // Normalize and use Shared Grid
+                const mappedData = state.data.map(mapAnilistToShared);
+
+                // Clear grid if page 1
+                if (state.page === 1) document.getElementById(gridId).innerHTML = '';
+
+                renderGrid(gridId, mappedData, 'anime', state.page > 1);
+                document.getElementById('anilist-page-num').innerText = state.page;
+            }
+        }
+
+        function changeAnilistPage(dir) {
+            const next = appState.anilist.page + dir;
+            if (next > 0) {
+                appState.anilist.page = next;
+                loadAnilistSection();
+            }
+        }
+
+        async function openAnilistPlayer(id) {
+            router('anilist-player');
+            const state = appState.anilist;
+
+            const query = `query ($id: Int) { Media(id: $id) { id title { romaji english } 
+            description 
+            coverImage { large } 
+            bannerImage
+            episodes
+                    nextAiringEpisode { episode }
+                    averageScore
+                    format
+                    duration
+                    status
+                    seasonYear
+                    studios(isMain: true) { nodes { name } }
+                    startDate { year month day }
+                    genres
+                    description
+                    recommendations(sort: RATING_DESC, perPage: 10) {
+                        nodes {
+                            mediaRecommendation {
+                                id
+                                title { romaji english }
+                                coverImage { large }
+                                bannerImage
+                                format
+                                averageScore
+                            }
+                        }
+                    }
+                    characters(page: 1, perPage: 25, sort: [ROLE, FAVOURITES_DESC]) {
+                    edges {
+                    role
+                    voiceActors(language: JAPANESE, sort: [FAVOURITES_DESC]) {
+                    id
+                    name { full } image { medium } }
+                    node { id name { userPreferred } image { medium }
+                    }
+                    }
+                }
+            } }`;
+
+            const data = await fetchAnilist(query, { id });
+            if (!data || !data.Media) return;
+            const anime = data.Media;
+            state.currentAnime = anime;
+            state.currentEp = 1;
+
+            // Setup Banner
+            const bannerUrl = getBackdropUrl(anime.bannerImage || anime.coverImage.large);
+            document.getElementById('anilist-info-banner').style.backgroundImage = `url(${bannerUrl})`;
+
+            document.getElementById('anilist-player-title').innerText = anime.title.english || anime.title.romaji;
+            document.getElementById('anilist-info-img').src = anime.coverImage.large;
+
+            // Banner Metadata
+            document.getElementById('anilist-banner-score').innerText = (anime.averageScore || '??') + '% Score';
+            document.getElementById('anilist-banner-type').innerText = anime.format || 'TV';
+            document.getElementById('anilist-banner-year').innerText = anime.seasonYear || 'N/A';
+
+            document.getElementById('anilist-info-desc').innerHTML = anime.description;
+
+            // Details Sidebar
+            document.getElementById('anilist-info-Type').innerText = anime.format;
+            document.getElementById('anilist-info-Status').innerText = anime.status || 'Unknown';
+            document.getElementById('anilist-info-Date').innerText = anime.startDate && anime.startDate.year ? `${anime.startDate.year}` : '?';
+            document.getElementById('anilist-info-Studio').innerText = anime.studios?.nodes?.[0]?.name || '?';
+            document.getElementById('anilist-info-Genres').innerText = anime.genres?.join(', ') || '';
+
+            // Watchlist Button
+            const watchlistBtn = document.getElementById('anilist-watchlist-btn');
+            watchlistBtn.onclick = () => addToWatchlist(anime.id, 'anime', anime.title.english || anime.title.romaji, anime.coverImage.large);
+
+
+            // Setup Server Buttons
+            const serverBtnContainer = document.getElementById('anime-server-buttons');
+            serverBtnContainer.innerHTML = '';
+            ANIME_SOURCES.forEach((src, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1 rounded-sm text-sm font-bold ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
+                btn.innerText = src.name.split(' ')[0];
+                btn.onclick = () => {
+                    state.currentServerIdx = idx;
+                    Array.from(serverBtnContainer.children).forEach(b => {
+                        b.classList.remove('bg-primary', 'text-black');
+                        b.classList.add('bg-[#111]', 'text-gray-400');
+                    });
+                    btn.classList.remove('bg-[#111]', 'text-gray-400');
+                    btn.classList.add('bg-primary', 'text-black');
+                    playAnilistEp(state.currentEp);
+                };
+                serverBtnContainer.appendChild(btn);
+            });
+
+            // CAST RENDER
+            const castGrid = document.getElementById('anilist-cast-grid');
+            castGrid.className = 'flex overflow-x-auto space-x-4 pb-4';
+            castGrid.innerHTML = '';
+
+            // 'anime' is the object returned by the API call: data.Media
+            if (anime.characters && anime.characters.edges) {
+                anime.characters.edges.forEach(charEdge => {
+                    // Iterate through the array of voice actors for this character edge
+                    if (charEdge.voiceActors && charEdge.voiceActors.length > 0) {
+                        charEdge.voiceActors.forEach(va => {
+
+                            const el = document.createElement('div');
+                            el.className = "flex flex-col gap-2 min-w-[80px]"; // added min-w
+
+                            const roleDisplay = charEdge.role.charAt(0).toUpperCase() + charEdge.role.slice(1).toLowerCase();
+
+                            el.innerHTML = `
+                    <div class="aspect-square rounded-full overflow-hidden border border-[#333] w-20 h-20 mx-auto">
+                        <img src="${va.image.medium}" class="w-full h-full object-cover" alt="Voice Actor Image">
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-white font-semibold truncate" title="${va.name.full}">${va.name.full}</p>
+                        <p class="text-[10px] text-gray-400 truncate" title="${charEdge.node.name.userPreferred} (${roleDisplay})">
+                            ${charEdge.node.name.userPreferred} | ${roleDisplay}
+                        </p>
+                    </div>
+                `;
+                            castGrid.appendChild(el);
+                        });
+                    }
+                });
+            }
+
+
+            // RECS RENDER (Use Shared Grid logic via mapping)
+            const recsGrid = document.getElementById('anilist-recommendations-grid');
+            recsGrid.innerHTML = '';
+            if (anime.recommendations && anime.recommendations.nodes) {
+                const recItems = anime.recommendations.nodes
+                    .map(n => n.mediaRecommendation)
+                    .filter(m => m)
+                    .map(mapAnilistToShared);
+
+                renderHorizontalGrid('anilist-recommendations-grid', recItems);
+            }
+            if (recsGrid.children.length === 0) recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
+
+            // EPISODES
+            const epGrid = document.getElementById('anilist-episodes-grid');
+            epGrid.innerHTML = '';
+
+            // Calculate max aired episodes
+            let maxEps = anime.episodes || 12; // fallback
+            if (anime.nextAiringEpisode) {
+                maxEps = anime.nextAiringEpisode.episode - 1; // Subtract 1 from next airing
+            }
+
+            if (maxEps === 0) epGrid.innerHTML = '<p class="text-xs text-gray-500">No aired episodes yet.</p>';
+
+            for (let i = 1; i <= maxEps; i++) {
+                const btn = document.createElement('button');
+                btn.className = `p-2 rounded border border-[#444] text-xs hover:border-primary hover:text-primary ${i === 1 ? 'bg-primary text-black' : 'bg-[#1a1b1e] text-gray-300'}`;
+                btn.innerText = i;
+                btn.onclick = () => playAnilistEp(i);
+                epGrid.appendChild(btn);
+            }
+            if (maxEps > 0) playAnilistEp(1);
+        }
+
+        function playAnilistEp(ep) {
+            appState.anilist.currentEp = ep;
+            document.getElementById('anilist-player-ep').innerText = `Episode ${ep}`;
+            // NEW SOURCE LOGIC
+            const source = ANIME_SOURCES[appState.anilist.currentServerIdx];
+            const url = source.url(appState.anilist.currentAnime.id, ep);
+
+            document.getElementById('anilist-iframe').src = url;
+            const btns = document.getElementById('anilist-episodes-grid').children;
+            Array.from(btns).forEach(b => {
+                if (parseInt(b.innerText) === ep) {
+                    b.classList.remove('bg-[#1a1b1e]', 'text-gray-300');
+                    b.classList.add('bg-primary', 'text-black');
+                } else {
+                    b.classList.add('bg-[#1a1b1e]', 'text-gray-300');
+                    b.classList.remove('bg-primary', 'text-black');
+                }
+            });
+        }
+
+        function changeAnilistEp(dir) {
+            const next = appState.anilist.currentEp + dir;
+            // logic to check max eps would go here if strict
+            if (next > 0) playAnilistEp(next);
+        }
+
+        /**
+         * SEARCH & HYBRID RESULTS
+         */
+        const searchInput = document.getElementById('global-search-input');
+
+        // REPLACED INPUT EVENT WITH KEYPRESS FOR ENTER KEY
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent form submission if any
+                const val = e.target.value.trim();
+                if (val.length > 0) {
+                    performSearch(val);
+                }
+            }
+        });
+
+        async function performSearch(query) {
+            router('search');
+            const grid = document.getElementById('grid-search');
+            grid.innerHTML = '<p class="text-gray-400">Searching...</p>';
+
+            // 1. Fetch Anilist Data (Anime)
+            const anilistQuery = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { large } format averageScore episodes } } }`;
+            const anilistPromise = fetchAnilist(anilistQuery, { search: query });
+
+            // 2. Fetch TMDB Data (Movies + TV)
+            const tmdbPromise = fetchTMDB('/search/multi', { query });
+
+            const [anilistRes, tmdbRes] = await Promise.all([anilistPromise, tmdbPromise]);
+
+            grid.innerHTML = '';
+
+            let mixedResults = [];
+
+            // Render Anilist Results First
+            if (anilistRes && anilistRes.Page.media) {
+                const animeItems = anilistRes.Page.media.map(mapAnilistToShared);
+                mixedResults = [...mixedResults, ...animeItems];
+            }
+
+            // Render TMDB Results (Exclude Anime by Genre 16 + JP Country)
+            if (tmdbRes && tmdbRes.results) {
+                const filtered = tmdbRes.results.filter(i => {
+                    const isMedia = i.media_type === 'movie' || i.media_type === 'tv';
+                    // STRICT FILTER: If Genre is Animation (16) AND Country contains JP, assume it's anime and hide it (since we have Anilist)
+                    const isAnime = i.genre_ids && i.genre_ids.includes(16) && i.origin_country && i.origin_country.includes('JP');
+                    return isMedia && !isAnime;
+                });
+                mixedResults = [...mixedResults, ...filtered];
+            }
+
+            renderGrid('grid-search', mixedResults, null);
+
+            if (grid.children.length === 0) grid.innerHTML = '<p class="text-gray-400">No results found.</p>';
+        }
+
+        /**
+         * RENDERERS
+         */
+        function updateSharedBanner(item) {
+            const banner = document.getElementById('shared-banner');
+            const bgUrl = getBackdropUrl(item.backdrop_path);
+
+            banner.style.backgroundImage = `url(${bgUrl})`;
+            const title = item.title || item.name;
+            const desc = item.overview || 'No description available.';
+            const type = item.media_type || 'movie';
+
+            document.getElementById('banner-content').innerHTML = `
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white">${title}</h1>
+                <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
+                <div class="flex gap-4">
+                    <button class="bg-primary hover:bg-white text-black font-bold py-3 px-8 rounded-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
+                        <i class="fas fa-play mr-2"></i> Play Now
+                    </button>
+                    <button class="bg-[#333] hover:bg-[#444] text-white font-bold py-3 px-8 rounded-md transition-colors" onclick="addToWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}')">
+                        <i class="fas fa-plus mr-2"></i> My List
+                    </button>
+                </div>
+            `;
+        }
+
+        // Wrapper to switch between Details functions based on type
+        function openDetailsWrapper(id, type) {
+            if (type === 'anime') openAnilistPlayer(id);
+            else openDetails(id, type);
+        }
+
+        function renderGrid(containerId, items, typeOverride, append = false) {
+            const container = document.getElementById(containerId);
+            if (!append) container.innerHTML = '';
+            items.forEach(item => {
+                if (!item.poster_path) return;
+                const type = typeOverride || (item.media_type || 'movie');
+                const title = item.title || item.name;
+                const date = item.release_date || item.first_air_date || 'N/A';
+                const year = date !== 'N/A' ? date.split('-')[0] : '';
+                const posterUrl = getPosterUrl(item.poster_path);
+                const statusBadge = item.status ? `<div class="absolute top-2 left-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase">${item.status.replace(/_/g, ' ')}</div>` : '';
+
+                const card = document.createElement('div');
+                card.className = 'movie-card cursor-pointer relative group';
+                card.innerHTML = `
+                    <div class="aspect-[2/3] overflow-hidden relative">
+                        <img src="${posterUrl}" class="w-full h-full object-cover">
+                         ${statusBadge}
+                        <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold border border-[#333]">
+                            ${item.vote_average ? item.vote_average.toFixed(1) : 'NR'}
+                        </div>
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <i class="mdi mdi-play-circle text-primary text-5xl"></i>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-card-bg">
+                        <h3 class="text-white text-sm font-semibold truncate hover:text-primary transition-colors">${title}</h3>
+                        <div class="flex justify-between items-center text-xs text-gray-400 mt-1">
+                            <span>${year}</span>
+                            <span class="uppercase border border-gray-600 px-1 rounded text-[10px]">${type}</span>
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => openDetailsWrapper(item.id, type);
+                container.appendChild(card);
+            });
+        }
+
+        function renderHorizontalGrid(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            items.forEach(item => {
+                const type = item.media_type || 'movie';
+                const title = item.title || item.name || 'Unknown Title';
+                const posterUrl = getPosterUrl(item.poster_path);
+
+                const card = document.createElement('div');
+                card.className = 'movie-card cursor-pointer relative flex-shrink-0 w-[160px] md:w-[200px] bg-[#222] border border-[#333] rounded overflow-hidden';
+                // Added title below image
+                card.innerHTML = `
+                     <div class="aspect-[2/3] overflow-hidden relative">
+                        <img src="${posterUrl}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-2">
+                        <h4 class="text-xs text-white font-medium truncate">${title}</h4>
+                    </div>
+                `;
+                card.onclick = () => openDetailsWrapper(item.id, type);
+                container.appendChild(card);
+            });
+        }
+
+        function renderPagination(containerId, current, total, callback) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            const max = Math.min(total, 500);
+            if (max <= 1) return;
+
+            const prev = document.createElement('button');
+            prev.className = "px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black disabled:opacity-50";
+            prev.innerText = "<";
+            prev.disabled = current === 1;
+            prev.onclick = () => callback(current - 1);
+
+            const next = document.createElement('button');
+            next.className = "px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black disabled:opacity-50";
+            next.innerText = ">";
+            next.disabled = current === max;
+            next.onclick = () => callback(current + 1);
+
+            const pageSpan = document.createElement('span');
+            pageSpan.className = "px-3 py-1 text-primary font-bold";
+            pageSpan.innerText = `${current} / ${max}`;
+
+            container.append(prev, pageSpan, next);
+        }
+
+        async function openDetails(id, type) {
+            router('details');
+            const container = document.getElementById('details-content');
+            container.innerHTML = '';
+            loader.show();
+
+            // FETCH DETAILS, CREDITS, and RECOMMENDATIONS
+            const [details, credits, recommendations] = await Promise.all([
+                fetchTMDB(`/${type}/${id}`),
+                fetchTMDB(`/${type}/${id}/credits`),
+                fetchTMDB(`/${type}/${id}/recommendations`)
+            ]);
+
+            if (!details) { container.innerHTML = 'Error loading'; return; }
+
+            const title = details.title || details.name;
+            const backdrop = getBackdropUrl(details.backdrop_path);
+            const poster = getPosterUrl(details.poster_path);
+            const runtime = details.runtime || (details.episode_run_time ? details.episode_run_time[0] : '?') + 'm';
+            const cast = credits ? credits.cast.slice(0, 6).map(c => c.name).join(', ') : '';
+
+            // FORMAT MORE DETAILS
+            const releaseDate = details.release_date || details.first_air_date || 'N/A';
+            const status = details.status || 'N/A';
+            const genres = details.genres ? details.genres.map(g => g.name).join(', ') : 'N/A';
+            const tagline = details.tagline ? `"${details.tagline}"` : '';
+
+            // Money format
+            const budget = details.budget ? `$${(details.budget / 1000000).toFixed(1)}M` : 'N/A';
+            const revenue = details.revenue ? `$${(details.revenue / 1000000).toFixed(1)}M` : 'N/A';
+
+            container.innerHTML = `
+                <div class="relative h-[50vh] w-full bg-cover bg-center" style="background-image: url('${backdrop}')">
+                    <div class="absolute inset-0 bg-black/60"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 bg-gradient-to-t from-[#202125] to-transparent flex items-end">
+                        <div class="max-w-4xl">
+                            <button onclick="router(appState.lastView || 'home')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-arrow-left"></i> Back</button>
+                            <h1 class="text-4xl md:text-6xl font-bold text-white mb-2">${title}</h1>
+                            <div class="flex items-center gap-4 text-sm text-gray-300">
+                                <span class="text-primary font-bold">${details.vote_average.toFixed(1)} Rating</span>
+                                <span>${runtime}</span>
+                                <span class="uppercase border px-1 rounded">${type}</span>
+                                <span>${releaseDate.split('-')[0]}</span>
+                            </div>
+                            <p class="text-gray-400 italic text-sm mt-2">${tagline}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-4 md:px-12 py-8 flex flex-col lg:flex-row gap-8">
+                    <!-- Sidebar -->
+                    <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
+                        <img src="${poster}" class="w-full hidden lg:block rounded-lg shadow-xl border border-[#333]">
+                        <button onclick="addToWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}')" class="w-full py-3 bg-[#333] hover:bg-[#444] rounded font-bold">
+                             <i class="fas fa-plus"></i> Add to List
+                        </button>
+                        
+                        <!-- More Details Panel -->
+                        <div class="bg-[#2a2c31] p-4 rounded-md border border-[#333] text-sm space-y-3">
+                            <h4 class="text-white font-bold border-b border-[#444] pb-2 mb-2">Movie Info</h4>
+                            <div><span class="text-gray-400 block text-xs">Status</span><span class="text-white">${status}</span></div>
+                            <div><span class="text-gray-400 block text-xs">Released</span><span class="text-white">${releaseDate}</span></div>
+                            <div><span class="text-gray-400 block text-xs">Genres</span><span class="text-white">${genres}</span></div>
+                            ${type === 'movie' ? `<div><span class="text-gray-400 block text-xs">Budget</span><span class="text-white">${budget}</span></div>` : ''}
+                            ${type === 'movie' ? `<div><span class="text-gray-400 block text-xs">Revenue</span><span class="text-white">${revenue}</span></div>` : ''}
+                             <div><span class="text-gray-400 block text-xs">Production</span><span class="text-white">${details.production_companies?.[0]?.name || 'N/A'}</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="flex-1 space-y-8 min-w-0">
+                        <!-- Player -->
+                         <div class="bg-black rounded-xl overflow-hidden border border-[#333] shadow-2xl">
+                             <div class="bg-[#2a2c31] p-3 flex justify-between items-center border-b border-[#333]">
+                                <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
+                                <div class="flex gap-2" id="server-buttons"></div>
+                             </div>
+                             ${type === 'tv' ? `<div class="p-3 bg-[#202125] flex gap-4 border-b border-[#333]"><select id="season-select" class="bg-[#333] text-white p-2 rounded text-sm w-full outline-none"></select><select id="ep-select" class="bg-[#333] text-white p-2 rounded text-sm w-full outline-none"></select></div>` : ''}
+                             <div class="aspect-video relative"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
+                        </div>
+
+                        <!-- Text Info -->
+                        <div><h3 class="text-xl font-bold text-white mb-2">Overview</h3><p class="text-gray-300 leading-relaxed">${details.overview}</p></div>
+                        <div><h3 class="text-xl font-bold text-white mb-2">Starring</h3><p class="text-gray-400">${cast}</p></div>
+                        
+                        <!-- Recommendations -->
+                        <div>
+                             <h3 class="text-xl font-bold text-white mb-4">You may also like</h3>
+                             <div id="tmdb-recommendations" class="horizontal-scroll-container pb-4"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // RENDER RECS
+            if (recommendations && recommendations.results) {
+                renderHorizontalGrid('tmdb-recommendations', recommendations.results);
+            }
+
+            // PLAYER LOGIC (Same as before)
+            let season = 1, ep = 1;
+            const serverContainer = document.getElementById('server-buttons');
+            STREAM_SOURCES.forEach((src, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1 rounded text-xs font-bold ${idx === 0 ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
+                btn.innerText = src.name.split(' ')[0];
+                btn.onclick = () => {
+                    Array.from(serverContainer.children).forEach(b => b.className = 'px-3 py-1 rounded text-xs font-bold bg-[#111] text-gray-400 hover:text-white');
+                    btn.className = 'px-3 py-1 rounded text-xs font-bold bg-primary text-black';
+                    updatePlayerSource(src.url, id, type, season, ep);
+                }
+                serverContainer.appendChild(btn);
+            });
+
+            if (type === 'tv') {
+                const sSelect = document.getElementById('season-select');
+                const eSelect = document.getElementById('ep-select');
+
+                details.seasons.forEach(s => {
+                    if (s.season_number > 0) {
+                        const opt = document.createElement('option');
+                        opt.value = s.season_number;
+                        opt.text = s.name;
+                        sSelect.add(opt);
+                    }
+                });
+
+                // FETCH EPISODES FOR SELECTED SEASON (Date Filtering)
+                const updateEps = async () => {
+                    loader.show();
+                    season = sSelect.value;
+                    const seasonData = await fetchTMDB(`/tv/${id}/season/${season}`);
+                    eSelect.innerHTML = '';
+
+                    if (seasonData && seasonData.episodes) {
+                        const today = new Date();
+                        const validEps = seasonData.episodes.filter(e => {
+                            if (!e.air_date) return false;
+                            return new Date(e.air_date) <= today;
+                        });
+
+                        if (validEps.length === 0) {
+                            eSelect.innerHTML = '<option>No aired episodes</option>';
+                        } else {
+                            validEps.forEach(e => {
+                                const opt = document.createElement('option');
+                                opt.value = e.episode_number;
+                                opt.text = `Episode ${e.episode_number}: ${e.name}`;
+                                eSelect.add(opt);
+                            });
+                        }
+                    } else {
+                        eSelect.innerHTML = '<option>Error loading episodes</option>';
+                    }
+                    loader.hide();
+
+                    // Reset to Ep 1 if available
+                    if (eSelect.options.length > 0) {
+                        ep = eSelect.options[0].value;
+                        updatePlayerSource(STREAM_SOURCES[0].url, id, 'tv', season, ep);
+                    }
+                };
+
+                sSelect.onchange = updateEps;
+                eSelect.onchange = () => { ep = eSelect.value; updatePlayerSource(STREAM_SOURCES[0].url, id, 'tv', season, ep); };
+                if (sSelect.options.length > 0) updateEps();
+            } else {
+                updatePlayerSource(STREAM_SOURCES[0].url, id, 'movie');
+            }
+            loader.hide();
+        }
+
+        function updatePlayerSource(baseUrl, id, type, s = 1, e = 1) {
+            const iframe = document.getElementById('tmdb-player');
+            if (type === 'movie') iframe.src = baseUrl.includes('vidsrc') ? `${baseUrl}/movie/${id}?autoPlay=true` : `${baseUrl}/movie/${id}?autoPlay=true`;
+            else iframe.src = baseUrl.includes('vidsrc') ? `${baseUrl}/tv/${id}/${s}/${e}` : `${baseUrl}/tv/${id}/${s}/${e}`;
+        }
+
+        function addToWatchlist(id, type, title, poster) {
+            const exists = appState.watchlist.find(i => i.id === id);
+            if (exists) { showToast('Already in watchlist'); return; }
+            appState.watchlist.push({ id, type, title, poster_path: poster });
+            localStorage.setItem('goStreamWatchlist', JSON.stringify(appState.watchlist));
+            showToast('Added to Watchlist');
+        }
+
+        function renderWatchlist() {
+            const grid = document.getElementById('grid-watchlist');
+            grid.innerHTML = '';
+            if (appState.watchlist.length === 0) { grid.innerHTML = '<p class="text-gray-500">Your watchlist is empty.</p>'; return; }
+            appState.watchlist.forEach(item => {
+                const posterUrl = getPosterUrl(item.poster_path);
+                const card = document.createElement('div');
+                card.className = 'movie-card cursor-pointer relative';
+                card.innerHTML = `
+                    <div class="aspect-[2/3] overflow-hidden"><img src="${posterUrl}" class="w-full h-full object-cover"></div>
+                    <div class="p-2"><h4 class="text-sm truncate text-white">${item.title}</h4><button onclick="event.stopPropagation(); removeFromWatchlist(${item.id})" class="text-red-500 text-xs mt-1 hover:underline">Remove</button></div>
+                `;
+                card.onclick = () => openDetailsWrapper(item.id, item.type);
+                grid.appendChild(card);
+            });
+        }
+
+        function removeFromWatchlist(id) {
+            appState.watchlist = appState.watchlist.filter(i => i.id !== id);
+            localStorage.setItem('goStreamWatchlist', JSON.stringify(appState.watchlist));
+            renderWatchlist();
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = "bg-primary text-black px-4 py-2 rounded font-bold shadow-lg animate-fade-in";
+            el.innerText = msg;
+            t.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
+
+        document.getElementById('mobile-nav-toggle').onclick = () => {
+            document.getElementById('mobile-nav-menu').classList.toggle('hidden');
+        };
+
+        window.addEventListener('DOMContentLoaded', () => { router('home'); });
+
+        const copyrightSpan = document.getElementById('current-year-copyright');
+        if (copyrightSpan) copyrightSpan.textContent = `${new Date().getFullYear()} GoStream`;
+    </script>
+</body>
+
+</html>
