@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
     <script type='text/javascript' src='//skatetimprojects.com/98/78/12/9878125c00c51d2fe29f4bb8c227f1fc.js'></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -216,6 +217,13 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+
+        .navbar-toggle,
+        .navbar-toggle:focus,
+        .navbar-toggle:hover {
+            background-color: transparent !important;
+            border-color: transparent !important;
+        }
     </style>
 </head>
 
@@ -243,8 +251,10 @@
                 <a onclick="router('movies')" class="nav-link text-white font-medium" data-target="movies">MOVIES</a>
                 <a onclick="router('tv')" class="nav-link text-white font-medium" data-target="tv">TV SHOWS</a>
                 <a onclick="router('kdrama')" class="nav-link text-white font-medium" data-target="kdrama">K-DRAMA</a>
-                <a onclick="router('anime-anilist')" class="nav-link text-white font-medium" data-target="anime-anilist">ANIME</a>
-                <a onclick="router('watchlist')" class="nav-link text-white font-medium" data-target="watchlist">WATCHLIST</a>
+                <a onclick="router('anime-anilist')" class="nav-link text-white font-medium"
+                    data-target="anime-anilist">ANIME</a>
+                <a onclick="router('watchlist')" class="nav-link text-white font-medium"
+                    data-target="watchlist">WATCHLIST</a>
             </div>
 
             <!-- Search & Mobile Toggle -->
@@ -261,13 +271,17 @@
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-nav-menu" class="md:hidden bg-[#202940] hidden py-2 text-center border-t border-[#333]">
-            <a onclick="router('home')" class="nav-link block text-white text-sm py-2 px-4">HOME</a>
-            <a onclick="router('movies')" class="nav-link block text-white text-sm py-2 px-4">MOVIES</a>
-            <a onclick="router('tv')" class="nav-link block text-white text-sm py-2 px-4">TV SHOWS</a>
-            <a onclick="router('kdrama')" class="nav-link block text-white text-sm py-2 px-4">K-DRAMA</a>
-            <a onclick="router('anime-anilist')" class="nav-link block text-white text-sm py-2 px-4">ANIME</a>
-            <a onclick="router('watchlist')" class="nav-link block text-white text-sm py-2 px-4">WATCHLIST</a>
+        <div id="mobile-nav-menu" class="md:hidden bg-opacity-10 hidden py-2 text-center border-t border-[#333]">
+            <a onclick="router('home')" class="nav-link block text-white text-sm py-2 px-4" data-target="home">HOME</a>
+            <a onclick="router('movies')" class="nav-link block text-white text-sm py-2 px-4"
+                data-target="movies">MOVIES</a>
+            <a onclick="router('tv')" class="nav-link block text-white text-sm py-2 px-4" data-target="tv">TV SHOWS</a>
+            <a onclick="router('kdrama')" class="nav-link block text-white text-sm py-2 px-4"
+                data-target="kdrama">K-DRAMA</a>
+            <a onclick="router('anime-anilist')" class="nav-link block text-white text-sm py-2 px-4"
+                data-target="anime-anilist">ANIME</a>
+            <a onclick="router('watchlist')" class="nav-link block text-white text-sm py-2 px-4"
+                data-target="watchlist">WATCHLIST</a>
         </div>
     </nav>
 
@@ -786,7 +800,12 @@
             if (data && data.results) {
                 if (stateRef.page === 1) {
                     grid.innerHTML = '';
-                    if (data.results.length > 0) updateSharedBanner(data.results[Math.floor(Math.random() * Math.min(5, data.results.length))]);
+                    if (data.results.length > 0) {
+                        // FIX: Explicitly set media_type for banner items (TV/KDrama lack it in discover results)
+                        const bannerItem = data.results[Math.floor(Math.random() * Math.min(5, data.results.length))];
+                        bannerItem.media_type = key === 'movies' ? 'movie' : 'tv';
+                        updateSharedBanner(bannerItem);
+                    }
                 }
                 renderGrid(gridId, data.results, key === 'movies' ? 'movie' : 'tv');
                 renderPagination(`pag-${key}`, data.page, data.total_pages, (p) => {
@@ -1490,13 +1509,4 @@
     </script>
 </body>
 
-
 </html>
-
-
-
-
-
-
-
-
