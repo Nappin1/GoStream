@@ -510,14 +510,14 @@
         const ANILIST_API_URL = 'https://graphql.anilist.co';
 
         const STREAM_SOURCES = [
-            { url: '/embed?url=https://vidlink.pro', name: 'Server 1 (VidLink)' },
-            { url: 'https://go-stream-two.vercel.app/embed?url=https://vidsrc.icu/embed', name: 'Server 2 (VidSrc)' },
-            { url: 'https://go-stream-two.vercel.app/embed?url=https://vidsrc.cc/v2/embed', name: 'Server 3 (CC)' }
+            { url: 'https://vidlink.pro', name: 'Server 1 (VidLink)' },
+            { url: 'https://vidsrc.icu/embed', name: 'Server 2 (VidSrc)' },
+            { url: 'https://vidsrc.cc/v2/embed', name: 'Server 3 (CC)' }
         ];
 
         const ANIME_SOURCES = [
-            { name: 'Server 1 (CC)', url: (id, ep) => `https://go-stream-two.vercel.app/embed?url=https://vidsrc.cc/v2/embed/anime/ani${id}/${ep}/sub` },
-            { name: 'Server 2 (ICU)', url: (id, ep) => `https://go-stream-two.vercel.app/embed?url=https://vidsrc.icu/embed/anime/${id}/${ep}/0` }
+            { name: 'Server 1 (CC)', url: (id, ep) => `https://vidsrc.cc/v2/embed/anime/ani${id}/${ep}/sub` },
+            { name: 'Server 2 (ICU)', url: (id, ep) => `https://vidsrc.icu/embed/anime/${id}/${ep}/0` }
         ];
 
         // Constants for Filters
@@ -1494,4 +1494,5 @@
 
 
 </html>
+
 
