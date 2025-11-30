@@ -847,7 +847,7 @@
                 name: anime.title.english || anime.title.romaji,
                 overview: anime.description,
                 backdrop_path: anime.bannerImage || anime.coverImage.extraLarge,
-                poster_path: anime.coverImage.large,
+                poster_path: anime.coverImage.extraLarge,
                 vote_average: (anime.averageScore || 0) / 10,
                 media_type: 'anime',
                 release_date: anime.seasonYear ? String(anime.seasonYear) : 'N/A',
@@ -887,7 +887,7 @@
                 Page(page: $page, perPage: 24) {
                     pageInfo { hasNextPage }
                     media(sort: $sort, genre: $genre, countryOfOrigin: $country, type: ANIME, isAdult: false) {
-                        id title { romaji english } coverImage { large } format averageScore status episodes seasonYear
+                        id title { romaji english } coverImage { extraLarge } format averageScore status episodes seasonYear
                     }
                 }
             }`;
@@ -924,7 +924,7 @@
 
             const query = `query ($id: Int) { Media(id: $id) { id title { romaji english } 
             description 
-            coverImage { large } 
+            coverImage { extraLarge } 
             bannerImage
             episodes
                     nextAiringEpisode { episode }
@@ -942,7 +942,7 @@
                             mediaRecommendation {
                                 id
                                 title { romaji english }
-                                coverImage { large }
+                                coverImage { extraLarge }
                                 bannerImage
                                 format
                                 averageScore
@@ -968,11 +968,11 @@
             state.currentEp = 1;
 
             // Setup Banner
-            const bannerUrl = getBackdropUrl(anime.bannerImage || anime.coverImage.large);
+            const bannerUrl = getBackdropUrl(anime.bannerImage || anime.coverImage.extraLarge);
             document.getElementById('anilist-info-banner').style.backgroundImage = `url(${bannerUrl})`;
 
             document.getElementById('anilist-player-title').innerText = anime.title.english || anime.title.romaji;
-            document.getElementById('anilist-info-img').src = anime.coverImage.large;
+            document.getElementById('anilist-info-img').src = anime.coverImage.extraLarge;
 
             // Banner Metadata
             document.getElementById('anilist-banner-score').innerText = (anime.averageScore || '??') + '% Score';
@@ -990,7 +990,7 @@
 
             // Watchlist Button
             const watchlistBtn = document.getElementById('anilist-watchlist-btn');
-            watchlistBtn.onclick = () => addToWatchlist(anime.id, 'anime', anime.title.english || anime.title.romaji, anime.coverImage.large);
+            watchlistBtn.onclick = () => addToWatchlist(anime.id, 'anime', anime.title.english || anime.title.romaji, anime.coverImage.extraLarge);
 
 
             // Setup Server Buttons
@@ -1131,7 +1131,7 @@
             grid.innerHTML = '<p class="text-gray-400">Searching...</p>';
 
             // 1. Fetch Anilist Data (Anime)
-            const anilistQuery = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { large } format averageScore episodes } } }`;
+            const anilistQuery = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { extraLarge } format averageScore episodes } } }`;
             const anilistPromise = fetchAnilist(anilistQuery, { search: query });
 
             // 2. Fetch TMDB Data (Movies + TV)
@@ -1556,3 +1556,4 @@
 </body>
 
 </html>
+
