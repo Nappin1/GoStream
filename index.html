@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Stream - All in One</title>
+    <title>Go Stream</title>
     <link rel="icon" type="image/x-icon" href="images/G-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -261,11 +261,11 @@
             <div class="flex items-center pl-3 space-x-4">
                 <div class="relative sm:block">
                     <input id="global-search-input" type="text" placeholder="Search + Enter"
-                        class="bg-[#111] border border-[#333] text-white text-sm rounded-full py-1.5 pl-8 pr-3 md:w-80 w-full focus:outline-none focus:border-primary transition-colors">
+                        class="bg-[#111] border border-[#333] text-white text-sm rounded-md py-1.5 pl-8 pr-3 md:w-80 w-full focus:outline-none focus:border-primary transition-colors">
                     <i class="fas fa-search text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
                 </div>
                 <button id="mobile-nav-toggle" class="md:hidden outline-none text-white text-xl">
-                    <i class="fas fa-bars"></i>
+                    <i class="fas fa-bars text-primary"></i>
                 </button>
             </div>
         </div>
@@ -410,25 +410,36 @@
                 <!-- Sidebar -->
                 <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
                     <img id="anilist-info-img" src=""
-                        class="w-full hidden lg:block rounded-lg shadow-xl border border-[#333]">
-                    <button id="anilist-watchlist-btn" class="w-full py-3 bg-[#333] hover:bg-[#444] rounded font-bold">
+                        class="w-full hidden lg:block rounded-md shadow-xl border border-[#333]">
+                    <button id="anilist-watchlist-btn"
+                        class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold">
                         <i class="fas fa-plus"></i> Add to List
                     </button>
                     <!-- More Details Panel -->
                     <div class="bg-[#2a2c31] p-4 rounded-md border border-[#333] text-sm space-y-3">
+                        <h4 class="text-white text-xl font-bold border-b border-[#444] pb-2 mb-2"><span
+                                class="vline"></span>More Info</h4>
                         <div class="space-y-2">
-                            <div><span class="text-white font-medium">Type:</span> <span
+                            <div><span class="text-sm text-gray-400">Type:</span> <span
                                     id="anilist-info-Type">...</span></div>
-                            <div><span class="text-white font-medium">Studios:</span> <span
+                            <div><span class="text-sm text-gray-400">Studios:</span> <span
                                     id="anilist-info-Studio">...</span>
                             </div>
-                            <div><span class="text-white font-medium">Date:</span> <span
+                            <div><span class="text-sm text-gray-400">Date:</span> <span
                                     id="anilist-info-Date">...</span></div>
-                            <div><span class="text-white font-medium">Status:</span> <span
+                            <div><span class="text-sm text-gray-400">Status:</span> <span
                                     id="anilist-info-Status">...</span>
                             </div>
-                            <div><span class="text-white font-medium">Genre:</span> <span id="anilist-info-Genres"
+                            <div><span class="text-sm text-gray-400">Genre:</span> <span id="anilist-info-Genres"
                                     class="text-primary">...</span></div>
+                        </div>
+                        <hr>
+                        <h3 class="text-xl font-bold text-white mb-2"><span class="vline"></span>Overview</h3>
+                        <p id="anilist-info-desc" class="text-gray-300 leading-relaxed"></p>
+                        <hr>
+                        <h3 class="text-xl font-bold text-white mb-4"><span class="vline"></span>Cast</h3>
+                        <div id="anilist-cast-grid"
+                            class="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         </div>
                     </div>
                 </div>
@@ -436,17 +447,19 @@
                 <!-- Main Content -->
                 <div class="flex-1 space-y-8 min-w-0">
                     <!-- Player -->
-                    <div class="bg-black rounded-xl overflow-hidden border border-[#333] shadow-2xl">
-                        <div class="bg-black rounded-t-xl overflow-hidden border-b border-[#333] relative">
+                    <div class="rounded-md overflow-hidden">
+                        <div class="overflow-hidden relative">
                             <!-- Server Buttons -->
-                            <div class="bg-[#2a2c31] p-2 flex items-center gap-3 border-b border-[#333]">
-                                <span class="text-primary font-bold text-xs uppercase tracking-wider ml-2">Select
-                                    Server:</span>
-                                <div id="anime-server-buttons" class="flex gap-2"></div>
-                            </div>
-                            <div class="aspect-video relative">
-                                <iframe id="anilist-iframe" class="w-full h-full" src="" frameborder="0"
-                                    allowfullscreen></iframe>
+                            <div class="bg-black overflow-hidden">
+                                <div class="bg-[#2a2c31] p-3 flex justify-between items-center border-b border-[#333]">
+                                    <span class="text-primary font-bold"><i class="fas fa-play-circle"></i>
+                                        Player</span>
+                                    <div class="flex gap-2" id="anime-server-buttons"></div>
+                                </div>
+                                <div class="aspect-video relative">
+                                    <iframe id="anilist-iframe" class="w-full h-full" src="" frameborder="0"
+                                        allowfullscreen></iframe>
+                                </div>
                             </div>
                         </div>
 
@@ -463,7 +476,7 @@
                             </div>
                         </div>
                         <!-- Episodes Grid -->
-                        <div class="bg-[#2a2c31] p-4 rounded-b-xl border-t border-[#333]">
+                        <div class="bg-[#2a2c31] p-4 border-t border-[#333]">
                             <h3 class="text-sm font-bold text-white mb-3">Episodes</h3>
                             <div id="anilist-episodes-grid"
                                 class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto custom-scroll pr-2">
@@ -472,19 +485,10 @@
                     </div>
 
                     <!-- Text Info -->
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-2">Overview</h3>
-                        <p id="anilist-info-desc" class="text-gray-300 leading-relaxed"></p>
-                    </div>
-                    <div class="mt-6 bg-[#2a2c31] p-4 rounded-md">
-                        <h3 class="text-xl font-bold text-white mb-4"><span class="vline"></span>Cast</h3>
-                        <div id="anilist-cast-grid"
-                            class="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        </div>
-                    </div>
+
 
                     <!-- Recommendations Grid -->
-                    <div class="mt-8">
+                    <div class="mt-8 bg-[#2a2c31] p-4 rounded-md">
                         <h3 class="text-xl font-bold text-white mb-4"><span class="vline"></span>You may also like</h3>
                         <div id="anilist-recommendations-grid" class="horizontal-scroll-container pb-4"></div>
                     </div>
@@ -991,7 +995,7 @@
 
             // Setup Server Buttons
             const serverBtnContainer = document.getElementById('anime-server-buttons');
-            serverBtnContainer.innerHTML = '';
+            serverBtnContainer.innerHTML = '<span><i class="fas fa-server mt-1.5 text-center"></i></span>';
             ANIME_SOURCES.forEach((src, idx) => {
                 const btn = document.createElement('button');
                 btn.className = `px-3 py-1 rounded-sm text-sm font-bold ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
@@ -1231,23 +1235,37 @@
             });
         }
 
-        function renderHorizontalGrid(containerId, items) {
+        function renderHorizontalGrid(containerId, items, typeOverride, append = false) {
             const container = document.getElementById(containerId);
-            container.innerHTML = '';
+            if (!append) container.innerHTML = '';
             items.forEach(item => {
-                const type = item.media_type || 'movie';
-                const title = item.title || item.name || 'Unknown Title';
+                if (!item.poster_path) return;
+                const type = typeOverride || (item.media_type || 'movie');
+                const title = item.title || item.name;
+                const date = item.release_date || item.first_air_date || 'N/A';
+                const year = date !== 'N/A' ? date.split('-')[0] : '';
                 const posterUrl = getPosterUrl(item.poster_path);
+                const statusBadge = item.status ? `<div class="absolute top-2 left-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase">${item.status.replace(/_/g, ' ')}</div>` : '';
 
                 const card = document.createElement('div');
-                card.className = 'movie-card cursor-pointer relative flex-shrink-0 w-[160px] md:w-[200px] bg-[#222] border border-[#333] rounded overflow-hidden';
-                // Added title below image
+                card.className = 'movie-card cursor-pointer relative group';
                 card.innerHTML = `
-                     <div class="aspect-[2/3] overflow-hidden relative">
+                    <div class="aspect-[2/3] overflow-hidden relative">
                         <img src="${posterUrl}" class="w-full h-full object-cover">
+                         ${statusBadge}
+                        <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold border border-[#333]">
+                            ${item.vote_average ? item.vote_average.toFixed(1) : 'NR'}
+                        </div>
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <i class="mdi mdi-play-circle text-primary text-5xl"></i>
+                        </div>
                     </div>
-                    <div class="p-2">
-                        <h4 class="text-xs text-white font-medium truncate">${title}</h4>
+                    <div class="p-3 bg-card-bg">
+                        <h3 class="text-white text-sm font-semibold truncate hover:text-primary transition-colors">${title}</h3>
+                        <div class="flex justify-between items-center text-xs text-gray-400 mt-1">
+                            <span>${year}</span>
+                            <span class="uppercase border border-gray-600 px-1 rounded text-[10px]">${type}</span>
+                        </div>
                     </div>
                 `;
                 card.onclick = () => openDetailsWrapper(item.id, type);
@@ -1299,7 +1317,23 @@
             const backdrop = getBackdropUrl(details.backdrop_path);
             const poster = getPosterUrl(details.poster_path);
             const runtime = details.runtime || (details.episode_run_time ? details.episode_run_time[0] : '?') + 'm';
-            const cast = credits ? credits.cast.slice(0, 6).map(c => c.name).join(', ') : '';
+            const cast = credits && credits.cast ? credits.cast.slice(0, 12) : [];
+            let castHtml = '<div class="flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">';
+            if (cast.length > 0) {
+                castHtml += cast.map(c => {
+                    const profile = c.profile_path ? `${IMG_URL}${c.profile_path}` : 'https://placehold.co/100x100/333/555?text=No+Img';
+                    return `
+                        <div class="flex-shrink-0 w-24 text-center">
+                            <img src="${profile}" alt="${c.name}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-[#242d43]">
+                            <p class="text-xs font-semibold text-white truncate" title="${c.name}">${c.name}</p>
+                            <p class="text-[10px] text-gray-400 truncate" title="${c.character}">${c.character}</p>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                castHtml += '<p class="text-gray-400 text-sm">No cast information available.</p>';
+            }
+            castHtml += '</div>';
 
             // FORMAT MORE DETAILS
             const releaseDate = details.release_date || details.first_air_date || 'N/A';
@@ -1332,41 +1366,45 @@
                 <div class="px-4 md:px-12 py-8 flex flex-col lg:flex-row gap-8">
                     <!-- Sidebar -->
                     <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
-                        <img src="${poster}" class="w-full hidden lg:block rounded-lg shadow-xl border border-[#333]">
-                        <button onclick="addToWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}')" class="w-full py-3 bg-[#333] hover:bg-[#444] rounded font-bold">
+                        <img src="${poster}" class="w-full hidden lg:block rounded-md shadow-xl border border-[#333]">
+                        <button onclick="addToWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}')" class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold">
                              <i class="fas fa-plus"></i> Add to List
                         </button>
                         
                         <!-- More Details Panel -->
-                        <div class="bg-[#2a2c31] p-4 rounded-md border border-[#333] text-sm space-y-3">
-                            <h4 class="text-white font-bold border-b border-[#444] pb-2 mb-2">Movie Info</h4>
-                            <div><span class="text-gray-400 block text-xs">Status</span><span class="text-white">${status}</span></div>
-                            <div><span class="text-gray-400 block text-xs">Released</span><span class="text-white">${releaseDate}</span></div>
-                            <div><span class="text-gray-400 block text-xs">Genres</span><span class="text-white">${genres}</span></div>
-                            ${type === 'movie' ? `<div><span class="text-gray-400 block text-xs">Budget</span><span class="text-white">${budget}</span></div>` : ''}
-                            ${type === 'movie' ? `<div><span class="text-gray-400 block text-xs">Revenue</span><span class="text-white">${revenue}</span></div>` : ''}
-                             <div><span class="text-gray-400 block text-xs">Production</span><span class="text-white">${details.production_companies?.[0]?.name || 'N/A'}</span></div>
+                        <div class="bg-[#2a2c31] p-3 rounded-md border-[#333]">
+                            <h4 class="text-white text-xl font-bold border-b border-[#444] pb-2 mb-2"><span class="vline"></span>More Info</h4>
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm border-b border-[#444] pb-2 mb-2">
+                                <div><span class="text-gray-400 block text-xs">Type</span><span class="text-white uppercase">${type}</span></div>
+                                <div><span class="text-gray-400 block text-xs">Status</span><span class="text-white">${status}</span></div>
+                                <div><span class="text-gray-400 block text-xs">Released</span><span class="text-white">${releaseDate}</span></div>
+                                <div><span class="text-gray-400 block text-xs">Production</span><span class="text-white">${details.production_companies?.[0]?.name || 'N/A'}</span></div>${type === 'movie' ? `
+                                <div><span class="text-gray-400 block text-xs">Budget</span><span class="text-white">${budget}</span></div>` : ''}${type === 'movie' ? `
+                                <div><span class="text-gray-400 block text-xs">Revenue</span><span class="text-white">${revenue}</span></div>` : ''}
+                                <div><span class="text-gray-400 block text-xs">Genres</span><span class="text-white">${genres}</span></div>
+                            </div>
+
+                            <!-- Text Info -->
+                            <div><h3 class="text-xl font-bold text-white mb-2"><span class="vline"></span>Overview</h3><p class="text-gray-300 leading-relaxed">${details.overview}</p></div>
+                            <div><h3 class="text-xl font-bold text-white border-t border-[#444] pt-2 mt-2"><span class="vline"></span>Cast</h3><p class="text-gray-400">${castHtml}</p></div>
+                        
                         </div>
                     </div>
 
                     <!-- Main Content -->
                     <div class="flex-1 space-y-8 min-w-0">
                         <!-- Player -->
-                         <div class="bg-black rounded-xl overflow-hidden border border-[#333] shadow-2xl">
+                         <div class="bg-black rounded-md overflow-hidden border border-[#333] shadow-2xl">
                              <div class="bg-[#2a2c31] p-3 flex justify-between items-center border-b border-[#333]">
                                 <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
-                                <div class="flex gap-2" id="server-buttons"></div>
+                                <div class="flex gap-2" id="server-buttons"><span><i class="fas fa-server mr-2 text-center"></i></span></div>
                              </div>
                              ${type === 'tv' ? `<div class="p-3 bg-[#202125] flex gap-4 border-b border-[#333]"><select id="season-select" class="bg-[#333] text-white p-2 rounded text-sm w-full outline-none"></select><select id="ep-select" class="bg-[#333] text-white p-2 rounded text-sm w-full outline-none"></select></div>` : ''}
                              <div class="aspect-video relative"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
                         </div>
 
-                        <!-- Text Info -->
-                        <div><h3 class="text-xl font-bold text-white mb-2">Overview</h3><p class="text-gray-300 leading-relaxed">${details.overview}</p></div>
-                        <div><h3 class="text-xl font-bold text-white mb-2">Starring</h3><p class="text-gray-400">${cast}</p></div>
-                        
                         <!-- Recommendations -->
-                        <div>
+                        <div class="bg-[#2a2c31] p-4 rounded-md">
                              <h3 class="text-xl font-bold text-white mb-4">You may also like</h3>
                              <div id="tmdb-recommendations" class="horizontal-scroll-container pb-4"></div>
                         </div>
@@ -1476,7 +1514,12 @@
                 card.className = 'movie-card cursor-pointer relative';
                 card.innerHTML = `
                     <div class="aspect-[2/3] overflow-hidden"><img src="${posterUrl}" class="w-full h-full object-cover"></div>
-                    <div class="p-2"><h4 class="text-sm truncate text-white">${item.title}</h4><button onclick="event.stopPropagation(); removeFromWatchlist(${item.id})" class="text-red-500 text-xs mt-1 hover:underline">Remove</button></div>
+                    <div class="p-2">
+                        <h4 class="truncate text-center text-white">${item.title}</h4>
+                        <button onclick="event.stopPropagation(); removeFromWatchlist(${item.id})" class="absolute top-1 right-1 z-20 flex items-center rounded-full shadow-xl h-8 w-8 bg-primary bg-opacity-40 md:hover:bg-red-400 justify-center transition-all">   
+                        <i class="fas fa-minus text-white"></i>     
+                        </button>
+                    </div>
                 `;
                 card.onclick = () => openDetailsWrapper(item.id, item.type);
                 grid.appendChild(card);
@@ -1493,7 +1536,10 @@
             const t = document.getElementById('toast-container');
             const el = document.createElement('div');
             el.className = "bg-primary text-black px-4 py-2 rounded font-bold shadow-lg animate-fade-in";
-            el.innerText = msg;
+            el.innerHTML = `
+                <i class="fas fa-info-circle mr-3 text-lg"></i>
+                <span class="font-semibold">${msg}</span>
+            `;
             t.appendChild(el);
             setTimeout(() => el.remove(), 3000);
         }
