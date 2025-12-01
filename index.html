@@ -544,9 +544,10 @@
         const ANILIST_API_URL = 'https://graphql.anilist.co';
 
         const STREAM_SOURCES = [
-            { url: 'https://vidlink.pro', name: 'Server 1 (VidLink)' },
-            { url: 'https://vidsrc.icu/embed', name: 'Server 2 (VidSrc)' },
-            { url: 'https://vidsrc.cc/v2/embed', name: 'Server 3 (CC)' }
+            { url: 'https://vidlink.pro', name: 'Server 1 (Vidl)' },
+            { url: 'https://vidsrc.icu/embed', name: 'Server 2 (Vidic)' },
+            { url: 'https://vidsrc.cc/v2/embed', name: 'Server 3 (Vidcc)' },
+            { url: 'https://111movies.com', name: 'Server 4 (1M)' }
         ];
 
         const ANIME_SOURCES = [
@@ -557,13 +558,18 @@
         // Constants for Filters
         const COUNTRIES = [
             { code: '', name: 'All Countries' },
-            { code: 'US', name: 'United States' },
-            { code: 'JP', name: 'Japan' },
-            { code: 'KR', name: 'South Korea' },
-            { code: 'GB', name: 'United Kingdom' },
-            { code: 'FR', name: 'France' },
             { code: 'CN', name: 'China' },
-            { code: 'IN', name: 'India' }
+            { code: 'FR', name: 'France' },
+            { code: 'HK', name: 'Hongkong' },
+            { code: 'IN', name: 'India' },
+            { code: 'JP', name: 'Japan' },
+            { code: 'RU', name: 'Russia' },
+            { code: 'KR', name: 'South Korea' },
+            { code: 'ES', name: 'Spain' },
+            { code: 'TH', name: 'Thailand' },
+            { code: 'TR', name: 'Turkey' },
+            { code: 'GB', name: 'United Kingdom' },
+            { code: 'US', name: 'United States' }
         ];
 
         const TMDB_GENRES = [
@@ -628,7 +634,7 @@
         };
 
         const getBackdropUrl = (path) => {
-            if (!path) return 'https://placehold.co/1920x1080/202125/FFF?text=No+Image';
+            if (!path) return 'https://placehold.co/1920x1080/202125/FFF?text=No+Banner+available';
             return path.startsWith('http') ? path : BACKDROP_URL + path;
         };
 
@@ -779,18 +785,18 @@
         /**
          * TMDB API
          */
-        async function fetchTMDB(endpoint, params = {}) {
-            loader.show();
+        async function fetchTMDB(endpoint, params = {}, showLoader = true) {
+            if (showLoader) loader.show();
             params.api_key = API_KEY;
             const qs = new URLSearchParams(params).toString();
             try {
                 const res = await fetch(`${TMDB_BASE_URL}${endpoint}?${qs}`);
                 const data = await res.json();
-                loader.hide();
+                if (showLoader) loader.hide();
                 return data;
             } catch (e) {
                 console.error("TMDB Error", e);
-                loader.hide();
+                if (showLoader) loader.hide();
                 return null;
             }
         }
@@ -812,45 +818,93 @@
             const gridId = `grid-${key}`;
             const grid = document.getElementById(gridId);
 
-            const params = {
-                page: stateRef.page,
-                sort_by: stateRef.filters.sort,
-                language: 'en-US',
-                'vote_count.gte': 50,
-                ...extraParams
-            };
+            // Regex for non-English titles (CJK + Hangul)
+            const nonEnglishRegex = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D\uAC00-\uD7A3]/;
 
-            // FIX: If sorting by date (Newest), filter out future dates and remove vote count limit
-            if (stateRef.filters.sort.includes('date') || stateRef.filters.sort.includes('first_air_date')) {
-                const today = new Date().toISOString().split('T')[0];
-                if (key === 'movies') params['primary_release_date.lte'] = today;
-                else params['first_air_date.lte'] = today;
+            // Strategy: For KDrama, fetch more pages to fill the grid (Density Fetching)
+            // We map 1 UI page to 3 API pages to increase density of valid items after filtering
+            const isDensityFetch = (key === 'kdrama');
+            const pagesToFetch = isDensityFetch ? 3 : 1;
+            const startPage = isDensityFetch ? ((stateRef.page - 1) * pagesToFetch) + 1 : stateRef.page;
 
-                // Allow new shows with 0 votes to appear
-                delete params['vote_count.gte'];
-                params['vote_count.gte'] = 0;
+            let combinedResults = [];
+            let totalPagesApi = 0;
+
+            loader.show(); // Global loader for the batch
+
+            const promises = [];
+            for (let i = 0; i < pagesToFetch; i++) {
+                const params = {
+                    page: startPage + i,
+                    sort_by: stateRef.filters.sort,
+                    language: 'en-US',
+                    'vote_count.gte': 0,
+                    ...extraParams
+                };
+
+                // Date/Newest Logic
+                if (stateRef.filters.sort.includes('date') || stateRef.filters.sort.includes('first_air_date')) {
+                    const today = new Date().toISOString().split('T')[0];
+                    if (key === 'movies') params['primary_release_date.lte'] = today;
+                    else params['first_air_date.lte'] = today;
+
+                    delete params['vote_count.gte'];
+                    params['vote_count.gte'] = 0;
+                }
+
+                if (stateRef.filters.genre) params.with_genres = stateRef.filters.genre;
+                if (stateRef.filters.country) params.with_origin_country = stateRef.filters.country;
+
+                // Fetch without individual loader toggling
+                promises.push(fetchTMDB(endpoint, params, false));
             }
 
-            if (stateRef.filters.genre) params.with_genres = stateRef.filters.genre;
-            if (stateRef.filters.country) params.with_origin_country = stateRef.filters.country;
+            const responses = await Promise.all(promises);
 
-            const data = await fetchTMDB(endpoint, params);
-
-            if (data && data.results) {
-                if (stateRef.page === 1) {
-                    grid.innerHTML = '';
-                    if (data.results.length > 0) {
-                        const bannerItem = data.results[Math.floor(Math.random() * Math.min(5, data.results.length))];
-                        bannerItem.media_type = key === 'movies' ? 'movie' : 'tv';
-                        updateSharedBanner(bannerItem);
-                    }
+            responses.forEach(data => {
+                if (data && data.results) {
+                    combinedResults = [...combinedResults, ...data.results];
+                    if (data.total_pages > totalPagesApi) totalPagesApi = data.total_pages;
                 }
-                renderGrid(gridId, data.results, key === 'movies' ? 'movie' : 'tv');
-                renderPagination(`pag-${key}`, data.page, data.total_pages, (p) => {
+            });
+
+            // Filter locally if density fetch is active
+            let finalResults = combinedResults;
+            if (isDensityFetch) {
+                finalResults = combinedResults.filter(item => {
+                    const title = item.title || item.name;
+                    return !nonEnglishRegex.test(title);
+                });
+                // Ensure we stick to roughly 20 items per page for consistency
+                finalResults = finalResults.slice(0, 20);
+            }
+
+            // Calculate UI Pagination Total
+            const uiTotalPages = isDensityFetch ? Math.ceil(totalPagesApi / pagesToFetch) : totalPagesApi;
+
+            // Clear grid manually since we are handling the batch
+            grid.innerHTML = '';
+
+            if (finalResults.length > 0) {
+                // Update banner
+                const bannerItem = finalResults[Math.floor(Math.random() * Math.min(5, finalResults.length))];
+                bannerItem.media_type = key === 'movies' ? 'movie' : 'tv';
+                updateSharedBanner(bannerItem);
+
+                // Render Grid (pass false for append to keep logic simple)
+                renderGrid(gridId, finalResults, key === 'movies' ? 'movie' : 'tv', false);
+
+                // Render Pagination
+                renderPagination(`pag-${key}`, stateRef.page, uiTotalPages, (p) => {
                     stateRef.page = p;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                     loadTMDBSection(key, endpoint, extraParams);
                 });
+            } else {
+                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center">No results found.</p>';
             }
+
+            loader.hide();
         }
 
         /**
@@ -913,15 +967,12 @@
                 // Normalize and use Shared Grid
                 const mappedData = state.data.map(mapAnilistToShared);
 
-                // Clear grid if page 1
-                if (state.page === 1) document.getElementById(gridId).innerHTML = '';
-
                 // FIX: Update banner with random item from CURRENT results (rotates every change)
                 if (mappedData.length > 0) {
                     updateSharedBanner(mappedData[Math.floor(Math.random() * mappedData.length)]);
                 }
 
-                renderGrid(gridId, mappedData, 'anime', state.page > 1);
+                renderGrid(gridId, mappedData, 'anime', false);
                 document.getElementById('anilist-page-num').innerText = state.page;
             }
         }
@@ -932,6 +983,7 @@
             const next = currentPage + dir;
             if (next > 0) {
                 appState.anilist.page = next;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 loadAnilistSection();
             }
         }
