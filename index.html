@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go Stream - All in One</title>
-    <link rel="icon" type="image/x-icon" href="images/G-icon.png">
+    <!-- <link rel="icon" type="image/x-icon" href="images/G-icon.png"> -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome & Material Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-    <script type='text/javascript' src='//skatetimprojects.com/98/78/12/9878125c00c51d2fe29f4bb8c227f1fc.js'></script>
+    <!-- Removed external ad/tracking script for preview stability -->
 
     <script>
         tailwind.config = {
@@ -360,11 +360,14 @@
 
             <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
                 <button onclick="changeAnilistPage(-1)"
-                    class="px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black">
-                    < </button>
-                        <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
-                        <button onclick="changeAnilistPage(1)"
-                            class="px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black">></button>
+                    class="px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black font-bold">
+                    PREV
+                </button>
+                <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
+                <button onclick="changeAnilistPage(1)"
+                    class="px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black font-bold">
+                    NEXT
+                </button>
             </div>
         </section>
 
@@ -412,7 +415,7 @@
                     <img id="anilist-info-img" src=""
                         class="w-full hidden lg:block rounded-md shadow-xl border border-[#333]">
                     <button id="anilist-watchlist-btn"
-                        class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold">
+                        class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors">
                         <i class="fas fa-plus"></i> Add to List
                     </button>
                     <!-- More Details Panel -->
@@ -752,7 +755,13 @@
                 resetAndLoad(section);
             };
 
-            container.append(sortSelect, genreSelect, countrySelect);
+            // APPEND ELEMENTS CONDITIONALLY
+            container.append(sortSelect, genreSelect);
+
+            // Only append country filter if NOT in KDrama section
+            if (section !== 'kdrama') {
+                container.append(countrySelect);
+            }
         }
 
         function resetAndLoad(section) {
@@ -811,6 +820,17 @@
                 ...extraParams
             };
 
+            // FIX: If sorting by date (Newest), filter out future dates and remove vote count limit
+            if (stateRef.filters.sort.includes('date') || stateRef.filters.sort.includes('first_air_date')) {
+                const today = new Date().toISOString().split('T')[0];
+                if (key === 'movies') params['primary_release_date.lte'] = today;
+                else params['first_air_date.lte'] = today;
+
+                // Allow new shows with 0 votes to appear
+                delete params['vote_count.gte'];
+                params['vote_count.gte'] = 0;
+            }
+
             if (stateRef.filters.genre) params.with_genres = stateRef.filters.genre;
             if (stateRef.filters.country) params.with_origin_country = stateRef.filters.country;
 
@@ -820,7 +840,6 @@
                 if (stateRef.page === 1) {
                     grid.innerHTML = '';
                     if (data.results.length > 0) {
-                        // FIX: Explicitly set media_type for banner items (TV/KDrama lack it in discover results)
                         const bannerItem = data.results[Math.floor(Math.random() * Math.min(5, data.results.length))];
                         bannerItem.media_type = key === 'movies' ? 'movie' : 'tv';
                         updateSharedBanner(bannerItem);
@@ -874,35 +893,12 @@
             const state = appState.anilist;
             const gridId = 'grid-anilist';
 
-            // 1. Fetch Hero Data if empty
-            if (state.hero.length === 0) {
-                const heroQuery = `query { Page(page: 1, perPage: 1) { media(sort: TRENDING_DESC, type: ANIME)
-                { id title { romaji english } 
-                bannerImage 
-                coverImage { extraLarge } 
-                description 
-                averageScore 
-                seasonYear 
-                } } }`;
-                const data = await fetchAnilist(heroQuery);
-                if (data && data.Page.media) {
-                    state.hero = data.Page.media;
-                    // Use Shared Banner
-                    if (state.hero.length > 0) {
-                        updateSharedBanner(mapAnilistToShared(state.hero[0]));
-                    }
-                }
-            } else {
-                // Update banner with existing data if we navigated back
-                if (state.hero.length > 0) updateSharedBanner(mapAnilistToShared(state.hero[0]));
-            }
-
             const query = `
             query ($page: Int, $sort: [MediaSort], $genre: String, $country: CountryCode) {
                 Page(page: $page, perPage: 24) {
                     pageInfo { hasNextPage }
                     media(sort: $sort, genre: $genre, countryOfOrigin: $country, type: ANIME, isAdult: false) {
-                        id title { romaji english } coverImage { extraLarge } format averageScore status episodes seasonYear
+                        id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
                     }
                 }
             }`;
@@ -920,13 +916,20 @@
                 // Clear grid if page 1
                 if (state.page === 1) document.getElementById(gridId).innerHTML = '';
 
+                // FIX: Update banner with random item from CURRENT results (rotates every change)
+                if (mappedData.length > 0) {
+                    updateSharedBanner(mappedData[Math.floor(Math.random() * mappedData.length)]);
+                }
+
                 renderGrid(gridId, mappedData, 'anime', state.page > 1);
                 document.getElementById('anilist-page-num').innerText = state.page;
             }
         }
 
+        // FIX: Ensure correct math and type safety for pagination
         function changeAnilistPage(dir) {
-            const next = appState.anilist.page + dir;
+            const currentPage = parseInt(appState.anilist.page) || 1;
+            const next = currentPage + dir;
             if (next > 0) {
                 appState.anilist.page = next;
                 loadAnilistSection();
@@ -1065,18 +1068,18 @@
             }
 
 
-            // Watchlist Button
+            // Watchlist Button (Dynamic Toggle)
             const watchlistBtn = document.getElementById('anilist-watchlist-btn');
-            watchlistBtn.onclick = () => addToWatchlist(anime.id, 'anime', anime.title.english || anime.title.romaji, anime.coverImage.extraLarge);
-
+            watchlistBtn.onclick = () => toggleWatchlist(anime.id, 'anime', anime.title.english || anime.title.romaji, anime.coverImage.extraLarge, 'anilist-watchlist-btn');
+            updateWatchlistButtonState(anime.id, 'anilist-watchlist-btn');
 
             // Setup Server Buttons
             const serverBtnContainer = document.getElementById('anime-server-buttons');
-            serverBtnContainer.innerHTML = '<span><i class="fas fa-server mt-1.5 text-center"></i></span>';
+            serverBtnContainer.innerHTML = '';
             ANIME_SOURCES.forEach((src, idx) => {
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1 rounded-sm text-sm font-bold ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
-                btn.innerText = src.name.split(' ')[0];
+                btn.className = `px-3 py-1 rounded-sm text-xs font-bold ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
+                btn.innerText = src.name.split(/\s+/).slice(0, 2).join(" ");
                 btn.onclick = () => {
                     state.currentServerIdx = idx;
                     Array.from(serverBtnContainer.children).forEach(b => {
@@ -1261,11 +1264,13 @@
                     <button class="bg-primary hover:bg-white text-black font-bold py-3 px-8 rounded-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
                         <i class="fas fa-play mr-2"></i> Play Now
                     </button>
-                    <button class="bg-[#333] hover:bg-[#444] text-white font-bold py-3 px-8 rounded-md transition-colors" onclick="addToWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}')">
+                    <button id="banner-watchlist-btn-${item.id}" class="bg-[#333] hover:bg-[#444] text-white font-bold py-3 px-8 rounded-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}')">
                         <i class="fas fa-plus mr-2"></i> My List
                     </button>
                 </div>
             `;
+            // Init button state
+            updateWatchlistButtonState(item.id, `banner-watchlist-btn-${item.id}`);
         }
 
         // Wrapper to switch between Details functions based on type
@@ -1279,8 +1284,12 @@
             if (!append) container.innerHTML = '';
             items.forEach(item => {
                 if (!item.poster_path) return;
-                const type = typeOverride || (item.media_type || 'movie');
                 const title = item.title || item.name;
+
+                // FILTER: Remove items with Asian characters (CJK/Hangul) to ensure English titles
+                if (/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D\uAC00-\uD7A3]/.test(title)) return;
+
+                const type = typeOverride || (item.media_type || 'movie');
                 const date = item.release_date || item.first_air_date || 'N/A';
                 const year = date !== 'N/A' ? date.split('-')[0] : '';
                 const posterUrl = getPosterUrl(item.poster_path);
@@ -1317,8 +1326,12 @@
             if (!append) container.innerHTML = '';
             items.forEach(item => {
                 if (!item.poster_path) return;
-                const type = typeOverride || (item.media_type || 'movie');
                 const title = item.title || item.name;
+
+                // FILTER: Remove items with Asian characters (CJK/Hangul) to ensure English titles
+                if (/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D\uAC00-\uD7A3]/.test(title)) return;
+
+                const type = typeOverride || (item.media_type || 'movie');
                 const date = item.release_date || item.first_air_date || 'N/A';
                 const year = date !== 'N/A' ? date.split('-')[0] : '';
                 const posterUrl = getPosterUrl(item.poster_path);
@@ -1444,7 +1457,7 @@
                     <!-- Sidebar -->
                     <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
                         <img src="${poster}" class="w-full hidden lg:block rounded-md shadow-xl border border-[#333]">
-                        <button onclick="addToWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}')" class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold">
+                        <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn')" class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors">
                              <i class="fas fa-plus"></i> Add to List
                         </button>
                         
@@ -1471,10 +1484,10 @@
                     <!-- Main Content -->
                     <div class="flex-1 space-y-8 min-w-0">
                         <!-- Player -->
-                         <div class="bg-black rounded-md overflow-hidden border border-[#333] shadow-2xl">
+                        <div class="bg-black rounded-md overflow-hidden border border-[#333] shadow-2xl">
                              <div class="bg-[#2a2c31] p-3 flex justify-between items-center border-b border-[#333]">
                                 <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
-                                <div class="flex gap-2" id="server-buttons"><span><i class="fas fa-server mr-2 text-center"></i></span></div>
+                                <div class="flex gap-2" id="server-buttons"></div>
                              </div>
                              ${type === 'tv' ? `<div class="p-3 bg-[#202125] flex gap-4 border-b border-[#333]"><select id="season-select" class="bg-[#333] text-white p-2 rounded text-sm w-full outline-none"></select><select id="ep-select" class="bg-[#333] text-white p-2 rounded text-sm w-full outline-none"></select></div>` : ''}
                              <div class="aspect-video relative"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
@@ -1489,6 +1502,9 @@
                 </div>
             `;
 
+            // Init Button State
+            updateWatchlistButtonState(id, 'tmdb-watchlist-btn');
+
             // RENDER RECS
             if (recommendations && recommendations.results) {
                 renderHorizontalGrid('tmdb-recommendations', recommendations.results);
@@ -1499,11 +1515,11 @@
             const serverContainer = document.getElementById('server-buttons');
             STREAM_SOURCES.forEach((src, idx) => {
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1 rounded text-xs font-bold ${idx === 0 ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
-                btn.innerText = src.name.split(' ')[0];
+                btn.className = `px-3 py-1 rounded-sm text-xs font-bold ${idx === 0 ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
+                btn.innerText = src.name.split(/\s+/).slice(0, 2).join(" ");
                 btn.onclick = () => {
                     Array.from(serverContainer.children).forEach(b => b.className = 'px-3 py-1 rounded text-xs font-bold bg-[#111] text-gray-400 hover:text-white');
-                    btn.className = 'px-3 py-1 rounded text-xs font-bold bg-primary text-black';
+                    btn.className = 'px-3 py-1 rounded-sm text-xs font-bold bg-primary text-black';
                     updatePlayerSource(src.url, id, type, season, ep);
                 }
                 serverContainer.appendChild(btn);
@@ -1573,34 +1589,43 @@
             else iframe.src = baseUrl.includes('vidsrc') ? `${baseUrl}/tv/${id}/${s}/${e}` : `${baseUrl}/tv/${id}/${s}/${e}`;
         }
 
-        function addToWatchlist(id, type, title, poster) {
+        // --- WATCHLIST LOGIC (UPDATED) ---
+
+        function toggleWatchlist(id, type, title, poster, btnId) {
             const exists = appState.watchlist.find(i => i.id === id);
-            if (exists) { showToast('Already in watchlist'); return; }
-            appState.watchlist.push({ id, type, title, poster_path: poster });
+
+            if (exists) {
+                // Remove
+                appState.watchlist = appState.watchlist.filter(i => i.id !== id);
+                showToast('Removed from Watchlist');
+            } else {
+                // Add
+                appState.watchlist.push({ id, type, title, poster_path: poster });
+                showToast('Added to Watchlist');
+            }
+
             localStorage.setItem('goStreamWatchlist', JSON.stringify(appState.watchlist));
-            showToast('Added to Watchlist');
+            updateWatchlistButtonState(id, btnId);
         }
 
-        function renderWatchlist() {
-            const grid = document.getElementById('grid-watchlist');
-            grid.innerHTML = '';
-            if (appState.watchlist.length === 0) { grid.innerHTML = '<p class="text-gray-500">Your watchlist is empty.</p>'; return; }
-            appState.watchlist.forEach(item => {
-                const posterUrl = getPosterUrl(item.poster_path);
-                const card = document.createElement('div');
-                card.className = 'movie-card cursor-pointer relative';
-                card.innerHTML = `
-                    <div class="aspect-[2/3] overflow-hidden"><img src="${posterUrl}" class="w-full h-full object-cover"></div>
-                    <div class="p-2">
-                        <h4 class="truncate text-center text-white">${item.title}</h4>
-                        <button onclick="event.stopPropagation(); removeFromWatchlist(${item.id})" class="absolute top-1 right-1 z-20 flex items-center rounded-full shadow-xl h-8 w-8 bg-primary bg-opacity-40 md:hover:bg-red-400 justify-center transition-all">   
-                        <i class="fas fa-minus text-white"></i>     
-                        </button>
-                    </div>
-                `;
-                card.onclick = () => openDetailsWrapper(item.id, item.type);
-                grid.appendChild(card);
-            });
+        function updateWatchlistButtonState(id, btnId) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+
+            const exists = appState.watchlist.find(i => i.id === id);
+            if (exists) {
+                btn.innerHTML = '<i class="fas fa-check"></i> In Watchlist';
+                btn.className = btn.className.replace('bg-primary', 'bg-red-600').replace('text-black', 'text-white').replace('bg-[#333]', 'bg-red-600');
+                if (!btn.className.includes('bg-red-600')) btn.classList.add('bg-red-600', 'text-white');
+            } else {
+                btn.innerHTML = '<i class="fas fa-plus"></i> Add to List';
+                // Reset styles based on context (sidebar vs banner)
+                if (btnId.includes('banner')) {
+                    btn.className = "bg-[#333] hover:bg-[#444] text-white font-bold py-3 px-8 rounded-md transition-colors";
+                } else {
+                    btn.className = "w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors";
+                }
+            }
         }
 
         function removeFromWatchlist(id) {
