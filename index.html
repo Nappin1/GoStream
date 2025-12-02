@@ -5,23 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go Stream - All in One</title>
-    <!-- <link rel="icon" type="image/x-icon" href="images/G-icon.png"> -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome & Material Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-    <!-- Removed external ad/tracking script for preview stability -->
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'primary': '#cae962',
-                        'dark-bg': '#202125',
-                        'card-bg': '#2a2c31',
-                        'netflix-red': '#E50914'
+                        'primary': 'var(--color-primary)',
+                        'dark-bg': 'var(--bg-main)',
+                        'card-bg': 'var(--bg-card)',
+                        'nav-bg': 'var(--bg-nav)',
+                        'border-color': 'var(--border-color)',
+                        'text-main': 'var(--text-main)',
+                        'text-muted': 'var(--text-muted)',
+                        'input-bg': 'var(--bg-input)'
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -32,11 +33,25 @@
     </script>
 
     <style>
-        /* --- GLOBAL STYLES --- */
+        /* --- GLOBAL VARIABLES & THEME --- */
+        :root {
+            /* Dark Mode (Default) */
+            --color-primary: #cae962;
+            --bg-main: #202125;
+            --bg-card: #2a2c31;
+            --bg-nav: #1a1b1e;
+            --bg-input: #111;
+            --border-color: #333;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
         body {
-            background-color: #202125;
-            color: #fff;
+            background-color: var(--bg-main);
+            color: var(--text-main);
             font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Custom Scrollbar */
@@ -46,7 +61,7 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #222;
+            background: var(--bg-main);
         }
 
         ::-webkit-scrollbar-thumb {
@@ -60,7 +75,7 @@
 
         /* Selection */
         ::selection {
-            background-color: #cae962;
+            background-color: var(--color-primary);
             color: #000;
         }
 
@@ -77,14 +92,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.3s ease;
+            /* Removed transition for immediate hide */
         }
 
         .spinner {
             width: 50px;
             height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid #cae962;
+            border: 5px solid rgba(128, 128, 128, 0.2);
+            border-top: 5px solid var(--color-primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -100,25 +115,29 @@
         }
 
         .hidden-loader {
-            opacity: 0;
-            pointer-events: none;
+            display: none !important;
         }
 
         /* Nav Link Active State */
         .nav-link.active {
-            color: #cae962;
+            color: var(--color-primary);
             font-weight: 700;
         }
 
         .nav-link {
             cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--color-primary);
         }
 
         /* Movie Card & Utilities */
         .vline {
             display: inline-block;
             width: 4px;
-            background-color: #cae962;
+            background-color: var(--color-primary);
             margin-right: 10px;
             height: 1.5rem;
             vertical-align: middle;
@@ -127,15 +146,15 @@
         .movie-card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             overflow: hidden;
-            background-color: #222;
-            border: 1px solid #333;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 0.5rem;
         }
 
         .movie-card:hover {
             transform: scale(1.03);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-            border-color: #cae962;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            border-color: var(--color-primary);
         }
 
         .movie-card img {
@@ -167,18 +186,25 @@
 
         /* Filter Selects */
         .filter-select {
-            background-color: #2a2c31;
-            color: #fff;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
             font-size: 0.875rem;
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
-            border: 1px solid #333;
-            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            /* Generic arrow svg */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='gray'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.25em;
             cursor: pointer;
         }
 
         .filter-select:hover {
-            border-color: #cae962;
+            border-color: var(--color-primary);
         }
 
         /* Utilities */
@@ -196,7 +222,6 @@
             }
         }
 
-        /* Anime Section Specifics */
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -211,13 +236,6 @@
             overflow: hidden;
         }
 
-        .line-clamp-6 {
-            display: -webkit-box;
-            -webkit-line-clamp: 6;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
         .navbar-toggle,
         .navbar-toggle:focus,
         .navbar-toggle:hover {
@@ -227,7 +245,7 @@
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body>
 
     <!-- Global Loader -->
     <div id="global-loader" class="hidden-loader">
@@ -238,88 +256,93 @@
     </div>
 
     <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 bg-[#1a1b1e]/95 backdrop-blur-md border-b border-[#333]">
+    <nav id="navbar"
+        class="fixed top-0 left-0 w-full z-50 bg-black border-b border-border-color transition-colors duration-300">
         <div class="px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
             <a onclick="router('home')" class="cursor-pointer">
-                <h1 class="text-2xl outline-none tracking-tight font-extrabold text-white">Go<span
+                <h1 class="text-2xl outline-none tracking-tight font-extrabold text-text-main">Go<span
                         class="text-primary">Stream</span></h1>
             </a>
 
             <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-6 items-center outline-none">
-                <a onclick="router('home')" class="nav-link text-white font-medium" data-target="home">HOME</a>
-                <a onclick="router('movies')" class="nav-link text-white font-medium" data-target="movies">MOVIES</a>
-                <a onclick="router('tv')" class="nav-link text-white font-medium" data-target="tv">TV SHOWS</a>
-                <a onclick="router('kdrama')" class="nav-link text-white font-medium" data-target="kdrama">K-DRAMA</a>
-                <a onclick="router('anime-anilist')" class="nav-link text-white font-medium"
+                <a onclick="router('home')" class="nav-link text-text-main font-medium" data-target="home">HOME</a>
+                <a onclick="router('movies')" class="nav-link text-text-main font-medium"
+                    data-target="movies">MOVIES</a>
+                <a onclick="router('tv')" class="nav-link text-text-main font-medium" data-target="tv">TV SHOWS</a>
+                <a onclick="router('anime-anilist')" class="nav-link text-text-main font-medium"
                     data-target="anime-anilist">ANIME</a>
-                <a onclick="router('watchlist')" class="nav-link text-white font-medium"
+                <a onclick="router('watchlist')" class="nav-link text-text-main font-medium"
                     data-target="watchlist">WATCHLIST</a>
             </div>
 
-            <!-- Search & Mobile Toggle -->
+            <!-- Search & Theme & Mobile Toggle -->
             <div class="flex items-center pl-3 space-x-4">
-                <div class="relative sm:block">
+                <div class="relative sm:block hidden">
                     <input id="global-search-input" type="text" placeholder="Search + Enter"
-                        class="bg-[#111] border border-[#333] text-white text-sm rounded-md py-1.5 pl-8 pr-3 md:w-80 w-full focus:outline-none focus:border-primary transition-colors">
-                    <i class="fas fa-search text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+                        class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 md:w-64 lg:w-80 w-full focus:outline-none focus:border-primary transition-colors">
+                    <i class="fas fa-search text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
                 </div>
-                <button id="mobile-nav-toggle" class="md:hidden outline-none text-white text-xl">
+                <button id="mobile-nav-toggle" class="md:hidden outline-none text-text-main text-xl">
                     <i class="fas fa-bars text-primary"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-nav-menu" class="md:hidden bg-opacity-10 hidden py-2 text-center border-t border-[#333]">
-            <a onclick="router('home')" class="nav-link block text-white text-sm py-2 px-4" data-target="home">HOME</a>
-            <a onclick="router('movies')" class="nav-link block text-white text-sm py-2 px-4"
+        <div id="mobile-nav-menu" class="md:hidden bg-nav-bg hidden py-2 text-center border-t border-border-color">
+            <div class="p-4">
+                <input id="mobile-search-input" type="text" placeholder="Search + Enter"
+                    class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-2 pl-4 pr-3 w-full focus:outline-none focus:border-primary transition-colors mb-4">
+            </div>
+            <a onclick="router('home')" class="nav-link block text-text-main text-sm py-2 px-4"
+                data-target="home">HOME</a>
+            <a onclick="router('movies')" class="nav-link block text-text-main text-sm py-2 px-4"
                 data-target="movies">MOVIES</a>
-            <a onclick="router('tv')" class="nav-link block text-white text-sm py-2 px-4" data-target="tv">TV SHOWS</a>
-            <a onclick="router('kdrama')" class="nav-link block text-white text-sm py-2 px-4"
-                data-target="kdrama">K-DRAMA</a>
-            <a onclick="router('anime-anilist')" class="nav-link block text-white text-sm py-2 px-4"
+            <a onclick="router('tv')" class="nav-link block text-text-main text-sm py-2 px-4" data-target="tv">TV
+                SHOWS</a>
+            <a onclick="router('anime-anilist')" class="nav-link block text-text-main text-sm py-2 px-4"
                 data-target="anime-anilist">ANIME</a>
-            <a onclick="router('watchlist')" class="nav-link block text-white text-sm py-2 px-4"
+            <a onclick="router('watchlist')" class="nav-link block text-text-main text-sm py-2 px-4"
                 data-target="watchlist">WATCHLIST</a>
         </div>
     </nav>
 
     <!-- Main Content Area -->
-    <main id="main-content" class="pt-16 flex-1 min-h-screen">
+    <main id="main-content" class="pt-16 min-h-screen">
 
         <!-- Shared Banner -->
         <section id="shared-banner"
             class="relative h-[45vh] md:h-[60vh] flex items-end p-4 md:p-12 bg-cover bg-center bg-no-repeat transition-all duration-500 hidden">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#202125] via-transparent to-transparent"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-[#202125] via-[#202125]/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-dark-bg via-dark-bg/60 to-transparent"></div>
             <div id="banner-content" class="z-10 max-w-4xl relative fade-in"></div>
         </section>
 
         <!-- VIEW: HOME -->
         <section id="view-home" class="view-section px-4 sm:px-6 lg:px-8 py-8 space-y-8 hidden">
             <div class="discovery-row">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 px-2 flex items-center"><span
+                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 px-2 flex items-center"><span
                         class="vline"></span>Trending Now</h2>
                 <div id="row-trending" class="horizontal-scroll-container pb-4"></div>
             </div>
             <div class="discovery-row">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 px-2 flex items-center"><span
+                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 px-2 flex items-center"><span
                         class="vline"></span>Top Rated Movies</h2>
                 <div id="row-top-rated" class="horizontal-scroll-container pb-4"></div>
             </div>
             <div class="discovery-row">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 px-2 flex items-center"><span
+                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 px-2 flex items-center"><span
                         class="vline"></span>Popular Action</h2>
                 <div id="row-action" class="horizontal-scroll-container pb-4"></div>
             </div>
         </section>
 
         <!-- VIEW: MOVIES -->
-        <section id="view-movies" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+        <section id="view-movies" class="view-section px-4 w-full sm:px-6 lg:px-8 py-8 hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-2xl md:text-3xl font-bold flex text-primary"></span>Discover Movies<sup
-                        class="text-sm text-white">TMDB</sup></h2>
+                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center"></span>Popular
+                    Movies<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
                 <div id="movies-filters" class="flex flex-wrap gap-2"></div>
             </div>
             <div id="grid-movies" class="results-grid"></div>
@@ -327,32 +350,21 @@
         </section>
 
         <!-- VIEW: TV SHOWS -->
-        <section id="view-tv" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+        <section id="view-tv" class="view-section px-4 w-full sm:px-6 lg:px-8 py-8 hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-2xl md:text-3xl font-bold flex text-primary">Discover TV Shows<sup
-                        class="text-sm text-white">TMDB</sup></h2>
+                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center">Popular TV
+                    Shows<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
                 <div id="tv-filters" class="flex flex-wrap gap-2"></div>
             </div>
             <div id="grid-tv" class="results-grid"></div>
             <div id="pag-tv" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
-        <!-- VIEW: K-DRAMA -->
-        <section id="view-kdrama" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-2xl md:text-3xl font-bold flex text-primary">Discover K-Drama<sup
-                        class="text-sm text-white">TMDB</sup></h2>
-                <div id="kdrama-filters" class="flex flex-wrap gap-2"></div>
-            </div>
-            <div id="grid-kdrama" class="results-grid"></div>
-            <div id="pag-kdrama" class="pagination-controls mt-8 flex justify-center gap-2"></div>
-        </section>
-
         <!-- VIEW: ANIME ANILIST -->
         <section id="view-anime-anilist" class="view-section hidden w-full px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-2xl md:text-3xl font-bold flex text-primary">Discover Anime <sup
-                        class="text-sm text-white">ANILIST</sup></h2>
+                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center">Discover Anime <sup
+                        class="text-xs text-primary ml-2">ANILIST</sup></h2>
                 <div id="anilist-filters" class="flex flex-wrap gap-2"></div>
             </div>
 
@@ -360,12 +372,12 @@
 
             <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
                 <button onclick="changeAnilistPage(-1)"
-                    class="px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black font-bold">
+                    class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold">
                     PREV
                 </button>
                 <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
                 <button onclick="changeAnilistPage(1)"
-                    class="px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black font-bold">
+                    class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold">
                     NEXT
                 </button>
             </div>
@@ -379,7 +391,7 @@
 
         <!-- VIEW: SEARCH RESULTS -->
         <section id="view-search" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
-            <h2 class="text-2xl font-bold text-white mb-6">Search Results</h2>
+            <h2 class="text-2xl font-bold text-text-main mb-6">Search Results</h2>
             <div id="grid-search" class="results-grid"></div>
         </section>
 
@@ -393,10 +405,10 @@
             <div id="anilist-info-banner" class="relative h-[50vh] w-full bg-cover bg-center">
                 <div class="absolute inset-0 bg-black/60"></div>
                 <div
-                    class="absolute bottom-0 left-0 w-full p-6 md:p-12 bg-gradient-to-t from-[#202125] to-transparent flex items-end">
+                    class="absolute bottom-0 left-0 w-full p-6 md:p-12 bg-gradient-to-t from-dark-bg to-transparent flex items-end">
                     <div class="max-w-4xl">
                         <button onclick="router('anime-anilist')"
-                            class="mb-4 text-gray-300 hover:text-white flex items-center gap-2"><i
+                            class="mb-4 text-gray-300 md:hover:text-white flex items-center gap-2"><i
                                 class="fas fa-arrow-left"></i>
                             Back</button>
                         <h1 id="anilist-player-title" class="text-4xl md:text-6xl font-bold text-white mb-2">Title</h1>
@@ -413,49 +425,51 @@
                 <!-- Sidebar -->
                 <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
                     <img id="anilist-info-img" src=""
-                        class="w-full hidden lg:block rounded-md shadow-xl border border-[#333]">
+                        class="w-full hidden lg:block rounded-md shadow-xl border border-border-color">
                     <button id="anilist-watchlist-btn"
-                        class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors">
+                        class="w-full py-3 text-black md:hover:bg-opacity-60 rounded font-bold transition-colors">
                         <i class="fas fa-plus"></i> Add to List
                     </button>
                     <!-- More Details Panel -->
-                    <div class="bg-[#2a2c31] p-4 rounded-md border border-[#333] text-sm space-y-3">
-                        <h4 class="text-white text-xl font-bold border-b border-[#444] pb-2 mb-2"><span
+                    <div class="bg-card-bg p-4 rounded-md border border-border-color text-sm space-y-3">
+                        <h4 class="text-text-main text-xl font-bold border-b border-border-color pb-2 mb-2"><span
                                 class="vline"></span>More Info</h4>
-                        <div class="space-y-2">
-                            <div><i class="text-sm text-gray-400" id="anilist-info-Romaji">...</i></div>
-                            <div><span class="text-sm text-gray-400">Type:</span> <span
-                                    id="anilist-info-Type">...</span></div>
-                            <div><span class="text-sm text-gray-400">Episodes:</span> <span
-                                    id="anilist-info-Episodes">...</span></div>
-                            <div><span class="text-sm text-gray-400">Season:</span> <span
-                                    id="anilist-info-Season">...</span></div>
-                            <div><span class="text-sm text-gray-400">Studios:</span> <span
-                                    id="anilist-info-Studio">...</span>
+                        <div class="space-y-2 text-text-main">
+                            <div><i class="text-sm text-text-muted" id="anilist-info-Romaji">...</i></div>
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm pb-2 mb-2">
+                                <div><span class="text-sm text-text-muted">Type:</span> <span
+                                        id="anilist-info-Type">...</span></div>
+                                <div><span class="text-sm text-text-muted">Episodes:</span> <span
+                                        id="anilist-info-Episodes">...</span></div>
+                                <div><span class="text-sm text-text-muted">Season:</span> <span
+                                        id="anilist-info-Season">...</span></div>
+                                <div><span class="text-sm text-text-muted">Released Date:</span> <span
+                                        id="anilist-info-Date">...</span></div>
+                                <div><span class="text-sm text-text-muted">Studios:</span> <span
+                                        id="anilist-info-Studio">...</span>
+                                </div>
+                                <div><span class="text-sm text-text-muted">Status:</span> <span id="anilist-info-Status"
+                                        class="text-primary">...</span></div>
                             </div>
-                            <div><span class="text-sm text-gray-400">Producers:</span> <span
+                            <div><span class="text-sm text-text-muted">Producers:</span> <span
                                     id="anilist-info-Producers">...</span>
                             </div>
-                            <div><span class="text-sm text-gray-400">Date:</span> <span
-                                    id="anilist-info-Date">...</span></div>
-                            <div><span class="text-sm text-gray-400">Status:</span> <span
-                                    id="anilist-info-Status">...</span>
-                            </div>
-                            <div><span class="text-sm text-gray-400">Genre:</span> <span id="anilist-info-Genres"
+                            <div><span class="text-sm text-text-muted">Genre:</span> <span id="anilist-info-Genres"
                                     class="text-primary">...</span></div>
 
-                            <div id="anilist-info-Relations-Container" class="hidden pt-2 border-t border-[#444]">
-                                <span class="text-sm text-gray-400 block mb-2 font-bold">Relations</span>
+                            <div id="anilist-info-Relations-Container" class="hidden pt-2 border-t border-border-color">
+                                <span class="text-sm text-text-muted block mb-2 font-bold">Relations</span>
                                 <div id="anilist-info-Relations"
-                                    class="flex flex-col gap-3 text-xs text-gray-300 max-h-60 overflow-y-auto pr-1 custom-scroll">
+                                    class="flex flex-col gap-3 text-xs text-text-muted max-h-40 overflow-y-auto pr-1 custom-scroll">
                                 </div>
                             </div>
                         </div>
-                        <hr>
-                        <h3 class="text-xl font-bold text-white mb-2"><span class="vline"></span>Overview</h3>
-                        <p id="anilist-info-desc" class="text-gray-300 leading-relaxed"></p>
-                        <hr>
-                        <h3 class="text-xl font-bold text-white mb-4"><span class="vline"></span>Cast</h3>
+                        <h3 class="text-xl font-bold text-text-main mb-2 pt-2 border-t border-border-color"><span
+                                class="vline"></span>Overview</h3>
+                        <p id="anilist-info-desc"
+                            class="text-text-muted leading-relaxed max-h-40 overflow-y-auto pr-1 custom-scroll"></p>
+                        <h3 class="text-xl font-bold text-text-main mb-4 pt-2 border-t border-border-color"><span
+                                class="vline"></span>Cast</h3>
                         <div id="anilist-cast-grid"
                             class="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         </div>
@@ -465,11 +479,12 @@
                 <!-- Main Content -->
                 <div class="flex-1 space-y-8 min-w-0">
                     <!-- Player -->
-                    <div class="rounded-md overflow-hidden">
+                    <div class="rounded-md overflow-hidden border border-border-color shadow-lg">
                         <div class="overflow-hidden relative">
                             <!-- Server Buttons -->
                             <div class="bg-black overflow-hidden">
-                                <div class="bg-[#2a2c31] p-3 flex justify-between items-center border-b border-[#333]">
+                                <div
+                                    class="bg-card-bg p-3 flex justify-between items-center border-b border-border-color">
                                     <span class="text-primary font-bold"><i class="fas fa-play-circle"></i>
                                         Player</span>
                                     <div class="flex gap-2" id="anime-server-buttons"></div>
@@ -481,21 +496,21 @@
                             </div>
                         </div>
 
-                        <div class="bg-[#2a2c31] p-4">
+                        <div class="bg-card-bg p-4">
                             <!-- <h2 id="anilist-player-title" class="text-xl font-bold text-white mb-2">Anime Title</h2> -->
                             <div class="flex items-center justify-between">
                                 <span id="anilist-player-ep" class="text-primary">Episode 1</span>
                                 <div class="flex gap-2">
                                     <button onclick="changeAnilistEp(-1)"
-                                        class="px-3 py-1 bg-[#111] rounded-md text-xs hover:text-primary">Prev</button>
+                                        class="px-3 py-1 bg-input-bg border border-border-color rounded-md text-xs md:hover:text-primary text-text-main">Prev</button>
                                     <button onclick="changeAnilistEp(1)"
-                                        class="px-3 py-1 bg-[#111] rounded-md text-xs hover:text-primary">Next</button>
+                                        class="px-3 py-1 bg-input-bg border border-border-color rounded-md text-xs md:hover:text-primary text-text-main">Next</button>
                                 </div>
                             </div>
                         </div>
                         <!-- Episodes Grid -->
-                        <div class="bg-[#2a2c31] p-4 border-t border-[#333]">
-                            <h3 class="text-sm font-bold text-white mb-3">Episodes</h3>
+                        <div class="bg-card-bg p-4 border-t border-border-color">
+                            <h3 class="text-sm font-bold text-text-main mb-3">Episodes</h3>
                             <div id="anilist-episodes-grid"
                                 class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto custom-scroll pr-2">
                             </div>
@@ -506,8 +521,9 @@
 
 
                     <!-- Recommendations Grid -->
-                    <div class="mt-8 bg-[#2a2c31] p-4 rounded-md">
-                        <h3 class="text-xl font-bold text-white mb-4"><span class="vline"></span>You may also like</h3>
+                    <div class="mt-8 bg-card-bg p-4 rounded-md border border-border-color">
+                        <h3 class="text-xl font-bold text-text-main mb-4"><span class="vline"></span>You may also like
+                        </h3>
                         <div id="anilist-recommendations-grid" class="horizontal-scroll-container pb-4"></div>
                     </div>
                 </div>
@@ -516,16 +532,16 @@
 
     </main>
 
-    <footer class="bg-[#1a1b1e] py-6 border-t border-[#333] mt-auto w-full">
+    <footer class="bg-nav-bg py-6 border-t border-border-color mt-auto w-full">
         <div class="container mx-auto px-4 text-center">
             <div class="flex items-center justify-center gap-2 mb-4">
-                <h2 class="text-lg font-bold text-white">Go<span class="text-[#cae962]">Stream</span></h2>
+                <h2 class="text-lg font-bold text-text-main">Go<span class="text-primary">Stream</span></h2>
             </div>
-            <p class="text-xs text-gray-500">
+            <p class="text-xs text-text-muted">
                 GoStream does not store any files on our server, we only linked to the media which is hosted on 3rd
                 party services.
             </p>
-            <p id="credits" class="block text-sm text-[#9CA3AF] sm:text-center">© <span
+            <p id="credits" class="block text-sm text-text-muted sm:text-center">© <span
                     id="current-year-copyright">GoStream</span>. All rights reserved.</p>
         </div>
     </footer>
@@ -543,11 +559,18 @@
         const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
         const ANILIST_API_URL = 'https://graphql.anilist.co';
 
-        const STREAM_SOURCES = [
-            { url: 'https://vidlink.pro', name: '1' },
-            { url: 'https://vidsrc.icu/embed', name: '2' },
-            { url: 'https://vidsrc.cc/v2/embed', name: '3' },
-            { url: 'https://111movies.com', name: '4' }
+        const MOVIE_SOURCES = [
+            { name: '1', url: (id) => `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=true` },
+            { name: '2', url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
+            { name: '3', url: (id) => `https://vidlink.pro/movie/${id}` },
+            { name: '4', url: (id) => `https://111movies.com/movie/${id}` }
+        ];
+
+        const TV_SOURCES = [
+            { name: '1', url: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}?autoPlay=true` },
+            { name: '2', url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
+            { name: '3', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true` },
+            { name: '4', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` }
         ];
 
         const ANIME_SOURCES = [
@@ -592,6 +615,21 @@
             { id: 53, name: 'Thriller' }
         ];
 
+        const TV_STATUS = [
+            { value: '', name: 'All Status' },
+            { value: '0', name: 'Returning Series' },
+            { value: '3', name: 'Ended' },
+            { value: '4', name: 'Canceled' },
+            { value: '2', name: 'In Production' },
+            { value: '5', name: 'Pilot' }
+        ];
+
+        const MOVIE_STATUS = [
+            { value: '', name: 'All Status' },
+            { value: 'released', name: 'Released' },
+            { value: 'upcoming', name: 'Upcoming' }
+        ];
+
         const ANILIST_GENRES = [
             'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Fantasy',
             'Horror', 'Mecha', 'Music', 'Mystery', 'Psychological',
@@ -604,9 +642,8 @@
             lastView: 'home', // For simple back navigation
             watchlist: JSON.parse(localStorage.getItem('goStreamWatchlist')) || [],
             tmdb: {
-                movies: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '' }, data: [] },
-                tv: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '' }, data: [] },
-                kdrama: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '' }, data: [] }
+                movies: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '', status: '' }, data: [] },
+                tv: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '', status: '' }, data: [] }
             },
             anilist: {
                 page: 1,
@@ -623,11 +660,20 @@
          * CORE UTILITIES
          */
         const loader = {
-            show: () => document.getElementById('global-loader').classList.remove('hidden-loader'),
-            hide: () => document.getElementById('global-loader').classList.add('hidden-loader')
+            count: 0,
+            show: () => {
+                loader.count++;
+                document.getElementById('global-loader').classList.remove('hidden-loader');
+            },
+            hide: () => {
+                loader.count--;
+                if (loader.count <= 0) {
+                    loader.count = 0; // safety
+                    document.getElementById('global-loader').classList.add('hidden-loader');
+                }
+            }
         };
 
-        // Helper to handle mixed URL types (Anilist absolute vs TMDB relative)
         const getPosterUrl = (path) => {
             if (!path) return 'https://placehold.co/500x750/333/FFF?text=No+Image';
             return path.startsWith('http') ? path : IMG_URL + path;
@@ -639,7 +685,7 @@
         };
 
         function router(viewName) {
-            // STOP STREAMS by clearing iframe sources
+            // STOP STREAMS
             const tmdbFrame = document.getElementById('tmdb-player');
             const aniFrame = document.getElementById('anilist-iframe');
             if (tmdbFrame) tmdbFrame.src = "";
@@ -655,8 +701,7 @@
             document.getElementById('shared-banner').classList.add('hidden');
             document.getElementById('mobile-nav-menu').classList.add('hidden');
 
-            // Save last main view if navigating to something else
-            const mainViews = ['home', 'movies', 'tv', 'kdrama', 'anime-anilist', 'watchlist', 'search'];
+            const mainViews = ['home', 'movies', 'tv', 'anime-anilist', 'watchlist', 'search'];
             if (mainViews.includes(appState.currentView) && viewName === 'details') {
                 appState.lastView = appState.currentView;
             }
@@ -682,15 +727,9 @@
                     renderFilters('tv');
                     loadTMDBSection('tv', '/discover/tv');
                     break;
-                case 'kdrama':
-                    document.getElementById('view-kdrama').classList.remove('hidden');
-                    document.getElementById('shared-banner').classList.remove('hidden');
-                    renderFilters('kdrama');
-                    loadTMDBSection('kdrama', '/discover/tv', { with_original_language: 'ko' });
-                    break;
                 case 'anime-anilist':
                     document.getElementById('view-anime-anilist').classList.remove('hidden');
-                    document.getElementById('shared-banner').classList.remove('hidden'); // Enable shared banner
+                    document.getElementById('shared-banner').classList.remove('hidden');
                     renderFilters('anilist');
                     loadAnilistSection();
                     break;
@@ -721,23 +760,22 @@
             const isAnilist = section === 'anilist';
             const stateRef = isAnilist ? appState.anilist.filters : appState.tmdb[section].filters;
 
-            // Sort Select
             const sortSelect = document.createElement('select');
             sortSelect.className = 'filter-select';
-
-            // Fix Sort for TV Shows (Using first_air_date instead of primary_release_date)
-            const dateSort = (section === 'movies') ? 'primary_release_date.desc' : 'first_air_date.desc';
-
-            sortSelect.innerHTML = isAnilist
-                ? `<option value="TRENDING_DESC">Trending</option><option value="POPULARITY_DESC">Popular</option><option value="SCORE_DESC">Top Rated</option>`
-                : `<option value="popularity.desc">Popularity</option><option value="vote_average.desc">Rating</option><option value="${dateSort}">Newest</option>`;
+            if (isAnilist) {
+                sortSelect.innerHTML = `
+                <option value="TRENDING_DESC">Trending</option>
+                <option value="POPULARITY_DESC">Popular</option>
+                <option value="SCORE_DESC">Top Rated</option>`;
+            } else {
+                sortSelect.className = 'hidden';
+            }
             sortSelect.value = stateRef.sort;
             sortSelect.onchange = (e) => {
                 stateRef.sort = e.target.value;
                 resetAndLoad(section);
             };
 
-            // Genre Select
             const genreSelect = document.createElement('select');
             genreSelect.className = 'filter-select';
             if (isAnilist) {
@@ -751,7 +789,23 @@
                 resetAndLoad(section);
             };
 
-            // Country Select
+            const statusSelect = document.createElement('select');
+            statusSelect.className = 'filter-select';
+            if (section === 'movies') {
+                statusSelect.innerHTML = MOVIE_STATUS.map(s => `<option value="${s.value}">${s.name}</option>`).join('');
+            } else if (!isAnilist) {
+                statusSelect.innerHTML = TV_STATUS.map(s => `<option value="${s.value}">${s.name}</option>`).join('');
+            } else {
+                statusSelect.classList.add('hidden');
+            }
+            if (!isAnilist) {
+                statusSelect.value = stateRef.status;
+                statusSelect.onchange = (e) => {
+                    stateRef.status = e.target.value;
+                    resetAndLoad(section);
+                };
+            }
+
             const countrySelect = document.createElement('select');
             countrySelect.className = 'filter-select';
             countrySelect.innerHTML = COUNTRIES.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
@@ -761,13 +815,8 @@
                 resetAndLoad(section);
             };
 
-            // APPEND ELEMENTS CONDITIONALLY
             container.append(sortSelect, genreSelect);
-
-            // Only append country filter if NOT in KDrama section
-            if (section !== 'kdrama') {
-                container.append(countrySelect);
-            }
+            if (!isAnilist) container.append(statusSelect, countrySelect);
         }
 
         function resetAndLoad(section) {
@@ -777,8 +826,7 @@
             } else {
                 appState.tmdb[section].page = 1;
                 const endpoint = section === 'movies' ? '/discover/movie' : '/discover/tv';
-                const extra = section === 'kdrama' ? { with_original_language: 'ko' } : {};
-                loadTMDBSection(section, endpoint, extra);
+                loadTMDBSection(section, endpoint);
             }
         }
 
@@ -805,12 +853,12 @@
             const container = document.getElementById('row-trending');
             if (container.innerHTML !== '') return;
             const trending = await fetchTMDB('/trending/all/day');
-            if (trending) renderHorizontalGrid('row-trending', trending.results);
+            if (trending) renderTMDBGrid('row-trending', trending.results, null, true); // true for horizontal
             if (trending && trending.results.length > 0) updateSharedBanner(trending.results[0]);
             const topRated = await fetchTMDB('/movie/top_rated');
-            if (topRated) renderHorizontalGrid('row-top-rated', topRated.results);
+            if (topRated) renderTMDBGrid('row-top-rated', topRated.results, null, true);
             const action = await fetchTMDB('/discover/movie', { with_genres: 28 });
-            if (action) renderHorizontalGrid('row-action', action.results);
+            if (action) renderTMDBGrid('row-action', action.results, null, true);
         }
 
         async function loadTMDBSection(key, endpoint, extraParams = {}) {
@@ -818,84 +866,54 @@
             const gridId = `grid-${key}`;
             const grid = document.getElementById(gridId);
 
-            // Regex for non-English titles (CJK + Hangul)
-            const nonEnglishRegex = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D\uAC00-\uD7A3]/;
+            loader.show();
 
-            // Strategy: For KDrama, fetch more pages to fill the grid (Density Fetching)
-            // We map 1 UI page to 3 API pages to increase density of valid items after filtering
-            const isDensityFetch = (key === 'kdrama');
-            const pagesToFetch = isDensityFetch ? 3 : 1;
-            const startPage = isDensityFetch ? ((stateRef.page - 1) * pagesToFetch) + 1 : stateRef.page;
+            const params = {
+                page: stateRef.page,
+                sort_by: stateRef.filters.sort,
+                language: 'en-US',
+                'vote_count.gte': 0,
+                ...extraParams
+            };
 
-            let combinedResults = [];
-            let totalPagesApi = 0;
+            const today = new Date().toISOString().split('T')[0];
 
-            loader.show(); // Global loader for the batch
+            if (stateRef.filters.status) {
+                if (key === 'movies') {
+                    if (stateRef.filters.status === 'upcoming') {
+                        params['primary_release_date.gte'] = today;
+                    } else if (stateRef.filters.status === 'released') {
+                        params['primary_release_date.lte'] = today;
+                    }
+                } else {
+                    params.with_status = stateRef.filters.status;
+                }
+            }
 
-            const promises = [];
-            for (let i = 0; i < pagesToFetch; i++) {
-                const params = {
-                    page: startPage + i,
-                    sort_by: stateRef.filters.sort,
-                    language: 'en-US',
-                    'vote_count.gte': 0,
-                    ...extraParams
-                };
-
-                // Date/Newest Logic
-                if (stateRef.filters.sort.includes('date') || stateRef.filters.sort.includes('first_air_date')) {
-                    const today = new Date().toISOString().split('T')[0];
+            if ((stateRef.filters.sort.includes('date') || stateRef.filters.sort.includes('first_air_date'))) {
+                if (stateRef.filters.status !== 'upcoming') {
                     if (key === 'movies') params['primary_release_date.lte'] = today;
                     else params['first_air_date.lte'] = today;
-
-                    delete params['vote_count.gte'];
-                    params['vote_count.gte'] = 0;
                 }
-
-                if (stateRef.filters.genre) params.with_genres = stateRef.filters.genre;
-                if (stateRef.filters.country) params.with_origin_country = stateRef.filters.country;
-
-                // Fetch without individual loader toggling
-                promises.push(fetchTMDB(endpoint, params, false));
+                delete params['vote_count.gte'];
+                params['vote_count.gte'] = 0;
             }
 
-            const responses = await Promise.all(promises);
+            if (stateRef.filters.genre) params.with_genres = stateRef.filters.genre;
+            if (stateRef.filters.country) params.with_origin_country = stateRef.filters.country;
 
-            responses.forEach(data => {
-                if (data && data.results) {
-                    combinedResults = [...combinedResults, ...data.results];
-                    if (data.total_pages > totalPagesApi) totalPagesApi = data.total_pages;
-                }
-            });
+            const data = await fetchTMDB(endpoint, params, false);
 
-            // Filter locally if density fetch is active
-            let finalResults = combinedResults;
-            if (isDensityFetch) {
-                finalResults = combinedResults.filter(item => {
-                    const title = item.title || item.name;
-                    return !nonEnglishRegex.test(title);
-                });
-                // Ensure we stick to roughly 20 items per page for consistency
-                finalResults = finalResults.slice(0, 20);
-            }
-
-            // Calculate UI Pagination Total
-            const uiTotalPages = isDensityFetch ? Math.ceil(totalPagesApi / pagesToFetch) : totalPagesApi;
-
-            // Clear grid manually since we are handling the batch
             grid.innerHTML = '';
-
-            if (finalResults.length > 0) {
+            if (data && data.results && data.results.length > 0) {
                 // Update banner
-                const bannerItem = finalResults[Math.floor(Math.random() * Math.min(5, finalResults.length))];
+                const bannerItem = data.results[Math.floor(Math.random() * Math.min(5, data.results.length))];
                 bannerItem.media_type = key === 'movies' ? 'movie' : 'tv';
                 updateSharedBanner(bannerItem);
 
-                // Render Grid (pass false for append to keep logic simple)
-                renderGrid(gridId, finalResults, key === 'movies' ? 'movie' : 'tv', false);
+                await renderTMDBGrid(gridId, data.results, key === 'movies' ? 'movie' : 'tv');
 
-                // Render Pagination
-                renderPagination(`pag-${key}`, stateRef.page, uiTotalPages, (p) => {
+                renderPagination(`pag-${key}`, stateRef.page, data.total_pages, (p) => {
                     stateRef.page = p;
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     loadTMDBSection(key, endpoint, extraParams);
@@ -903,7 +921,6 @@
             } else {
                 grid.innerHTML = '<p class="text-gray-500 col-span-full text-center">No results found.</p>';
             }
-
             loader.hide();
         }
 
@@ -964,20 +981,17 @@
             const data = await fetchAnilist(query, vars);
             if (data && data.Page.media) {
                 state.data = data.Page.media;
-                // Normalize and use Shared Grid
                 const mappedData = state.data.map(mapAnilistToShared);
 
-                // FIX: Update banner with random item from CURRENT results (rotates every change)
                 if (mappedData.length > 0) {
                     updateSharedBanner(mappedData[Math.floor(Math.random() * mappedData.length)]);
                 }
 
-                renderGrid(gridId, mappedData, 'anime', false);
+                renderAnilistGrid(gridId, mappedData);
                 document.getElementById('anilist-page-num').innerText = state.page;
             }
         }
 
-        // FIX: Ensure correct math and type safety for pagination
         function changeAnilistPage(dir) {
             const currentPage = parseInt(appState.anilist.page) || 1;
             const next = currentPage + dir;
@@ -1018,6 +1032,8 @@
                                 bannerImage
                                 format
                                 averageScore
+                                status
+                                seasonYear
                             }
                         }
                     }
@@ -1039,36 +1055,30 @@
             state.currentAnime = anime;
             state.currentEp = 1;
 
-            // Setup Banner
             const bannerUrl = getBackdropUrl(anime.bannerImage || anime.coverImage.extraLarge);
             document.getElementById('anilist-info-banner').style.backgroundImage = `url(${bannerUrl})`;
 
             document.getElementById('anilist-player-title').innerText = anime.title.english || anime.title.romaji;
             document.getElementById('anilist-info-img').src = anime.coverImage.extraLarge;
 
-            // Banner Metadata
             document.getElementById('anilist-banner-score').innerText = (anime.averageScore || '??') + '% Score';
             document.getElementById('anilist-banner-type').innerText = anime.format || 'TV';
             document.getElementById('anilist-banner-year').innerText = anime.seasonYear || 'N/A';
-
             document.getElementById('anilist-info-desc').innerHTML = anime.description;
 
-            // Details Sidebar
             document.getElementById('anilist-info-Romaji').innerText = anime.title.romaji;
             document.getElementById('anilist-info-Type').innerText = anime.format;
             document.getElementById('anilist-info-Status').innerText = anime.status || 'Unknown';
-            document.getElementById('anilist-info-Date').innerText = anime.startDate && anime.startDate.year ? `${anime.startDate.year}` : '?';
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            document.getElementById('anilist-info-Date').innerText = anime.startDate && anime.startDate.year ? `${months[anime.startDate.month - 1]} ${anime.startDate.day} ${anime.startDate.year}` : '?';
 
-            // Episodes Count Logic
             const currentAired = anime.nextAiringEpisode ? anime.nextAiringEpisode.episode - 1 : (anime.episodes || '?');
             const totalEps = anime.episodes || '?';
             document.getElementById('anilist-info-Episodes').innerText = `${currentAired} / ${totalEps}`;
 
-            // Season Info
             const seas = anime.season ? anime.season.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
             document.getElementById('anilist-info-Season').innerText = `${seas} ${anime.seasonYear || ''}`;
 
-            // Studios & Producers Separation
             const studios = [];
             const producers = [];
             if (anime.studios && anime.studios.nodes) {
@@ -1082,7 +1092,6 @@
 
             document.getElementById('anilist-info-Genres').innerText = anime.genres?.join(', ') || '';
 
-            // Relations Logic
             const relContainer = document.getElementById('anilist-info-Relations-Container');
             const relList = document.getElementById('anilist-info-Relations');
             relList.innerHTML = '';
@@ -1094,19 +1103,19 @@
                     relContainer.classList.remove('hidden');
                     validRelations.forEach(edge => {
                         const div = document.createElement('div');
-                        div.className = 'cursor-pointer hover:bg-[#333] p-1.5 rounded flex gap-3 items-center transition-colors group border border-transparent hover:border-[#444]';
+                        div.className = 'cursor-pointer md:hover:bg-card-bg p-1.5 rounded flex gap-3 items-center transition-colors group border border-transparent hover:border-border-color';
 
                         const imgUrl = edge.node.coverImage?.medium || 'https://placehold.co/50x75?text=No+Img';
                         const relationType = edge.relationType.replace(/_/g, ' ').toLowerCase();
 
                         div.innerHTML = `
                             <div class="flex-shrink-0 w-10 h-14 overflow-hidden rounded shadow-sm relative">
-                                <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                <img src="${imgUrl}" class="w-full h-full object-cover md:group-hover:scale-110 transition-transform duration-300">
                             </div>
                             <div class="flex flex-col min-w-0 flex-1">
                                 <span class="text-[10px] text-primary uppercase font-bold tracking-wider mb-0.5">${relationType}</span>
-                                <span class="text-xs text-white font-medium truncate group-hover:text-primary transition-colors" title="${edge.node.title.romaji}">${edge.node.title.romaji}</span>
-                                <span class="text-[10px] text-gray-500 truncate">${edge.node.format || 'TV'} · ${edge.node.status || '?'}</span>
+                                <span class="text-xs text-text-main font-medium truncate md:group-hover:text-primary transition-colors" title="${edge.node.title.romaji}">${edge.node.title.romaji}</span>
+                                <span class="text-[10px] text-text-muted truncate">${edge.node.format || 'TV'} · ${edge.node.status || '?'}</span>
                             </div>
                         `;
                         div.onclick = () => openAnilistPlayer(edge.node.id);
@@ -1119,56 +1128,50 @@
                 relContainer.classList.add('hidden');
             }
 
-
-            // Watchlist Button (Dynamic Toggle)
             const watchlistBtn = document.getElementById('anilist-watchlist-btn');
             watchlistBtn.onclick = () => toggleWatchlist(anime.id, 'anime', anime.title.english || anime.title.romaji, anime.coverImage.extraLarge, 'anilist-watchlist-btn');
             updateWatchlistButtonState(anime.id, 'anilist-watchlist-btn');
 
-            // Setup Server Buttons
             const serverBtnContainer = document.getElementById('anime-server-buttons');
             serverBtnContainer.innerHTML = '';
             ANIME_SOURCES.forEach((src, idx) => {
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1 rounded-sm text-xs font-bold ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
+                btn.className = `px-3 py-1 rounded-sm text-xs font-bold ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-input-bg text-text-muted md:hover:text-text-main'}`;
                 btn.innerHTML = `<i class="fas fa-server mr-2"></i> ${src.name.split(/\s+/).slice(0, 2).join(" ")}`;
                 btn.onclick = () => {
                     state.currentServerIdx = idx;
                     Array.from(serverBtnContainer.children).forEach(b => {
                         b.classList.remove('bg-primary', 'text-black');
-                        b.classList.add('bg-[#111]', 'text-gray-400');
+                        b.classList.add('bg-input-bg', 'text-text-muted');
                     });
-                    btn.classList.remove('bg-[#111]', 'text-gray-400');
+                    btn.classList.remove('bg-input-bg', 'text-text-muted');
                     btn.classList.add('bg-primary', 'text-black');
                     playAnilistEp(state.currentEp);
                 };
                 serverBtnContainer.appendChild(btn);
             });
 
-            // CAST RENDER
             const castGrid = document.getElementById('anilist-cast-grid');
             castGrid.className = 'flex overflow-x-auto space-x-4 pb-4';
             castGrid.innerHTML = '';
 
-            // 'anime' is the object returned by the API call: data.Media
             if (anime.characters && anime.characters.edges) {
                 anime.characters.edges.forEach(charEdge => {
-                    // Iterate through the array of voice actors for this character edge
                     if (charEdge.voiceActors && charEdge.voiceActors.length > 0) {
                         charEdge.voiceActors.forEach(va => {
 
                             const el = document.createElement('div');
-                            el.className = "flex flex-col gap-2 min-w-[80px]"; // added min-w
+                            el.className = "flex flex-col gap-2 min-w-[80px]";
 
                             const roleDisplay = charEdge.role.charAt(0).toUpperCase() + charEdge.role.slice(1).toLowerCase();
 
                             el.innerHTML = `
-                    <div class="aspect-square rounded-full overflow-hidden border border-[#333] w-20 h-20 mx-auto">
+                    <div class="aspect-square rounded-full overflow-hidden border border-border-color w-20 h-20 mx-auto">
                         <img src="${va.image.medium}" class="w-full h-full object-cover" alt="Voice Actor Image">
                     </div>
                     <div class="text-center">
-                        <p class="text-xs text-white font-semibold truncate" title="${va.name.full}">${va.name.full}</p>
-                        <p class="text-[10px] text-gray-400 truncate" title="${charEdge.node.name.userPreferred} (${roleDisplay})">
+                        <p class="text-xs text-text-main font-semibold truncate" title="${va.name.full}">${va.name.full}</p>
+                        <p class="text-[10px] text-text-muted truncate" title="${charEdge.node.name.userPreferred} (${roleDisplay})">
                             ${charEdge.node.name.userPreferred} | ${roleDisplay}
                         </p>
                     </div>
@@ -1179,8 +1182,6 @@
                 });
             }
 
-
-            // RECS RENDER (Use Shared Grid logic via mapping)
             const recsGrid = document.getElementById('anilist-recommendations-grid');
             recsGrid.innerHTML = '';
             if (anime.recommendations && anime.recommendations.nodes) {
@@ -1189,25 +1190,23 @@
                     .filter(m => m)
                     .map(mapAnilistToShared);
 
-                renderHorizontalGrid('anilist-recommendations-grid', recItems);
+                renderAnilistGrid('anilist-recommendations-grid', recItems, true);
             }
             if (recsGrid.children.length === 0) recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
 
-            // EPISODES
             const epGrid = document.getElementById('anilist-episodes-grid');
             epGrid.innerHTML = '';
 
-            // Calculate max aired episodes
-            let maxEps = anime.episodes || 12; // fallback
+            let maxEps = anime.episodes || 12;
             if (anime.nextAiringEpisode) {
-                maxEps = anime.nextAiringEpisode.episode - 1; // Subtract 1 from next airing
+                maxEps = anime.nextAiringEpisode.episode - 1;
             }
 
             if (maxEps === 0) epGrid.innerHTML = '<p class="text-xs text-gray-500">No aired episodes yet.</p>';
 
             for (let i = 1; i <= maxEps; i++) {
                 const btn = document.createElement('button');
-                btn.className = `p-2 rounded border border-[#444] text-xs hover:border-primary hover:text-primary ${i === 1 ? 'bg-primary text-black' : 'bg-[#1a1b1e] text-gray-300'}`;
+                btn.className = `p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary ${i === 1 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted'}`;
                 btn.innerText = i;
                 btn.onclick = () => playAnilistEp(i);
                 epGrid.appendChild(btn);
@@ -1218,7 +1217,6 @@
         function playAnilistEp(ep) {
             appState.anilist.currentEp = ep;
             document.getElementById('anilist-player-ep').innerText = `Episode ${ep}`;
-            // NEW SOURCE LOGIC
             const source = ANIME_SOURCES[appState.anilist.currentServerIdx];
             const url = source.url(appState.anilist.currentAnime.id, ep);
 
@@ -1226,10 +1224,10 @@
             const btns = document.getElementById('anilist-episodes-grid').children;
             Array.from(btns).forEach(b => {
                 if (parseInt(b.innerText) === ep) {
-                    b.classList.remove('bg-[#1a1b1e]', 'text-gray-300');
+                    b.classList.remove('bg-input-bg', 'text-text-muted');
                     b.classList.add('bg-primary', 'text-black');
                 } else {
-                    b.classList.add('bg-[#1a1b1e]', 'text-gray-300');
+                    b.classList.add('bg-input-bg', 'text-text-muted');
                     b.classList.remove('bg-primary', 'text-black');
                 }
             });
@@ -1237,62 +1235,59 @@
 
         function changeAnilistEp(dir) {
             const next = appState.anilist.currentEp + dir;
-            // logic to check max eps would go here if strict
             if (next > 0) playAnilistEp(next);
         }
 
         /**
-         * SEARCH & HYBRID RESULTS
+         * SEARCH
          */
         const searchInput = document.getElementById('global-search-input');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
 
-        // REPLACED INPUT EVENT WITH KEYPRESS FOR ENTER KEY
-        searchInput.addEventListener('keypress', (e) => {
+        const handleSearch = (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault(); // Prevent form submission if any
+                e.preventDefault();
                 const val = e.target.value.trim();
                 if (val.length > 0) {
                     performSearch(val);
+                    document.getElementById('mobile-nav-menu').classList.add('hidden');
+                    e.target.value = ''; // Clear input
                 }
             }
-        });
+        }
+
+        searchInput.addEventListener('keypress', handleSearch);
+        mobileSearchInput.addEventListener('keypress', handleSearch);
 
         async function performSearch(query) {
             router('search');
             const grid = document.getElementById('grid-search');
             grid.innerHTML = '<p class="text-gray-400">Searching...</p>';
 
-            // 1. Fetch Anilist Data (Anime)
             const anilistQuery = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { extraLarge } format averageScore episodes } } }`;
             const anilistPromise = fetchAnilist(anilistQuery, { search: query });
-
-            // 2. Fetch TMDB Data (Movies + TV)
             const tmdbPromise = fetchTMDB('/search/multi', { query });
 
             const [anilistRes, tmdbRes] = await Promise.all([anilistPromise, tmdbPromise]);
 
             grid.innerHTML = '';
 
-            let mixedResults = [];
-
-            // Render Anilist Results First
+            // Render Anilist Results
             if (anilistRes && anilistRes.Page.media) {
                 const animeItems = anilistRes.Page.media.map(mapAnilistToShared);
-                mixedResults = [...mixedResults, ...animeItems];
+                renderAnilistGrid('grid-search', animeItems, false, true); // append=true to allow mixing
             }
 
-            // Render TMDB Results (Exclude Anime by Genre 16 + JP Country)
+            // Render TMDB Results
             if (tmdbRes && tmdbRes.results) {
                 const filtered = tmdbRes.results.filter(i => {
                     const isMedia = i.media_type === 'movie' || i.media_type === 'tv';
-                    // STRICT FILTER: If Genre is Animation (16) AND Country contains JP, assume it's anime and hide it (since we have Anilist)
                     const isAnime = i.genre_ids && i.genre_ids.includes(16) && i.origin_country && i.origin_country.includes('JP');
                     return isMedia && !isAnime;
                 });
-                mixedResults = [...mixedResults, ...filtered];
+                // Await this to ensure DOM is updated before checking empty state
+                await renderTMDBGrid('grid-search', filtered, null, false, true); // append=true
             }
-
-            renderGrid('grid-search', mixedResults, null);
 
             if (grid.children.length === 0) grid.innerHTML = '<p class="text-gray-400">No results found.</p>';
         }
@@ -1313,106 +1308,113 @@
                 <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white">${title}</h1>
                 <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
                 <div class="flex gap-4">
-                    <button class="bg-primary hover:bg-white text-black font-bold py-3 px-8 rounded-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
+                    <button class="bg-red-600 md:hover:bg-opacity-60 text-white font-bold py-3 px-8 rounded-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
                         <i class="fas fa-play mr-2"></i> Play Now
                     </button>
-                    <button id="banner-watchlist-btn-${item.id}" class="bg-[#333] hover:bg-[#444] text-white font-bold py-3 px-8 rounded-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}')">
+                    <button id="banner-watchlist-btn-${item.id}" class="bg-[#333] md:hover:bg-[#444] text-white font-bold py-3 px-8 rounded-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}')">
                         <i class="fas fa-plus mr-2"></i> My List
                     </button>
                 </div>
             `;
-            // Init button state
             updateWatchlistButtonState(item.id, `banner-watchlist-btn-${item.id}`);
         }
 
-        // Wrapper to switch between Details functions based on type
         function openDetailsWrapper(id, type) {
             if (type === 'anime') openAnilistPlayer(id);
             else openDetails(id, type);
         }
 
-        function renderGrid(containerId, items, typeOverride, append = false) {
+        async function fetchAndDetermineStatus(type, id) {
+            try {
+                const details = await fetchTMDB(`/${type}/${id}`, {}, false);
+                return details.status;
+            } catch (error) {
+                console.error(`Error fetching status for ${type} ID ${id}:`, error);
+                return null;
+            }
+        }
+
+        // Dedicated renderer for TMDB items (Movie/TV) - Fetches Status
+        async function renderTMDBGrid(containerId, items, typeOverride, isHorizontal = false, append = false) {
             const container = document.getElementById(containerId);
             if (!append) container.innerHTML = '';
-            items.forEach(item => {
-                if (!item.poster_path) return;
-                const title = item.title || item.name;
 
-                // FILTER: Remove items with Asian characters (CJK/Hangul) to ensure English titles
-                if (/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D\uAC00-\uD7A3]/.test(title)) return;
+            for (const item of items) {
+                if (!item.poster_path) continue;
+                const title = item.title || item.name;
+                if (/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D\uAC00-\uD7A3]/.test(title)) continue;
 
                 const type = typeOverride || (item.media_type || 'movie');
                 const date = item.release_date || item.first_air_date || 'N/A';
                 const year = date !== 'N/A' ? date.split('-')[0] : '';
                 const posterUrl = getPosterUrl(item.poster_path);
-                const statusBadge = item.status ? `<div class="absolute top-2 left-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase">${item.status.replace(/_/g, ' ')}</div>` : '';
 
-                const card = document.createElement('div');
-                card.className = 'movie-card cursor-pointer relative group';
-                card.innerHTML = `
-                    <div class="aspect-[2/3] overflow-hidden relative">
-                        <img src="${posterUrl}" class="w-full h-full object-cover">
-                         ${statusBadge}
-                        <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold border border-[#333]">
-                            ${item.vote_average ? item.vote_average.toFixed(1) : 'NR'}
-                        </div>
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                            <i class="mdi mdi-play-circle text-primary text-5xl"></i>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-card-bg">
-                        <h3 class="text-white text-sm font-semibold truncate hover:text-primary transition-colors">${title}</h3>
-                        <div class="flex justify-between items-center text-xs text-gray-400 mt-1">
-                            <span>${year}</span>
-                            <span class="uppercase border border-gray-600 px-1 rounded text-[10px]">${type}</span>
-                        </div>
-                    </div>
-                `;
-                card.onclick = () => openDetailsWrapper(item.id, type);
+                // Fetch status only for TMDB items
+                const tmdbStatus = await fetchAndDetermineStatus(type, item.id);
+                let displayStatus = tmdbStatus || item.status;
+
+                if (!displayStatus && (item.release_date || item.first_air_date)) {
+                    const releaseDate = new Date(item.release_date || item.first_air_date);
+                    const now = new Date();
+                    displayStatus = releaseDate > now ? 'Upcoming' : 'Released';
+                }
+
+                const statusBadge = displayStatus ? `<div class="absolute top-2 left-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
+                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal);
+                container.appendChild(card);
+            }
+        }
+
+        // Dedicated renderer for Anilist items - NO TMDB FETCHING (Faster)
+        function renderAnilistGrid(containerId, items, isHorizontal = false, append = false) {
+            const container = document.getElementById(containerId);
+            if (!append) container.innerHTML = '';
+
+            items.forEach(item => {
+                if (!item.poster_path) return;
+                const title = item.title || item.name;
+                const type = 'anime';
+                const date = item.release_date || 'N/A';
+                const year = date !== 'N/A' ? date.split('-')[0] : '';
+                const posterUrl = getPosterUrl(item.poster_path);
+
+                // Use existing status from Anilist object
+                const statusBadge = item.status ? `<div class="absolute top-2 left-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
+
+                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal);
                 container.appendChild(card);
             });
         }
 
-        function renderHorizontalGrid(containerId, items, typeOverride, append = false) {
-            const container = document.getElementById(containerId);
-            if (!append) container.innerHTML = '';
-            items.forEach(item => {
-                if (!item.poster_path) return;
-                const title = item.title || item.name;
+        function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal) {
+            const card = document.createElement('div');
+            card.className = 'movie-card cursor-pointer relative group';
+            // Specific styling for horizontal cards
+            if (isHorizontal) {
+                // css handles min-width
+            }
 
-                // FILTER: Remove items with Asian characters (CJK/Hangul) to ensure English titles
-                if (/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D\uAC00-\uD7A3]/.test(title)) return;
-
-                const type = typeOverride || (item.media_type || 'movie');
-                const date = item.release_date || item.first_air_date || 'N/A';
-                const year = date !== 'N/A' ? date.split('-')[0] : '';
-                const posterUrl = getPosterUrl(item.poster_path);
-                const statusBadge = item.status ? `<div class="absolute top-2 left-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase">${item.status.replace(/_/g, ' ')}</div>` : '';
-
-                const card = document.createElement('div');
-                card.className = 'movie-card cursor-pointer relative group';
-                card.innerHTML = `
-                    <div class="aspect-[2/3] overflow-hidden relative">
-                        <img src="${posterUrl}" class="w-full h-full object-cover">
-                         ${statusBadge}
-                        <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold border border-[#333]">
-                            ${item.vote_average ? item.vote_average.toFixed(1) : 'NR'}
-                        </div>
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                            <i class="mdi mdi-play-circle text-primary text-5xl"></i>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-card-bg">
-                        <h3 class="text-white text-sm font-semibold truncate hover:text-primary transition-colors">${title}</h3>
-                        <div class="flex justify-between items-center text-xs text-gray-400 mt-1">
-                            <span>${year}</span>
-                            <span class="uppercase border border-gray-600 px-1 rounded text-[10px]">${type}</span>
-                        </div>
-                    </div>
-                `;
-                card.onclick = () => openDetailsWrapper(item.id, type);
-                container.appendChild(card);
-            });
+            card.innerHTML = `
+            <div class="aspect-[2/3] overflow-hidden relative">
+                <img src="${posterUrl}" class="w-full h-full object-cover">
+                 ${statusBadge}
+                <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold border border-[#333] z-10">
+                    ${vote ? vote.toFixed(1) : 'NR'}
+                </div>
+                <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
+                    <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg"></i>
+                </div>
+            </div>
+            <div class="p-3 bg-card-bg">
+                <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors">${title}</h3>
+                <div class="flex justify-between items-center text-xs text-text-muted mt-1">
+                    <span>${year}</span>
+                    <span class="uppercase border border-border-color px-1 rounded text-[10px]">${type}</span>
+                </div>
+            </div>
+        `;
+            card.onclick = () => openDetailsWrapper(id, type);
+            return card;
         }
 
         function renderPagination(containerId, current, total, callback) {
@@ -1422,13 +1424,13 @@
             if (max <= 1) return;
 
             const prev = document.createElement('button');
-            prev.className = "px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black disabled:opacity-50";
+            prev.className = "px-3 py-1 bg-card-bg border border-border-color rounded md:hover:bg-primary md:hover:text-black disabled:opacity-50 text-text-main";
             prev.innerText = "<";
             prev.disabled = current === 1;
             prev.onclick = () => callback(current - 1);
 
             const next = document.createElement('button');
-            next.className = "px-3 py-1 bg-[#333] rounded hover:bg-primary hover:text-black disabled:opacity-50";
+            next.className = "px-3 py-1 bg-card-bg border border-border-color rounded md:hover:bg-primary md:hover:text-black disabled:opacity-50 text-text-main";
             next.innerText = ">";
             next.disabled = current === max;
             next.onclick = () => callback(current + 1);
@@ -1446,7 +1448,6 @@
             container.innerHTML = '';
             loader.show();
 
-            // FETCH DETAILS, CREDITS, and RECOMMENDATIONS
             const [details, credits, recommendations] = await Promise.all([
                 fetchTMDB(`/${type}/${id}`),
                 fetchTMDB(`/${type}/${id}/credits`),
@@ -1466,33 +1467,31 @@
                     const profile = c.profile_path ? `${IMG_URL}${c.profile_path}` : 'https://placehold.co/100x100/333/555?text=No+Img';
                     return `
                         <div class="flex-shrink-0 w-24 text-center">
-                            <img src="${profile}" alt="${c.name}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-[#242d43]">
-                            <p class="text-xs font-semibold text-white truncate" title="${c.name}">${c.name}</p>
-                            <p class="text-[10px] text-gray-400 truncate" title="${c.character}">${c.character}</p>
+                            <img src="${profile}" alt="${c.name}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-border-color">
+                            <p class="text-xs font-semibold text-text-main truncate" title="${c.name}">${c.name}</p>
+                            <p class="text-[10px] text-text-muted truncate" title="${c.character}">${c.character}</p>
                         </div>
                     `;
                 }).join('');
             } else {
-                castHtml += '<p class="text-gray-400 text-sm">No cast information available.</p>';
+                castHtml += '<p class="text-text-muted text-sm">No cast information available.</p>';
             }
             castHtml += '</div>';
 
-            // FORMAT MORE DETAILS
             const releaseDate = details.release_date || details.first_air_date || 'N/A';
             const status = details.status || 'N/A';
             const genres = details.genres ? details.genres.map(g => g.name).join(', ') : 'N/A';
             const tagline = details.tagline ? `"${details.tagline}"` : '';
 
-            // Money format
             const budget = details.budget ? `$${(details.budget / 1000000).toFixed(1)}M` : 'N/A';
             const revenue = details.revenue ? `$${(details.revenue / 1000000).toFixed(1)}M` : 'N/A';
 
             container.innerHTML = `
                 <div class="relative h-[50vh] w-full bg-cover bg-center" style="background-image: url('${backdrop}')">
                     <div class="absolute inset-0 bg-black/60"></div>
-                    <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 bg-gradient-to-t from-[#202125] to-transparent flex items-end">
+                    <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 bg-gradient-to-t from-dark-bg to-transparent flex items-end">
                         <div class="max-w-4xl">
-                            <button onclick="router(appState.lastView || 'home')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button onclick="router(appState.lastView || 'home')" class="mb-4 text-gray-300 md:hover:text-white flex items-center gap-2"><i class="fas fa-arrow-left"></i> Back</button>
                             <h1 class="text-4xl md:text-6xl font-bold text-white mb-2">${title}</h1>
                             <div class="flex items-center gap-4 text-sm text-gray-300">
                                 <span class="text-primary font-bold">${details.vote_average.toFixed(1)} Rating</span>
@@ -1508,27 +1507,27 @@
                 <div class="px-4 md:px-12 py-8 flex flex-col lg:flex-row gap-8">
                     <!-- Sidebar -->
                     <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
-                        <img src="${poster}" class="w-full hidden lg:block rounded-md shadow-xl border border-[#333]">
+                        <img src="${poster}" class="w-full hidden lg:block rounded-md shadow-xl border border-border-color">
                         <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn')" class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors">
                              <i class="fas fa-plus"></i> Add to List
                         </button>
                         
                         <!-- More Details Panel -->
-                        <div class="bg-[#2a2c31] p-3 rounded-md border-[#333]">
-                            <h4 class="text-white text-xl font-bold border-b border-[#444] pb-2 mb-2"><span class="vline"></span>More Info</h4>
-                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm border-b border-[#444] pb-2 mb-2">
-                                <div><span class="text-gray-400 block text-xs">Type</span><span class="text-white uppercase">${type}</span></div>
-                                <div><span class="text-gray-400 block text-xs">Status</span><span class="text-white">${status}</span></div>
-                                <div><span class="text-gray-400 block text-xs">Released</span><span class="text-white">${releaseDate}</span></div>
-                                <div><span class="text-gray-400 block text-xs">Production</span><span class="text-white">${details.production_companies?.[0]?.name || 'N/A'}</span></div>${type === 'movie' ? `
-                                <div><span class="text-gray-400 block text-xs">Budget</span><span class="text-white">${budget}</span></div>` : ''}${type === 'movie' ? `
-                                <div><span class="text-gray-400 block text-xs">Revenue</span><span class="text-white">${revenue}</span></div>` : ''}
-                                <div><span class="text-gray-400 block text-xs">Genres</span><span class="text-white">${genres}</span></div>
+                        <div class="bg-card-bg p-3 rounded-md border border-border-color">
+                            <h4 class="text-text-main text-xl font-bold border-b border-border-color pb-2 mb-2"><span class="vline"></span>More Info</h4>
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                <div><span class="text-text-muted block text-xs">Type</span><span class="text-text-main uppercase">${type}</span></div>
+                                <div><span class="text-text-muted block text-xs">Status</span><span class="text-primary">${status}</span></div>
+                                <div><span class="text-text-muted block text-xs">Released</span><span class="text-text-main">${releaseDate}</span></div>
+                                <div><span class="text-text-muted block text-xs">Production</span><span class="text-text-main">${details.production_companies?.[0]?.name || 'N/A'}</span></div>${type === 'movie' ? `
+                                <div><span class="text-text-muted block text-xs">Budget</span><span class="text-text-main">${budget}</span></div>` : ''}${type === 'movie' ? `
+                                <div><span class="text-text-muted block text-xs">Revenue</span><span class="text-text-main">${revenue}</span></div>` : ''}
                             </div>
+                            <div class="mb-2 mt-2 pb-2 border-b border-border-color"><span class="text-text-muted block text-xs">Genres</span><span class="text-primary text-sm">${genres}</span></div>
 
                             <!-- Text Info -->
-                            <div><h3 class="text-xl font-bold text-white mb-2"><span class="vline"></span>Overview</h3><p class="text-gray-300 leading-relaxed">${details.overview}</p></div>
-                            <div><h3 class="text-xl font-bold text-white border-t border-[#444] pt-2 mt-2"><span class="vline"></span>Cast</h3><p class="text-gray-400">${castHtml}</p></div>
+                            <div><h3 class="text-xl font-bold text-text-main mb-2"><span class="vline"></span>Overview</h3><p class="text-text-muted leading-relaxed max-h-60 overflow-y-auto pr-1 custom-scroll">${details.overview}</p></div>
+                            <div><h3 class="text-xl font-bold text-text-main border-t border-border-color pt-2 mt-2"><span class="vline"></span>Cast</h3><p class="text-text-muted">${castHtml}</p></div>
                         
                         </div>
                     </div>
@@ -1536,43 +1535,42 @@
                     <!-- Main Content -->
                     <div class="flex-1 space-y-8 min-w-0">
                         <!-- Player -->
-                        <div class="bg-black rounded-md overflow-hidden border border-[#333] shadow-2xl">
-                             <div class="bg-[#2a2c31] p-3 flex justify-between items-center border-b border-[#333]">
+                        <div class="bg-black rounded-md overflow-hidden border border-border-color shadow-2xl">
+                             <div class="bg-card-bg p-3 flex justify-between items-center border-b border-border-color">
                                 <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
                                 <div class="flex gap-2" id="server-buttons"></div>
                              </div>
-                             ${type === 'tv' ? `<div class="p-3 bg-[#202125] flex gap-4 border-b border-[#333]"><select id="season-select" class="bg-[#333] text-white p-2 rounded text-sm w-full outline-none"></select><select id="ep-select" class="bg-[#333] text-white p-2 rounded text-sm w-full outline-none"></select></div>` : ''}
+                             ${type === 'tv' ? `<div class="p-3 bg-nav-bg flex gap-4 border-b border-border-color"><select id="season-select" class="bg-input-bg text-text-main p-2 rounded text-sm w-full outline-none border border-border-color"></select><select id="ep-select" class="bg-input-bg text-text-main p-2 rounded text-sm w-full outline-none border border-border-color"></select></div>` : ''}
                              <div class="aspect-video relative"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
                         </div>
 
                         <!-- Recommendations -->
-                        <div class="bg-[#2a2c31] p-4 rounded-md">
-                             <h3 class="text-xl font-bold text-white mb-4">You may also like</h3>
+                        <div class="bg-card-bg p-4 rounded-md border border-border-color">
+                             <h3 class="text-xl font-bold text-text-main mb-4">You may also like</h3>
                              <div id="tmdb-recommendations" class="horizontal-scroll-container pb-4"></div>
                         </div>
                     </div>
                 </div>
             `;
 
-            // Init Button State
             updateWatchlistButtonState(id, 'tmdb-watchlist-btn');
 
-            // RENDER RECS
             if (recommendations && recommendations.results) {
-                renderHorizontalGrid('tmdb-recommendations', recommendations.results);
+                renderTMDBGrid('tmdb-recommendations', recommendations.results, type, true);
             }
 
-            // PLAYER LOGIC (Same as before)
             let season = 1, ep = 1;
             const serverContainer = document.getElementById('server-buttons');
-            STREAM_SOURCES.forEach((src, idx) => {
+            const SOURCES = type === 'movie' ? MOVIE_SOURCES : TV_SOURCES;
+
+            SOURCES.forEach((src, idx) => {
                 const btn = document.createElement('button');
-                btn.innerHTML = `<i class="fas fa-server mr-2"></i> ${src.name.split(/\s+/).slice(0, 2).join(" ")}`;
-                btn.className = `px-3 py-1 rounded-sm text-xs font-bold ${idx === 0 ? 'bg-primary text-black' : 'bg-[#111] text-gray-400 hover:text-white'}`;
+                btn.innerHTML = `<i class="fas fa-server mr-2"></i> ${src.name}`;
+                btn.className = `px-3 py-1 rounded-sm text-xs font-bold ${idx === 0 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted md:hover:text-text-main'}`;
                 btn.onclick = () => {
-                    Array.from(serverContainer.children).forEach(b => b.className = 'px-3 py-1 rounded text-xs font-bold bg-[#111] text-gray-400 hover:text-white');
+                    Array.from(serverContainer.children).forEach(b => b.className = 'px-3 py-1 rounded text-xs font-bold bg-input-bg text-text-muted md:hover:text-text-main');
                     btn.className = 'px-3 py-1 rounded-sm text-xs font-bold bg-primary text-black';
-                    updatePlayerSource(src.url, id, type, season, ep);
+                    updatePlayerSource(src, id, type, season, ep);
                 }
                 serverContainer.appendChild(btn);
             });
@@ -1590,7 +1588,6 @@
                     }
                 });
 
-                // FETCH EPISODES FOR SELECTED SEASON (Date Filtering)
                 const updateEps = async () => {
                     loader.show();
                     season = sSelect.value;
@@ -1619,39 +1616,37 @@
                     }
                     loader.hide();
 
-                    // Reset to Ep 1 if available
                     if (eSelect.options.length > 0) {
                         ep = eSelect.options[0].value;
-                        updatePlayerSource(STREAM_SOURCES[0].url, id, 'tv', season, ep);
+                        updatePlayerSource(SOURCES[0], id, 'tv', season, ep);
                     }
                 };
 
                 sSelect.onchange = updateEps;
-                eSelect.onchange = () => { ep = eSelect.value; updatePlayerSource(STREAM_SOURCES[0].url, id, 'tv', season, ep); };
+                eSelect.onchange = () => { ep = eSelect.value; updatePlayerSource(SOURCES[0], id, 'tv', season, ep); };
                 if (sSelect.options.length > 0) updateEps();
             } else {
-                updatePlayerSource(STREAM_SOURCES[0].url, id, 'movie');
+                updatePlayerSource(SOURCES[0], id, 'movie');
             }
             loader.hide();
         }
 
-        function updatePlayerSource(baseUrl, id, type, s = 1, e = 1) {
+        function updatePlayerSource(sourceObj, id, type, s = 1, e = 1) {
             const iframe = document.getElementById('tmdb-player');
-            if (type === 'movie') iframe.src = baseUrl.includes('vidsrc') ? `${baseUrl}/movie/${id}?autoPlay=true` : `${baseUrl}/movie/${id}?autoPlay=true`;
-            else iframe.src = baseUrl.includes('vidsrc') ? `${baseUrl}/tv/${id}/${s}/${e}` : `${baseUrl}/tv/${id}/${s}/${e}`;
+            if (type === 'movie') {
+                iframe.src = sourceObj.url(id);
+            } else {
+                iframe.src = sourceObj.url(id, s, e);
+            }
         }
-
-        // --- WATCHLIST LOGIC (UPDATED) ---
 
         function toggleWatchlist(id, type, title, poster, btnId) {
             const exists = appState.watchlist.find(i => i.id === id);
 
             if (exists) {
-                // Remove
                 appState.watchlist = appState.watchlist.filter(i => i.id !== id);
                 showToast('Removed from Watchlist');
             } else {
-                // Add
                 appState.watchlist.push({ id, type, title, poster_path: poster });
                 showToast('Added to Watchlist');
             }
@@ -1667,15 +1662,14 @@
             const exists = appState.watchlist.find(i => i.id === id);
             if (exists) {
                 btn.innerHTML = '<i class="fas fa-check"></i> In Watchlist';
-                btn.className = btn.className.replace('bg-primary', 'bg-red-600').replace('text-black', 'text-white').replace('bg-[#333]', 'bg-red-600');
-                if (!btn.className.includes('bg-red-600')) btn.classList.add('bg-red-600', 'text-white');
+                btn.className = btn.className.replace('bg-white', 'bg-primary').replace('bg-white', 'bg-primary');
+                if (!btn.className.includes('bg-primary')) btn.classList.add('bg-primary', 'text-black');
             } else {
                 btn.innerHTML = '<i class="fas fa-plus"></i> Add to List';
-                // Reset styles based on context (sidebar vs banner)
                 if (btnId.includes('banner')) {
-                    btn.className = "bg-[#333] hover:bg-[#444] text-white font-bold py-3 px-8 rounded-md transition-colors";
+                    btn.className = "bg-white md:hover:bg-opacity-60 text-black font-bold py-3 px-8 rounded-md transition-colors";
                 } else {
-                    btn.className = "w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors";
+                    btn.className = "w-full py-3 bg-white text-black md:hover:bg-opacity-60 rounded font-bold transition-colors";
                 }
             }
         }
@@ -1683,7 +1677,7 @@
         function renderWatchlist() {
             const grid = document.getElementById('grid-watchlist');
             grid.innerHTML = '';
-            if (appState.watchlist.length === 0) { grid.innerHTML = '<p class="text-gray-500">Your watchlist is empty.</p>'; return; }
+            if (appState.watchlist.length === 0) { grid.innerHTML = '<p class="text-text-muted">Your watchlist is empty.</p>'; return; }
             appState.watchlist.forEach(item => {
                 const posterUrl = getPosterUrl(item.poster_path);
                 const card = document.createElement('div');
@@ -1691,7 +1685,7 @@
                 card.innerHTML = `
                     <div class="aspect-[2/3] overflow-hidden"><img src="${posterUrl}" class="w-full h-full object-cover"></div>
                     <div class="p-2">
-                        <h4 class="truncate text-center text-white">${item.title}</h4>
+                        <h4 class="truncate text-center text-text-main">${item.title}</h4>
                         <button onclick="event.stopPropagation(); removeFromWatchlist(${item.id})" class="absolute top-1 right-1 z-20 flex items-center rounded-full shadow-xl h-8 w-8 bg-primary bg-opacity-40 md:hover:bg-red-400 justify-center transition-all">   
                         <i class="fas fa-minus text-white"></i>     
                         </button>
@@ -1735,11 +1729,33 @@
             }, 3000);
         }
 
-        document.getElementById('mobile-nav-toggle').onclick = () => {
+        function closeMobileNav() {
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            if (!mobileNavMenu.classList.contains('hidden')) {
+                mobileNavMenu.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('mobile-nav-toggle').onclick = (event) => {
+            event.stopPropagation();
             document.getElementById('mobile-nav-menu').classList.toggle('hidden');
         };
 
-        window.addEventListener('DOMContentLoaded', () => { router('home'); });
+        document.addEventListener('click', (event) => {
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+            const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+            if (!mobileNavMenu.contains(event.target) && !mobileNavToggle.contains(event.target)) {
+                closeMobileNav();
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            closeMobileNav();
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            router('home');
+        });
 
         const copyrightSpan = document.getElementById('current-year-copyright');
         if (copyrightSpan) copyrightSpan.textContent = `${new Date().getFullYear()} GoStream`;
