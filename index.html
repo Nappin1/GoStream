@@ -4,16 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Stream - All in One</title>
+    <title>Go Stream</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    screens: {
+                        'nav-bp': '821px',
+                    },
                     colors: {
                         'primary': 'var(--color-primary)',
                         'dark-bg': 'var(--bg-main)',
@@ -265,7 +269,7 @@
             </a>
 
             <!-- Desktop Menu -->
-            <div class="hidden md:flex space-x-6 items-center outline-none">
+            <div class="hidden nav-bp:flex space-x-6 items-center outline-none">
                 <a onclick="router('home')" class="nav-link text-text-main font-medium" data-target="home">HOME</a>
                 <a onclick="router('movies')" class="nav-link text-text-main font-medium"
                     data-target="movies">MOVIES</a>
@@ -278,23 +282,19 @@
 
             <!-- Search & Theme & Mobile Toggle -->
             <div class="flex items-center pl-3 space-x-4">
-                <div class="relative sm:block hidden">
+                <div class="relative block">
                     <input id="global-search-input" type="text" placeholder="Search + Enter"
-                        class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 md:w-64 lg:w-80 w-full focus:outline-none focus:border-primary transition-colors">
+                        class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 md:w-64 lg:w-80 w-36 sm:w-64 focus:outline-none focus:border-primary transition-colors">
                     <i class="fas fa-search text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
                 </div>
-                <button id="mobile-nav-toggle" class="md:hidden outline-none text-text-main text-xl">
+                <button id="mobile-nav-toggle" class="nav-bp:hidden outline-none text-text-main text-xl">
                     <i class="fas fa-bars text-primary"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-nav-menu" class="md:hidden bg-nav-bg hidden py-2 text-center border-t border-border-color">
-            <div class="p-4">
-                <input id="mobile-search-input" type="text" placeholder="Search + Enter"
-                    class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-2 pl-4 pr-3 w-full focus:outline-none focus:border-primary transition-colors mb-4">
-            </div>
+        <div id="mobile-nav-menu" class="nav-bp:hidden bg-nav-bg hidden py-2 text-center border-t border-border-color">
             <a onclick="router('home')" class="nav-link block text-text-main text-sm py-2 px-4"
                 data-target="home">HOME</a>
             <a onclick="router('movies')" class="nav-link block text-text-main text-sm py-2 px-4"
@@ -339,7 +339,7 @@
         </section>
 
         <!-- VIEW: MOVIES -->
-        <section id="view-movies" class="view-section px-4 w-full sm:px-6 lg:px-8 py-8 hidden">
+        <section id="view-movies" class="view-section px-4 w-full sm:px-6 lg:px-8 hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center"></span>Popular
                     Movies<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
@@ -350,7 +350,7 @@
         </section>
 
         <!-- VIEW: TV SHOWS -->
-        <section id="view-tv" class="view-section px-4 w-full sm:px-6 lg:px-8 py-8 hidden">
+        <section id="view-tv" class="view-section px-4 w-full sm:px-6 lg:px-8 hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center">Popular TV
                     Shows<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
@@ -361,7 +361,7 @@
         </section>
 
         <!-- VIEW: ANIME ANILIST -->
-        <section id="view-anime-anilist" class="view-section hidden w-full px-4 sm:px-6 lg:px-8 py-8">
+        <section id="view-anime-anilist" class="view-section hidden w-full px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center">Discover Anime <sup
                         class="text-xs text-primary ml-2">ANILIST</sup></h2>
@@ -373,12 +373,12 @@
             <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
                 <button onclick="changeAnilistPage(-1)"
                     class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold">
-                    PREV
+                    <i class="fas fa-chevron-left"></i>
                 </button>
                 <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
                 <button onclick="changeAnilistPage(1)"
                     class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold">
-                    NEXT
+                    <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </section>
@@ -424,52 +424,51 @@
             <div class="px-4 md:px-12 py-8 flex flex-col lg:flex-row gap-8">
                 <!-- Sidebar -->
                 <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
-                    <img id="anilist-info-img" src=""
-                        class="w-full hidden lg:block rounded-md shadow-xl border border-border-color">
+                    <img id="anilist-info-img" src="" class="w-full hidden lg:block rounded-md shadow-xl">
                     <button id="anilist-watchlist-btn"
                         class="w-full py-3 text-black md:hover:bg-opacity-60 rounded font-bold transition-colors">
                         <i class="fas fa-plus"></i> Add to List
                     </button>
                     <!-- More Details Panel -->
                     <div class="bg-card-bg p-4 rounded-md border border-border-color text-sm space-y-3">
-                        <h4 class="text-text-main text-xl font-bold border-b border-border-color pb-2 mb-2"><span
+                        <h4 class="text-text-main text-xl font-bold border-b border-primary pb-2 mb-2"><span
                                 class="vline"></span>More Info</h4>
                         <div class="space-y-2 text-text-main">
                             <div><i class="text-sm text-text-muted" id="anilist-info-Romaji">...</i></div>
                             <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm pb-2 mb-2">
                                 <div><span class="text-sm text-text-muted">Type:</span> <span
                                         id="anilist-info-Type">...</span></div>
-                                <div><span class="text-sm text-text-muted">Episodes:</span> <span
-                                        id="anilist-info-Episodes">...</span></div>
-                                <div><span class="text-sm text-text-muted">Season:</span> <span
-                                        id="anilist-info-Season">...</span></div>
-                                <div><span class="text-sm text-text-muted">Released Date:</span> <span
-                                        id="anilist-info-Date">...</span></div>
-                                <div><span class="text-sm text-text-muted">Studios:</span> <span
-                                        id="anilist-info-Studio">...</span>
-                                </div>
                                 <div><span class="text-sm text-text-muted">Status:</span> <span id="anilist-info-Status"
                                         class="text-primary">...</span></div>
+                                <div><span class="text-sm text-text-muted">Season:</span> <span
+                                        id="anilist-info-Season">...</span></div>
+                                <div><span class="text-sm text-text-muted">Episodes:</span> <span
+                                        id="anilist-info-Episodes">...</span></div>
+                                <div><span class="text-sm text-text-muted">Released:</span> <span
+                                        id="anilist-info-Date">...</span></div>
+                                <div><span class="text-sm text-text-muted">Studios:</span> <span
+                                        id="anilist-info-Studio">...</span></div>
                             </div>
                             <div><span class="text-sm text-text-muted">Producers:</span> <span
                                     id="anilist-info-Producers">...</span>
                             </div>
-                            <div><span class="text-sm text-text-muted">Genre:</span> <span id="anilist-info-Genres"
-                                    class="text-primary">...</span></div>
+                            <div><span class="text-sm text-text-muted">Genre:</span> <span
+                                    id="anilist-info-Genres">...</span></div>
 
-                            <div id="anilist-info-Relations-Container" class="hidden pt-2 border-t border-border-color">
+                            <div id="anilist-info-Relations-Container" class="hidden pt-2 border-t border-primary">
                                 <span class="text-sm text-text-muted block mb-2 font-bold">Relations</span>
                                 <div id="anilist-info-Relations"
                                     class="flex flex-col gap-3 text-xs text-text-muted max-h-40 overflow-y-auto pr-1 custom-scroll">
                                 </div>
                             </div>
                         </div>
-                        <h3 class="text-xl font-bold text-text-main mb-2 pt-2 border-t border-border-color"><span
-                                class="vline"></span>Overview</h3>
+                        <h3 class="text-xl font-bold text-text-main mb-2 pt-2 border-t border-primary">
+                            <span class="vline"></span>Overview
+                        </h3>
                         <p id="anilist-info-desc"
                             class="text-text-muted leading-relaxed max-h-40 overflow-y-auto pr-1 custom-scroll"></p>
-                        <h3 class="text-xl font-bold text-text-main mb-4 pt-2 border-t border-border-color"><span
-                                class="vline"></span>Cast</h3>
+                        <h3 class="text-xl font-bold text-text-main mb-4 pt-2 border-t border-primary"><span
+                                class="vline"></span>Cast & Voice Actors</h3>
                         <div id="anilist-cast-grid"
                             class="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         </div>
@@ -509,10 +508,10 @@
                             </div>
                         </div>
                         <!-- Episodes Grid -->
-                        <div class="bg-card-bg p-4 border-t border-border-color">
+                        <div class="bg-card-bg p-4 border-t border-primary">
                             <h3 class="text-sm font-bold text-text-main mb-3">Episodes</h3>
                             <div id="anilist-episodes-grid"
-                                class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto custom-scroll pr-2">
+                                class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto custom-scroll pr-2">
                             </div>
                         </div>
                     </div>
@@ -1097,13 +1096,13 @@
             relList.innerHTML = '';
 
             if (anime.relations && anime.relations.edges && anime.relations.edges.length > 0) {
-                const validRelations = anime.relations.edges.filter(r => r.node.format !== 'MANGA' && r.node.format !== 'NOVEL' && r.node.format !== 'ONE_SHOT');
+                const validRelations = anime.relations.edges.filter(r => r.node.format !== 'MANGA' && r.node.format !== 'NOVEL' && r.node.format !== 'MUSIC' && r.node.format !== 'ONE_SHOT');
 
                 if (validRelations.length > 0) {
                     relContainer.classList.remove('hidden');
                     validRelations.forEach(edge => {
                         const div = document.createElement('div');
-                        div.className = 'cursor-pointer md:hover:bg-card-bg p-1.5 rounded flex gap-3 items-center transition-colors group border border-transparent hover:border-border-color';
+                        div.className = 'cursor-pointer md:hover:bg-card-bg p-1.5 rounded flex gap-3 items-center transition-colors group border border-transparent md:hover:border-border-color';
 
                         const imgUrl = edge.node.coverImage?.medium || 'https://placehold.co/50x75?text=No+Img';
                         const relationType = edge.relationType.replace(/_/g, ' ').toLowerCase();
@@ -1205,11 +1204,26 @@
             if (maxEps === 0) epGrid.innerHTML = '<p class="text-xs text-gray-500">No aired episodes yet.</p>';
 
             for (let i = 1; i <= maxEps; i++) {
+                // Wrapper for positioning
+                const wrapper = document.createElement('div');
+                wrapper.className = 'relative group';
+
                 const btn = document.createElement('button');
-                btn.className = `p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary ${i === 1 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted'}`;
+                btn.className = `w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary ${i === 1 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted'}`;
                 btn.innerText = i;
                 btn.onclick = () => playAnilistEp(i);
-                epGrid.appendChild(btn);
+
+                wrapper.appendChild(btn);
+
+                // Add NEW tag as absolute element on top of wrapper if releasing
+                if (anime.status === 'RELEASING' && i === maxEps) {
+                    const badge = document.createElement('sup');
+                    badge.className = "absolute -top-0.5 -right-0.5 text-[9px] text-primary font-bold bg-black rounded z-10 shadow-sm";
+                    badge.innerText = "New";
+                    wrapper.appendChild(badge);
+                }
+
+                epGrid.appendChild(wrapper);
             }
             if (maxEps > 0) playAnilistEp(1);
         }
@@ -1221,9 +1235,14 @@
             const url = source.url(appState.anilist.currentAnime.id, ep);
 
             document.getElementById('anilist-iframe').src = url;
-            const btns = document.getElementById('anilist-episodes-grid').children;
-            Array.from(btns).forEach(b => {
-                if (parseInt(b.innerText) === ep) {
+            const wrappers = document.getElementById('anilist-episodes-grid').children;
+            Array.from(wrappers).forEach(wrapper => {
+                const b = wrapper.querySelector('button');
+                if (!b) return;
+
+                const btnEpNum = parseInt(b.innerText);
+
+                if (btnEpNum === ep) {
                     b.classList.remove('bg-input-bg', 'text-text-muted');
                     b.classList.add('bg-primary', 'text-black');
                 } else {
@@ -1242,7 +1261,7 @@
          * SEARCH
          */
         const searchInput = document.getElementById('global-search-input');
-        const mobileSearchInput = document.getElementById('mobile-search-input');
+        // Removed mobile search input references since element was removed
 
         const handleSearch = (e) => {
             if (e.key === 'Enter') {
@@ -1257,7 +1276,7 @@
         }
 
         searchInput.addEventListener('keypress', handleSearch);
-        mobileSearchInput.addEventListener('keypress', handleSearch);
+        // Removed mobile search input listener
 
         async function performSearch(query) {
             router('search');
@@ -1425,13 +1444,13 @@
 
             const prev = document.createElement('button');
             prev.className = "px-3 py-1 bg-card-bg border border-border-color rounded md:hover:bg-primary md:hover:text-black disabled:opacity-50 text-text-main";
-            prev.innerText = "<";
+            prev.innerHTML = '<i class="fas fa-chevron-left"></i>';
             prev.disabled = current === 1;
             prev.onclick = () => callback(current - 1);
 
             const next = document.createElement('button');
             next.className = "px-3 py-1 bg-card-bg border border-border-color rounded md:hover:bg-primary md:hover:text-black disabled:opacity-50 text-text-main";
-            next.innerText = ">";
+            next.innerHTML = '<i class="fas fa-chevron-right"></i>';
             next.disabled = current === max;
             next.onclick = () => callback(current + 1);
 
@@ -1479,6 +1498,27 @@
             castHtml += '</div>';
 
             const releaseDate = details.release_date || details.first_air_date || 'N/A';
+
+            const rawDateString = details.release_date || details.first_air_date || null;
+
+            let relDate;
+
+            if (rawDateString) {
+                // 1. Parse the ISO format date string into a Date object
+                const dateObject = new Date(rawDateString);
+
+                // 2. Format the date into a localized short month and full year string
+                // This uses the built-in Internationalization API (Intl) for robust formatting.
+                relDate = dateObject.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short', // 'short' gives "Jan", 'long' gives "January"
+                    day: 'numeric' // Includes the day of the month
+                });
+
+            } else {
+                // Fallback if no date data was available
+                relDate = 'N/A';
+            }
             const status = details.status || 'N/A';
             const genres = details.genres ? details.genres.map(g => g.name).join(', ') : 'N/A';
             const tagline = details.tagline ? `"${details.tagline}"` : '';
@@ -1513,21 +1553,19 @@
                         </button>
                         
                         <!-- More Details Panel -->
-                        <div class="bg-card-bg p-3 rounded-md border border-border-color">
-                            <h4 class="text-text-main text-xl font-bold border-b border-border-color pb-2 mb-2"><span class="vline"></span>More Info</h4>
+                        <div class="bg-card-bg p-3 rounded-md">
+                            <h4 class="text-text-main text-xl font-bold border-b border-primary pb-2 mb-2"><span class="vline"></span>More Info</h4>
                             <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
                                 <div><span class="text-text-muted block text-xs">Type</span><span class="text-text-main uppercase">${type}</span></div>
                                 <div><span class="text-text-muted block text-xs">Status</span><span class="text-primary">${status}</span></div>
-                                <div><span class="text-text-muted block text-xs">Released</span><span class="text-text-main">${releaseDate}</span></div>
-                                <div><span class="text-text-muted block text-xs">Production</span><span class="text-text-main">${details.production_companies?.[0]?.name || 'N/A'}</span></div>${type === 'movie' ? `
-                                <div><span class="text-text-muted block text-xs">Budget</span><span class="text-text-main">${budget}</span></div>` : ''}${type === 'movie' ? `
-                                <div><span class="text-text-muted block text-xs">Revenue</span><span class="text-text-main">${revenue}</span></div>` : ''}
+                                <div><span class="text-text-muted block text-xs">Released</span><span class="text-text-main">${relDate}</span></div>
+                                <div><span class="text-text-muted block text-xs">Production</span><span class="text-text-main">${details.production_companies?.[0]?.name || 'N/A'}</span></div>
                             </div>
-                            <div class="mb-2 mt-2 pb-2 border-b border-border-color"><span class="text-text-muted block text-xs">Genres</span><span class="text-primary text-sm">${genres}</span></div>
+                            <div class="mb-2 mt-2 pb-2 border-b border-primary text-sm"><span class="text-text-muted block text-xs">Genres</span><span class="text-text-main">${genres}</span></div>
 
                             <!-- Text Info -->
                             <div><h3 class="text-xl font-bold text-text-main mb-2"><span class="vline"></span>Overview</h3><p class="text-text-muted leading-relaxed max-h-60 overflow-y-auto pr-1 custom-scroll">${details.overview}</p></div>
-                            <div><h3 class="text-xl font-bold text-text-main border-t border-border-color pt-2 mt-2"><span class="vline"></span>Cast</h3><p class="text-text-muted">${castHtml}</p></div>
+                            <div><h3 class="text-xl font-bold text-text-main border-t border-primary pt-2 mt-2"><span class="vline"></span>Cast</h3><p class="text-text-muted">${castHtml}</p></div>
                         
                         </div>
                     </div>
