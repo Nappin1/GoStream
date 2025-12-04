@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -223,6 +224,20 @@
             border-color: var(--color-primary);
         }
 
+        /* Bottom Nav Specifics */
+        .bottom-nav-item {
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--color-primary);
+        }
+
+        .bottom-nav-item.active i {
+            transform: translateY(-2px);
+        }
+
         /* Utilities */
         .fade-in {
             animation: fadeIn 0.5s ease-in;
@@ -285,36 +300,53 @@
                     data-target="watchlist">WATCHLIST</a>
             </div>
 
-            <!-- Search & Theme & Mobile Toggle -->
+            <!-- Search -->
             <div class="flex items-center pl-3 space-x-4">
                 <div class="relative block">
                     <input id="global-search-input" type="text" placeholder="Search + Enter"
                         class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 md:w-64 lg:w-80 w-36 sm:w-64 focus:outline-none focus:border-primary transition-colors">
                     <i class="fas fa-search text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
                 </div>
-                <button id="mobile-nav-toggle" class="nav-bp:hidden outline-none text-text-main text-xl">
-                    <i class="fas fa-bars text-primary"></i>
-                </button>
+                <!-- Removed Mobile Toggle Button -->
             </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-nav-menu" class="nav-bp:hidden bg-nav-bg hidden py-2 text-center border-t border-border-color">
-            <a onclick="router('home')" class="nav-link block text-text-main text-sm py-2 px-4"
-                data-target="home">HOME</a>
-            <a onclick="router('movies')" class="nav-link block text-text-main text-sm py-2 px-4"
-                data-target="movies">MOVIES</a>
-            <a onclick="router('tv')" class="nav-link block text-text-main text-sm py-2 px-4" data-target="tv">TV
-                SHOWS</a>
-            <a onclick="router('anime-anilist')" class="nav-link block text-text-main text-sm py-2 px-4"
-                data-target="anime-anilist">ANIME</a>
-            <a onclick="router('watchlist')" class="nav-link block text-text-main text-sm py-2 px-4"
-                data-target="watchlist">WATCHLIST</a>
         </div>
     </nav>
 
+    <!-- Bottom Navigation (Mobile Only) -->
+    <div id="bottom-nav"
+        class="nav-bp:hidden fixed bottom-0 left-0 w-full bg-[#151618] border-t border-border-color z-50 flex justify-around items-center h-16 pb-1 shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
+        <button onclick="router('home')"
+            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1" data-target="home">
+            <i class="material-icons text-lg transition-transform duration-200">home</i>
+            <span class="text-[10px] font-medium tracking-wide">Home</span>
+        </button>
+        <button onclick="router('movies')"
+            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1" data-target="movies">
+            <i class="material-icons text-lg transition-transform duration-200">movie</i>
+            <span class="text-[10px] font-medium tracking-wide">Movies</span>
+        </button>
+        <button onclick="router('tv')"
+            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1" data-target="tv">
+            <i class="material-icons text-lg transition-transform duration-200">ondemand_video</i>
+            <span class="text-[10px] font-medium tracking-wide">TV Shows</span>
+        </button>
+        <button onclick="router('anime-anilist')"
+            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1"
+            data-target="anime-anilist">
+            <i class="material-icons text-lg transition-transform duration-200">local_play</i>
+            <span class="text-[10px] font-medium tracking-wide">Anime</span>
+        </button>
+        <button onclick="router('watchlist')"
+            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1"
+            data-target="watchlist">
+            <i class="material-icons text-lg transition-transform duration-200">video_library</i>
+            <span class="text-[10px] font-medium tracking-wide">Library</span>
+        </button>
+    </div>
+
     <!-- Main Content Area -->
-    <main id="main-content" class="pt-16 min-h-screen">
+    <main id="main-content" class="pt-16 pb-20 min-h-screen">
+        <!-- Added pb-20 to main-content to prevent bottom nav overlap -->
 
         <!-- Shared Banner -->
         <section id="shared-banner"
@@ -390,7 +422,7 @@
 
         <!-- VIEW: WATCHLIST -->
         <section id="view-watchlist" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
-            <h2 class="text-2xl md:text-3xl font-bold flex text-primary mb-6"></span>My Watchlist</h2>
+            <h2 class="text-2xl md:text-3xl font-bold flex text-primary mb-6"></span>Library</h2>
             <div id="grid-watchlist" class="results-grid"></div>
         </section>
 
@@ -479,7 +511,7 @@
                                 </div>
                             </div>
                             <!-- Cast -->
-                            <div class="mb-8">
+                            <div class="mb-8 border-t border-border-color pt-2">
                                 <h3 class="text-lg font-bold text-text-main mb-3">Cast & Voice Actors</h3>
                                 <div id="anilist-cast-grid" class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
                                 </div>
@@ -606,18 +638,14 @@
             { name: '1', url: (id) => `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=true` },
             { name: '2', url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
             { name: '3', url: (id) => `https://vidlink.pro/movie/${id}` },
-            { name: '4', url: (id) => `https://111movies.com/movie/${id}` },
-            { name: '5', url: (id) => `https://vidrock.net/movie/${id}?autoplay=true&download=false` },
-            { name: '6', url: (id) => `https://player.vidplus.to/embed/movie/${id}?autoplay=true&autonext=false&nextbutton=true&poster=true&title=true&watchparty=false&chromecast=true&episodelist=false&servericon=false&setting=true&pip=true&icons=vid&primarycolor=6C63FF&secondarycolor=9F9BFF&iconcolor=FFFFFF&font=Roboto&fontcolor=FFFFFF&fontsize=20&opacity=0.5` }
+            { name: '4', url: (id) => `https://111movies.com/movie/${id}` }
         ];
 
         const TV_SOURCES = [
             { name: '1', url: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}?autoPlay=true` },
             { name: '2', url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
-            { name: '3', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&title=true&poster=true&autoplay=true&nextbutton=true` },
-            { name: '4', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` },
-            { name: '5', url: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}?autoplay=true&download=false&episodeselector=false&enlang` },
-            { name: '6', url: (id, s, e) => `https://player.vidplus.to/embed/tv/${id}/${s}/${e}?autoplay=true&autonext=false&nextbutton=true&poster=true&title=true&watchparty=false&chromecast=true&episodelist=false&servericon=false&setting=true&pip=true&icons=vid&primarycolor=6C63FF&secondarycolor=9F9BFF&iconcolor=FFFFFF&font=Roboto&fontcolor=FFFFFF&fontsize=20&opacity=0.5` }
+            { name: '3', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true` },
+            { name: '4', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` }
         ];
 
         const ANIME_SOURCES = [
@@ -738,15 +766,21 @@
             if (tmdbFrame) tmdbFrame.src = "";
             if (aniFrame) aniFrame.src = "";
 
-            // Update UI
+            // Update UI (Desktop)
             document.querySelectorAll('.nav-link').forEach(l => {
+                if (l.dataset.target === viewName) l.classList.add('active');
+                else l.classList.remove('active');
+            });
+
+            // Update UI (Mobile Bottom Nav)
+            document.querySelectorAll('.bottom-nav-item').forEach(l => {
                 if (l.dataset.target === viewName) l.classList.add('active');
                 else l.classList.remove('active');
             });
 
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('shared-banner').classList.add('hidden');
-            document.getElementById('mobile-nav-menu').classList.add('hidden');
+            // document.getElementById('mobile-nav-menu').classList.add('hidden'); // Removed
 
             const mainViews = ['home', 'movies', 'tv', 'anime-anilist', 'watchlist', 'search'];
             if (mainViews.includes(appState.currentView) && viewName === 'details') {
@@ -1385,10 +1419,10 @@
                 <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white">${title}</h1>
                 <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
                 <div class="flex gap-4">
-                    <button class="bg-red-600 md:hover:bg-opacity-60 text-white font-bold py-3 px-8 rounded-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
+                    <button class="bg-red-600 md:hover:bg-opacity-60 text-white font-bold py-3 px-5 rounded-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
                         <i class="fas fa-play mr-2"></i> Play Now
                     </button>
-                    <button id="banner-watchlist-btn-${item.id}" class="bg-[#333] md:hover:bg-[#444] text-white font-bold py-3 px-8 rounded-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}')">
+                    <button id="banner-watchlist-btn-${item.id}" class="md:hover:bg-opacity-60 text-black font-bold py-3 px-5 rounded-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}')">
                         <i class="fas fa-plus mr-2"></i> My List
                     </button>
                 </div>
@@ -1630,7 +1664,7 @@
                             <!-- Action Buttons -->
                             <div class="flex flex-col gap-2">
                                 <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn')" class="w-full py-2.5 bg-primary text-black font-bold rounded shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2">
-                                    <i class="fas fa-plus"></i> Add to List
+                                    <i class="fas fa-plus mr-2"></i> Add to List
                                 </button>
                             </div>
 
@@ -1794,10 +1828,10 @@
 
             if (exists) {
                 appState.watchlist = appState.watchlist.filter(i => i.id !== id);
-                showToast('Removed from Watchlist');
+                showToast('Removed from Library');
             } else {
                 appState.watchlist.push({ id, type, title, poster_path: poster });
-                showToast('Added to Watchlist');
+                showToast('Added to Library');
             }
 
             localStorage.setItem('goStreamWatchlist', JSON.stringify(appState.watchlist));
@@ -1810,13 +1844,13 @@
 
             const exists = appState.watchlist.find(i => i.id === id);
             if (exists) {
-                btn.innerHTML = '<i class="fas fa-check"></i> In Watchlist';
+                btn.innerHTML = '<i class="material-icons">bookmark_added</i>';
                 btn.className = btn.className.replace('bg-white', 'bg-primary').replace('bg-white', 'bg-primary');
                 if (!btn.className.includes('bg-primary')) btn.classList.add('bg-primary', 'text-black');
             } else {
-                btn.innerHTML = '<i class="fas fa-plus"></i> Add to List';
+                btn.innerHTML = '<i class="material-icons">bookmark_add</i>';
                 if (btnId.includes('banner')) {
-                    btn.className = "bg-white md:hover:bg-opacity-60 text-black font-bold py-3 px-8 rounded-md transition-colors";
+                    btn.className = "bg-white md:hover:bg-opacity-60 text-black font-bold py-3 px-5 rounded-md transition-colors";
                 } else {
                     btn.className = "w-full py-3 bg-white text-black md:hover:bg-opacity-60 rounded font-bold transition-colors";
                 }
@@ -1826,7 +1860,7 @@
         function renderWatchlist() {
             const grid = document.getElementById('grid-watchlist');
             grid.innerHTML = '';
-            if (appState.watchlist.length === 0) { grid.innerHTML = '<p class="text-text-muted">Your watchlist is empty.</p>'; return; }
+            if (appState.watchlist.length === 0) { grid.innerHTML = '<p class="text-text-muted">Your Library is empty.</p>'; return; }
             appState.watchlist.forEach(item => {
                 const posterUrl = getPosterUrl(item.poster_path);
                 const card = document.createElement('div');
@@ -1878,29 +1912,7 @@
             }, 3000);
         }
 
-        function closeMobileNav() {
-            const mobileNavMenu = document.getElementById('mobile-nav-menu');
-            if (!mobileNavMenu.classList.contains('hidden')) {
-                mobileNavMenu.classList.add('hidden');
-            }
-        }
-
-        document.getElementById('mobile-nav-toggle').onclick = (event) => {
-            event.stopPropagation();
-            document.getElementById('mobile-nav-menu').classList.toggle('hidden');
-        };
-
-        document.addEventListener('click', (event) => {
-            const mobileNavMenu = document.getElementById('mobile-nav-menu');
-            const mobileNavToggle = document.getElementById('mobile-nav-toggle');
-            if (!mobileNavMenu.contains(event.target) && !mobileNavToggle.contains(event.target)) {
-                closeMobileNav();
-            }
-        });
-
-        window.addEventListener('scroll', () => {
-            closeMobileNav();
-        });
+        // Removed closeMobileNav(), mobile-nav-toggle listener, click listener, scroll listener related to old mobile menu
 
         window.addEventListener('DOMContentLoaded', () => {
             router('home');
