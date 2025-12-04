@@ -251,13 +251,6 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
-        .navbar-toggle,
-        .navbar-toggle:focus,
-        .navbar-toggle:hover {
-            background-color: transparent !important;
-            border-color: transparent !important;
-        }
     </style>
 </head>
 
@@ -413,129 +406,168 @@
         </section>
 
         <!-- VIEW: ANILIST PLAYER/DETAILS -->
-        <section id="view-anilist-player" class="view-section hidden w-full">
-            <div id="anilist-info-banner" class="relative h-[50vh] w-full bg-cover bg-center">
-                <div class="absolute inset-0 bg-black/60"></div>
-                <div
-                    class="absolute bottom-0 left-0 w-full p-6 md:p-12 bg-gradient-to-t from-dark-bg to-transparent flex items-end">
-                    <div class="max-w-4xl">
-                        <button onclick="router('anime-anilist')"
-                            class="mb-4 text-gray-300 md:hover:text-white flex items-center gap-2"><i
-                                class="fas fa-arrow-left"></i>
-                            Back</button>
-                        <h1 id="anilist-player-title" class="text-4xl md:text-6xl font-bold text-white mb-2">Title</h1>
-                        <div class="flex items-center gap-4 text-sm text-gray-300">
-                            <span id="anilist-banner-score" class="text-primary font-bold"></span>
-                            <span id="anilist-banner-type" class="uppercase border px-1 rounded"></span>
-                            <span id="anilist-banner-year"></span>
-                        </div>
-                    </div>
-                </div>
+        <section id="view-anilist-player" class="view-section hidden w-full bg-dark-bg">
+            <!-- Banner Image -->
+            <div id="anilist-info-banner" class="w-full h-[300px] md:h-[400px] bg-cover bg-center relative">
+                <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
             </div>
 
-            <div class="px-4 md:px-12 py-8 flex flex-col lg:flex-row gap-8">
-                <!-- Sidebar -->
-                <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
-                    <img id="anilist-info-img" src="" class="w-full hidden lg:block rounded-md shadow-xl">
-                    <button id="anilist-watchlist-btn"
-                        class="w-full py-3 text-black md:hover:bg-opacity-60 rounded font-bold transition-colors">
-                        <i class="fas fa-plus"></i> Add to List
-                    </button>
-                    <!-- More Details Panel -->
-                    <div class="bg-card-bg p-4 rounded-md border border-border-color text-sm space-y-3">
-                        <h4 class="text-text-main text-xl font-bold border-b border-primary pb-2 mb-2"><span
-                                class="vline"></span>More Info</h4>
-                        <div class="space-y-2 text-text-main">
-                            <div><i class="text-sm text-text-muted" id="anilist-info-Romaji">...</i></div>
-                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm pb-2 mb-2">
-                                <div><span class="text-sm text-text-muted">Type:</span> <span
-                                        id="anilist-info-Type">...</span></div>
-                                <div><span class="text-sm text-text-muted">Status:</span> <span id="anilist-info-Status"
-                                        class="text-primary">...</span></div>
-                                <div><span class="text-sm text-text-muted">Season:</span> <span
-                                        id="anilist-info-Season">...</span></div>
-                                <div><span class="text-sm text-text-muted">Episodes:</span> <span
-                                        id="anilist-info-Episodes">...</span></div>
-                                <div><span class="text-sm text-text-muted">Released:</span> <span
-                                        id="anilist-info-Date">...</span></div>
-                                <div><span class="text-sm text-text-muted">Studios:</span> <span
-                                        id="anilist-info-Studio">...</span></div>
-                            </div>
-                            <div><span class="text-sm text-text-muted">Producers:</span> <span
-                                    id="anilist-info-Producers">...</span>
-                            </div>
-                            <div><span class="text-sm text-text-muted">Genre:</span> <span
-                                    id="anilist-info-Genres">...</span></div>
+            <!-- Main Content Container (Overlapping Banner) -->
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
+                <div class="flex flex-col md:flex-row gap-8">
 
-                            <div id="anilist-info-Relations-Container" class="hidden pt-2 border-t border-primary">
-                                <span class="text-sm text-text-muted block mb-2 font-bold">Relations</span>
-                                <div id="anilist-info-Relations"
-                                    class="flex flex-col gap-3 text-xs text-text-muted max-h-40 overflow-y-auto pr-1 custom-scroll">
+                    <!-- Left Column: Poster & Sidebar -->
+                    <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
+                        <!-- Poster -->
+                        <img id="anilist-info-img" src=""
+                            class="w-[180px] md:w-full mx-auto md:mx-0 rounded-md shadow-2xl">
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col gap-2">
+                            <button id="anilist-watchlist-btn"
+                                class="w-full py-2.5 bg-primary text-black font-bold rounded shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2">
+                                <i class="fas fa-plus"></i> Add to List
+                            </button>
+                        </div>
+
+                        <!-- Sidebar Info -->
+                        <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
+                            <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
+
+                            <div>
+                                <p id="anilist-info-Romaji" class="text-text-main text-xs font-medium italic"></p>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between md:block"><span
+                                        class="text-text-muted text-xs">Format</span>
+                                    <p id="anilist-info-Type"
+                                        class="text-text-main text-xs font-medium text-right md:text-left"></p>
+                                </div>
+                                <div class="flex justify-between md:block"><span
+                                        class="text-text-muted text-xs">Episodes</span>
+                                    <p id="anilist-info-Episodes"
+                                        class="text-text-main text-xs font-medium text-right md:text-left"></p>
+                                </div>
+                                <div class="flex justify-between md:block"><span
+                                        class="text-text-muted text-xs">Status</span>
+                                    <p id="anilist-info-Status"
+                                        class="text-primary text-xs font-medium text-right md:text-left"></p>
+                                </div>
+                                <div class="flex justify-between md:block"><span
+                                        class="text-text-muted text-xs">Season</span>
+                                    <p id="anilist-info-Season"
+                                        class="text-text-main text-xs font-medium text-right md:text-left"></p>
+                                </div>
+                                <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Start
+                                        Date</span>
+                                    <p id="anilist-info-Date"
+                                        class="text-text-main text-xs font-medium text-right md:text-left"></p>
+                                </div>
+                                <div class="flex justify-between md:block"><span
+                                        class="text-text-muted text-xs">Studios</span>
+                                    <p id="anilist-info-Studio"
+                                        class="text-text-main text-xs font-medium text-right md:text-left"></p>
+                                </div>
+                                <div class="flex justify-between md:block"><span
+                                        class="text-text-muted text-xs">Producers</span>
+                                    <p id="anilist-info-Producers"
+                                        class="text-text-main text-xs font-medium text-right md:text-left line-clamp-2">
+                                    </p>
+                                </div>
+                                <div><span class="text-text-muted text-xs">Genres</span>
+                                    <div id="anilist-info-Genres" class="flex flex-wrap gap-1 mt-1"></div>
                                 </div>
                             </div>
+                            <!-- Cast -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-bold text-text-main mb-3">Cast & Voice Actors</h3>
+                                <div id="anilist-cast-grid" class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
+                                </div>
+                            </div>
+
                         </div>
-                        <h3 class="text-xl font-bold text-text-main mb-2 pt-2 border-t border-primary">
-                            <span class="vline"></span>Overview
-                        </h3>
-                        <p id="anilist-info-desc"
-                            class="text-text-muted leading-relaxed max-h-40 overflow-y-auto pr-1 custom-scroll"></p>
-                        <h3 class="text-xl font-bold text-text-main mb-4 pt-2 border-t border-primary"><span
-                                class="vline"></span>Cast & Voice Actors</h3>
-                        <div id="anilist-cast-grid"
-                            class="grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+
+                        <!-- Relations Sidebar -->
+                        <div id="anilist-info-Relations-Container"
+                            class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color hidden">
+                            <h4 class="font-bold text-text-main border-b border-border-color pb-2">Relations</h4>
+                            <div id="anilist-info-Relations" class="flex flex-col gap-3 max-h-60 overflow-y-auto pr-1">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Main Content -->
-                <div class="flex-1 space-y-8 min-w-0">
-                    <!-- Player -->
-                    <div class="rounded-md overflow-hidden border border-border-color shadow-lg">
-                        <div class="overflow-hidden relative">
-                            <!-- Server Buttons -->
-                            <div class="bg-black overflow-hidden">
-                                <div
-                                    class="bg-card-bg p-3 flex justify-between items-center border-b border-border-color">
-                                    <span class="text-primary font-bold"><i class="fas fa-play-circle"></i>
-                                        Player</span>
-                                    <div class="flex gap-2" id="anime-server-buttons"></div>
+                    <!-- Right Column: Main Content -->
+                    <div class="flex-1 pt-4 md:pt-16 min-w-0">
+                        <!-- Header Section -->
+                        <div class="mb-6 bg-gradient-to-t from-dark-bg to-transparent">
+                            <button onclick="router('anime-anilist')"
+                                class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i
+                                    class="fas fa-arrow-left"></i> Back to Browse</button>
+                            <h1 id="anilist-player-title"
+                                class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight"></h1>
+
+                            <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
+                                <span id="anilist-banner-score" class="text-primary font-bold"></span>
+                                <span id="anilist-banner-year"
+                                    class="px-2 py-0.5 border border-border-color rounded"></span>
+                                <span id="anilist-banner-type" class="uppercase"></span>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
+                                <div id="anilist-info-desc"
+                                    class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto pr-2">
                                 </div>
-                                <div class="aspect-video relative">
+                            </div>
+                        </div>
+
+                        <!-- Player Section -->
+                        <div class="mb-8 space-y-4">
+                            <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
+                                <!-- Player Header (Server select) -->
+                                <div
+                                    class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
+                                    <div class="flex items-center gap-2 text-primary font-bold">
+                                        <i class="fas fa-play-circle"></i> <span id="anilist-player-ep">Episode 1</span>
+                                    </div>
+                                    <div id="anime-server-buttons" class="flex flex-wrap gap-2"></div>
+                                </div>
+
+                                <!-- Iframe -->
+                                <div class="aspect-video relative bg-black">
                                     <iframe id="anilist-iframe" class="w-full h-full" src="" frameborder="0"
                                         allowfullscreen></iframe>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="bg-card-bg p-4">
-                            <!-- <h2 id="anilist-player-title" class="text-xl font-bold text-white mb-2">Anime Title</h2> -->
-                            <div class="flex items-center justify-between">
-                                <span id="anilist-player-ep" class="text-primary">Episode 1</span>
-                                <div class="flex gap-2">
+                                <!-- Player Footer (Prev/Next) -->
+                                <div
+                                    class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
                                     <button onclick="changeAnilistEp(-1)"
-                                        class="px-3 py-1 bg-input-bg border border-border-color rounded-md text-xs md:hover:text-primary text-text-main">Prev</button>
+                                        class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">
+                                        <i class="fas fa-backward mr-1"></i> Prev
+                                    </button>
                                     <button onclick="changeAnilistEp(1)"
-                                        class="px-3 py-1 bg-input-bg border border-border-color rounded-md text-xs md:hover:text-primary text-text-main">Next</button>
+                                        class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">
+                                        Next <i class="fas fa-forward ml-1"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <!-- Episodes Grid -->
-                        <div class="bg-card-bg p-4 border-t border-primary">
-                            <h3 class="text-sm font-bold text-text-main mb-3">Episodes</h3>
+
+                        <!-- Episodes List -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-bold text-text-main mb-3">Episodes</h3>
                             <div id="anilist-episodes-grid"
                                 class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto custom-scroll pr-2">
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Text Info -->
 
 
-                    <!-- Recommendations Grid -->
-                    <div class="mt-8 bg-card-bg p-4 rounded-md border border-border-color">
-                        <h3 class="text-xl font-bold text-text-main mb-4"><span class="vline"></span>You may also like
-                        </h3>
-                        <div id="anilist-recommendations-grid" class="horizontal-scroll-container pb-4"></div>
+                        <!-- Recommendations -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-bold text-text-main mb-3">Recommendations</h3>
+                            <div id="anilist-recommendations-grid" class="horizontal-scroll-container"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -574,14 +606,18 @@
             { name: '1', url: (id) => `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=true` },
             { name: '2', url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
             { name: '3', url: (id) => `https://vidlink.pro/movie/${id}` },
-            { name: '4', url: (id) => `https://111movies.com/movie/${id}` }
+            { name: '4', url: (id) => `https://111movies.com/movie/${id}` },
+            { name: '5', url: (id) => `https://vidrock.net/movie/${id}?autoplay=true&download=false` },
+            { name: '6', url: (id) => `https://player.vidplus.to/embed/movie/${id}?autoplay=true&autonext=false&nextbutton=true&poster=true&title=true&watchparty=false&chromecast=true&episodelist=false&servericon=false&setting=true&pip=true&icons=vid&primarycolor=6C63FF&secondarycolor=9F9BFF&iconcolor=FFFFFF&font=Roboto&fontcolor=FFFFFF&fontsize=20&opacity=0.5` }
         ];
 
         const TV_SOURCES = [
             { name: '1', url: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}?autoPlay=true` },
             { name: '2', url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
-            { name: '3', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true` },
-            { name: '4', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` }
+            { name: '3', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&title=true&poster=true&autoplay=true&nextbutton=true` },
+            { name: '4', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` },
+            { name: '5', url: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}?autoplay=true&download=false&episodeselector=false&enlang` },
+            { name: '6', url: (id, s, e) => `https://player.vidplus.to/embed/tv/${id}/${s}/${e}?autoplay=true&autonext=false&nextbutton=true&poster=true&title=true&watchparty=false&chromecast=true&episodelist=false&servericon=false&setting=true&pip=true&icons=vid&primarycolor=6C63FF&secondarycolor=9F9BFF&iconcolor=FFFFFF&font=Roboto&fontcolor=FFFFFF&fontsize=20&opacity=0.5` }
         ];
 
         const ANIME_SOURCES = [
@@ -1079,7 +1115,7 @@
 
             document.getElementById('anilist-info-Romaji').innerText = anime.title.romaji;
             document.getElementById('anilist-info-Type').innerText = anime.format;
-            document.getElementById('anilist-info-Status').innerText = anime.status || 'Unknown';
+            document.getElementById('anilist-info-Status').innerText = anime.status ? anime.status.replace(/_/g, ' ') : 'Unknown';
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             document.getElementById('anilist-info-Date').innerText = anime.startDate && anime.startDate.year ? `${months[anime.startDate.month - 1]} ${anime.startDate.day} ${anime.startDate.year}` : '?';
 
@@ -1101,7 +1137,17 @@
             document.getElementById('anilist-info-Studio').innerText = studios.join(', ') || 'N/A';
             document.getElementById('anilist-info-Producers').innerText = producers.slice(0, 4).join(', ') || 'N/A'; // Limit to 4
 
-            document.getElementById('anilist-info-Genres').innerText = anime.genres?.join(', ') || '';
+            // Genres formatted better
+            const genreContainer = document.getElementById('anilist-info-Genres');
+            genreContainer.innerHTML = '';
+            if (anime.genres) {
+                anime.genres.forEach(g => {
+                    const span = document.createElement('span');
+                    span.className = "px-2 py-0.5 bg-input-bg border border-border-color rounded text-[10px] text-text-muted";
+                    span.innerText = g;
+                    genreContainer.appendChild(span);
+                });
+            }
 
             const relContainer = document.getElementById('anilist-info-Relations-Container');
             const relList = document.getElementById('anilist-info-Relations');
@@ -1114,7 +1160,7 @@
                     relContainer.classList.remove('hidden');
                     validRelations.forEach(edge => {
                         const div = document.createElement('div');
-                        div.className = 'cursor-pointer md:hover:bg-card-bg p-1.5 rounded flex gap-3 items-center transition-colors group border border-transparent md:hover:border-border-color';
+                        div.className = 'cursor-pointer hover:bg-nav-bg p-1.5 rounded flex gap-3 items-center transition-colors group border border-transparent hover:border-border-color';
 
                         const imgUrl = edge.node.coverImage?.medium || 'https://placehold.co/50x75?text=No+Img';
                         const relationType = edge.relationType.replace(/_/g, ' ').toLowerCase();
@@ -1126,7 +1172,7 @@
                             <div class="flex flex-col min-w-0 flex-1">
                                 <span class="text-[10px] text-primary uppercase font-bold tracking-wider mb-0.5">${relationType}</span>
                                 <span class="text-xs text-text-main font-medium truncate md:group-hover:text-primary transition-colors" title="${edge.node.title.romaji}">${edge.node.title.romaji}</span>
-                                <span class="text-[10px] text-text-muted truncate">${edge.node.format || 'TV'} · ${edge.node.status || '?'}</span>
+                                <span class="text-[10px] text-text-muted truncate">${edge.node.format || 'TV'} · ${edge.node.status ? edge.node.status.replace(/_/g, ' ') : '?'}</span>
                             </div>
                         `;
                         div.onclick = () => openAnilistPlayer(edge.node.id);
@@ -1147,7 +1193,7 @@
             serverBtnContainer.innerHTML = '';
             ANIME_SOURCES.forEach((src, idx) => {
                 const btn = document.createElement('button');
-                btn.className = `px-3 py-1 rounded-sm text-xs font-bold ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-input-bg text-text-muted md:hover:text-text-main'}`;
+                btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
                 btn.innerHTML = `<i class="fas fa-server mr-2"></i> ${src.name.split(/\s+/).slice(0, 2).join(" ")}`;
                 btn.onclick = () => {
                     state.currentServerIdx = idx;
@@ -1231,7 +1277,7 @@
                 if (anime.status === 'RELEASING' && i === maxEps) {
                     const badge = document.createElement('sup');
                     badge.className = "absolute -top-0.5 -right-0.5 text-[9px] text-primary font-bold bg-black rounded z-10 shadow-sm";
-                    badge.innerText = "New";
+                    badge.innerText = "NEW";
                     wrapper.appendChild(badge);
                 }
 
@@ -1487,11 +1533,48 @@
 
             if (!details) { container.innerHTML = 'Error loading'; return; }
 
+            // --- NEW: Fetch Collection Data (Movies Only) ---
+            let collectionHtml = '';
+            if (type === 'movie' && details.belongs_to_collection) {
+                const collectionData = await fetchTMDB(`/collection/${details.belongs_to_collection.id}`);
+                if (collectionData && collectionData.parts && collectionData.parts.length > 0) {
+                    const sortedParts = collectionData.parts.sort((a, b) => {
+                        return new Date(a.release_date || '9999-12-31') - new Date(b.release_date || '9999-12-31');
+                    });
+
+                    collectionHtml = `
+                        <div class="mt-6 border-t border-border-color pt-4">
+                            <h4 class="font-bold text-text-main mb-3">Collection</h4>
+                            <div class="flex flex-col gap-3 max-h-60 overflow-y-auto pr-1 custom-scroll">`;
+
+                    sortedParts.forEach(part => {
+                        const partDate = part.release_date ? part.release_date.split('-')[0] : 'N/A';
+                        const partImg = part.poster_path ? IMG_URL + part.poster_path : 'https://placehold.co/50x75?text=No+Img';
+                        const isActive = part.id === id ? 'border-primary bg-nav-bg' : 'border-transparent';
+
+                        collectionHtml += `
+                            <div class="cursor-pointer hover:bg-nav-bg p-1.5 rounded flex gap-3 items-center transition-colors group border ${isActive} hover:border-border-color" onclick="openDetailsWrapper(${part.id}, 'movie')">
+                                <div class="flex-shrink-0 w-10 h-14 overflow-hidden rounded shadow-sm relative">
+                                    <img src="${partImg}" class="w-full h-full object-cover md:group-hover:scale-110 transition-transform duration-300">
+                                </div>
+                                <div class="flex flex-col min-w-0 flex-1">
+                                    <span class="text-xs text-text-main font-medium truncate md:group-hover:text-primary transition-colors" title="${part.title}">${part.title}</span>
+                                    <span class="text-[10px] text-text-muted truncate">${partDate}</span>
+                                </div>
+                            </div>`;
+                    });
+
+                    collectionHtml += `</div></div>`;
+                }
+            }
+            // ------------------------------------------------
+
             const title = details.title || details.name;
             const backdrop = getBackdropUrl(details.backdrop_path);
             const poster = getPosterUrl(details.poster_path);
             const runtime = details.runtime || (details.episode_run_time ? details.episode_run_time[0] : '?') + 'm';
-            const cast = credits && credits.cast ? credits.cast.slice(0, 12) : [];
+
+            const cast = credits && credits.cast ? credits.cast.slice(0, 15) : [];
             let castHtml = '<div class="flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">';
             if (cast.length > 0) {
                 castHtml += cast.map(c => {
@@ -1510,94 +1593,108 @@
             castHtml += '</div>';
 
             const releaseDate = details.release_date || details.first_air_date || 'N/A';
-
             const rawDateString = details.release_date || details.first_air_date || null;
-
-            let relDate;
+            let relDate = 'N/A';
 
             if (rawDateString) {
-                // 1. Parse the ISO format date string into a Date object
                 const dateObject = new Date(rawDateString);
-
-                // 2. Format the date into a localized short month and full year string
-                // This uses the built-in Internationalization API (Intl) for robust formatting.
                 relDate = dateObject.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short', // 'short' gives "Jan", 'long' gives "January"
-                    day: 'numeric' // Includes the day of the month
+                    year: 'numeric', month: 'short', day: 'numeric'
                 });
-
-            } else {
-                // Fallback if no date data was available
-                relDate = 'N/A';
             }
+
             const status = details.status || 'N/A';
-            const genres = details.genres ? details.genres.map(g => g.name).join(', ') : 'N/A';
+
+            let genresHtml = '';
+            if (details.genres) {
+                genresHtml = details.genres.map(g => `<span class="px-2 py-0.5 bg-input-bg border border-border-color rounded text-[10px] text-text-muted">${g.name}</span>`).join('');
+            }
+
             const tagline = details.tagline ? `"${details.tagline}"` : '';
 
-            const budget = details.budget ? `$${(details.budget / 1000000).toFixed(1)}M` : 'N/A';
-            const revenue = details.revenue ? `$${(details.revenue / 1000000).toFixed(1)}M` : 'N/A';
-
             container.innerHTML = `
-                <div class="relative h-[50vh] w-full bg-cover bg-center" style="background-image: url('${backdrop}')">
-                    <div class="absolute inset-0 bg-black/60"></div>
-                    <div class="absolute bottom-0 left-0 w-full p-6 md:p-12 bg-gradient-to-t from-dark-bg to-transparent flex items-end">
-                        <div class="max-w-4xl">
-                            <button onclick="router(appState.lastView || 'home')" class="mb-4 text-gray-300 md:hover:text-white flex items-center gap-2"><i class="fas fa-arrow-left"></i> Back</button>
-                            <h1 class="text-4xl md:text-6xl font-bold text-white mb-2">${title}</h1>
-                            <div class="flex items-center gap-4 text-sm text-gray-300">
-                                <span class="text-primary font-bold">${details.vote_average.toFixed(1)} Rating</span>
-                                <span>${runtime}</span>
-                                <span class="uppercase border px-1 rounded">${type}</span>
-                                <span>${releaseDate.split('-')[0]}</span>
-                            </div>
-                            <p class="text-gray-400 italic text-sm mt-2">${tagline}</p>
-                        </div>
-                    </div>
+                <!-- Banner Image -->
+                <div class="w-full h-[300px] md:h-[400px] bg-cover bg-center relative" style="background-image: url('${backdrop}')">
+                    <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
                 </div>
 
-                <div class="px-4 md:px-12 py-8 flex flex-col lg:flex-row gap-8">
-                    <!-- Sidebar -->
-                    <div class="w-full lg:w-72 flex-shrink-0 space-y-6">
-                        <img src="${poster}" class="w-full hidden lg:block rounded-md shadow-xl border border-border-color">
-                        <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn')" class="w-full py-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors">
-                             <i class="fas fa-plus"></i> Add to List
-                        </button>
+                <!-- Main Content Container (Overlapping Banner) -->
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
+                    <div class="flex flex-col md:flex-row gap-8">
                         
-                        <!-- More Details Panel -->
-                        <div class="bg-card-bg p-3 rounded-md">
-                            <h4 class="text-text-main text-xl font-bold border-b border-primary pb-2 mb-2"><span class="vline"></span>More Info</h4>
-                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                                <div><span class="text-text-muted block text-xs">Type</span><span class="text-text-main uppercase">${type}</span></div>
-                                <div><span class="text-text-muted block text-xs">Status</span><span class="text-primary">${status}</span></div>
-                                <div><span class="text-text-muted block text-xs">Released</span><span class="text-text-main">${relDate}</span></div>
-                                <div><span class="text-text-muted block text-xs">Production</span><span class="text-text-main">${details.production_companies?.[0]?.name || 'N/A'}</span></div>
+                        <!-- Left Column: Poster & Sidebar -->
+                        <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
+                            <!-- Poster -->
+                            <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 rounded-md shadow-2xl">
+                            
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col gap-2">
+                                <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn')" class="w-full py-2.5 bg-primary text-black font-bold rounded shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2">
+                                    <i class="fas fa-plus"></i> Add to List
+                                </button>
                             </div>
-                            <div class="mb-2 mt-2 pb-2 border-b border-primary text-sm"><span class="text-text-muted block text-xs">Genres</span><span class="text-text-main">${genres}</span></div>
 
-                            <!-- Text Info -->
-                            <div><h3 class="text-xl font-bold text-text-main mb-2"><span class="vline"></span>Overview</h3><p class="text-text-muted leading-relaxed max-h-60 overflow-y-auto pr-1 custom-scroll">${details.overview}</p></div>
-                            <div><h3 class="text-xl font-bold text-text-main border-t border-primary pt-2 mt-2"><span class="vline"></span>Cast</h3><p class="text-text-muted">${castHtml}</p></div>
-                        
+                            <!-- Sidebar Info -->
+                            <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
+                                <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Type</span><p class="text-text-main text-xs font-medium text-right md:text-left uppercase">${type}</p></div>
+                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Status</span><p class="text-primary text-xs font-medium text-right md:text-left">${status}</p></div>
+                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Released</span><p class="text-text-main text-xs font-medium text-right md:text-left">${relDate}</p></div>
+                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Runtime</span><p class="text-text-main text-xs font-medium text-right md:text-left">${runtime}</p></div>
+                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Production</span><p class="text-text-main text-xs font-medium text-right md:text-left">${details.production_companies?.[0]?.name || 'N/A'}</p></div>
+                                    <div class=" border-b border-border-color pb-2"><span class="text-text-muted text-xs">Genres</span><div class="flex flex-wrap gap-1 mt-1">${genresHtml}</div></div>
+                                </div>
+                                <!-- Cast -->
+                            <div class="mb-0">
+                                <h3 class="text-lg font-bold text-text-main mb-3">Cast</h3>
+                                <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">${castHtml}</div>
+                            </div>
+                            
+                            <!-- Collection -->
+                            ${collectionHtml}
+
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Main Content -->
-                    <div class="flex-1 space-y-8 min-w-0">
-                        <!-- Player -->
-                        <div class="bg-black rounded-md overflow-hidden border border-border-color shadow-2xl">
-                             <div class="bg-card-bg p-3 flex justify-between items-center border-b border-border-color">
-                                <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
-                                <div class="flex gap-2" id="server-buttons"></div>
-                             </div>
-                             ${type === 'tv' ? `<div class="p-3 bg-nav-bg flex gap-4 border-b border-border-color"><select id="season-select" class="bg-input-bg text-text-main p-2 rounded text-sm w-full outline-none border border-border-color"></select><select id="ep-select" class="bg-input-bg text-text-main p-2 rounded text-sm w-full outline-none border border-border-color"></select></div>` : ''}
-                             <div class="aspect-video relative"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
-                        </div>
+                        <!-- Right Column: Main Content -->
+                        <div class="flex-1 pt-4 md:pt-16 min-w-0">
+                            <!-- Header Section -->
+                            <div class="mb-6">
+                                <button onclick="router(appState.lastView || 'home')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-arrow-left"></i> Back</button>
+                                <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
+                                <p class="text-gray-400 italic text-sm mb-4">${tagline}</p>
+                                
+                                <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
+                                    <span class="text-primary font-bold"><i class="fas fa-star mr-1"></i> ${details.vote_average.toFixed(1)}</span>
+                                    <span class="px-2 py-0.5 border border-border-color rounded">${releaseDate.split('-')[0]}</span>
+                                    <span class="uppercase">${type}</span>
+                                </div>
 
-                        <!-- Recommendations -->
-                        <div class="bg-card-bg p-4 rounded-md border border-border-color">
-                             <h3 class="text-xl font-bold text-text-main mb-4">You may also like</h3>
-                             <div id="tmdb-recommendations" class="horizontal-scroll-container pb-4"></div>
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
+                                    <p class="text-text-muted text-sm leading-relaxed whitespace-pre-line">${details.overview}</p>
+                                </div>
+                            </div>
+
+                            <!-- Player Section -->
+                            <div class="mb-8 space-y-4">
+                                <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
+                                    <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
+                                        <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
+                                        <div class="flex gap-2" id="server-buttons"></div>
+                                    </div>
+                                    ${type === 'tv' ? `<div class="p-3 bg-nav-bg flex gap-4 border-b border-border-color"><select id="season-select" class="bg-input-bg text-text-main p-2 rounded text-sm w-full outline-none border border-border-color cursor-pointer"></select><select id="ep-select" class="bg-input-bg text-text-main p-2 rounded text-sm w-full outline-none border border-border-color cursor-pointer"></select></div>` : ''}
+                                    <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
+                                </div>
+                            </div>
+
+                            
+                            <!-- Recommendations -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-bold text-text-main mb-3">You may also like</h3>
+                                <div id="tmdb-recommendations" class="horizontal-scroll-container"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1616,10 +1713,12 @@
             SOURCES.forEach((src, idx) => {
                 const btn = document.createElement('button');
                 btn.innerHTML = `<i class="fas fa-server mr-2"></i> ${src.name}`;
-                btn.className = `px-3 py-1 rounded-sm text-xs font-bold ${idx === 0 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted md:hover:text-text-main'}`;
+                btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === 0 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
                 btn.onclick = () => {
-                    Array.from(serverContainer.children).forEach(b => b.className = 'px-3 py-1 rounded text-xs font-bold bg-input-bg text-text-muted md:hover:text-text-main');
-                    btn.className = 'px-3 py-1 rounded-sm text-xs font-bold bg-primary text-black';
+                    Array.from(serverContainer.children).forEach(b => {
+                        b.className = 'px-3 py-1 rounded text-xs font-bold bg-input-bg text-text-muted hover:text-white transition-colors';
+                    });
+                    btn.className = 'px-3 py-1 rounded-sm text-xs font-bold bg-primary text-black transition-colors';
                     updatePlayerSource(src, id, type, season, ep);
                 }
                 serverContainer.appendChild(btn);
@@ -1813,4 +1912,3 @@
 </body>
 
 </html>
-
