@@ -452,16 +452,38 @@
                     <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
                         <!-- Poster -->
                         <img id="anilist-info-img" src=""
-                            class="w-[180px] md:w-full mx-auto md:mx-0 rounded-md shadow-2xl">
+                            class="w-[180px] hidden md:block md:w-full mx-auto md:mx-0 rounded-md shadow-2xl">
 
                         <!-- Action Buttons -->
+                        <button onclick="router('anime-anilist')"
+                            class="mb-4 text-gray-300 hover:text-white block md:hidden flex items-center gap-2 text-sm font-medium">
+                            <i class="fas fa-arrow-left"></i> Back to Browse
+                        </button>
                         <div class="flex flex-col gap-2">
                             <button id="anilist-watchlist-btn"
-                                class="w-full py-2.5 bg-primary text-black font-bold rounded shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2">
-                                <i class="fas fa-plus"></i> Add to List
+                                class="w-full bg-primary text-black pt-4 py-3.5 px-3.5 font-bold rounded shadow-lg transition transform flex items-center justify-center gap-2">
+                                <i class="material-icons">bookmark_add</i>
                             </button>
                         </div>
+                        <div class="mb-6 bg-gradient-to-t from-dark-bg to-transparent">
 
+                            <h1 id="anilist-player-title"
+                                class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight"></h1>
+
+                            <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
+                                <span id="anilist-banner-score" class="text-primary font-bold"></span>
+                                <span id="anilist-banner-year"
+                                    class="px-2 py-0.5 border border-border-color rounded"></span>
+                                <span id="anilist-banner-type" class="uppercase"></span>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
+                                <div id="anilist-info-desc"
+                                    class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto pr-2">
+                                </div>
+                            </div>
+                        </div>
                         <!-- Sidebar Info -->
                         <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
                             <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
@@ -531,27 +553,11 @@
                     <!-- Right Column: Main Content -->
                     <div class="flex-1 pt-4 md:pt-16 min-w-0">
                         <!-- Header Section -->
-                        <div class="mb-6 bg-gradient-to-t from-dark-bg to-transparent">
-                            <button onclick="router('anime-anilist')"
-                                class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i
-                                    class="fas fa-arrow-left"></i> Back to Browse</button>
-                            <h1 id="anilist-player-title"
-                                class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight"></h1>
+                        <button onclick="router('anime-anilist')"
+                            class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-sm font-medium">
+                            <i class="fas fa-arrow-left"></i> Back to Browse
+                        </button>
 
-                            <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
-                                <span id="anilist-banner-score" class="text-primary font-bold"></span>
-                                <span id="anilist-banner-year"
-                                    class="px-2 py-0.5 border border-border-color rounded"></span>
-                                <span id="anilist-banner-type" class="uppercase"></span>
-                            </div>
-
-                            <div class="mb-6">
-                                <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
-                                <div id="anilist-info-desc"
-                                    class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto pr-2">
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Player Section -->
                         <div class="mb-8 space-y-4">
@@ -638,14 +644,18 @@
             { name: '1', url: (id) => `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=true` },
             { name: '2', url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
             { name: '3', url: (id) => `https://vidlink.pro/movie/${id}` },
-            { name: '4', url: (id) => `https://111movies.com/movie/${id}` }
+            { name: '4', url: (id) => `https://111movies.com/movie/${id}` },
+            { name: '5', url: (id) => `https://vidrock.net/movie/${id}?autoplay=true&download=false` },
+            { name: '6', url: (id) => `https://player.videasy.net/movie/${id}?color=B20710&colour=B20710&autoPlay=true&primarycolor=B20710&autoNext=true&nextButton=true&poster=true&autoplayNextEpisode=true&nextEpisode=true&adFree=true` }
         ];
 
         const TV_SOURCES = [
             { name: '1', url: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}?autoPlay=true` },
             { name: '2', url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
-            { name: '3', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=true` },
-            { name: '4', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` }
+            { name: '3', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?title=true&poster=true&autoplay=true&nextbutton=true` },
+            { name: '4', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` },
+            { name: '5', url: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}?autoplay=true&download=false&episodeselector=false&enlang` },
+            { name: '6', url: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}?color=B20710&colour=B20710&autoPlay=true&primarycolor=B20710&autoNext=true&nextButton=true&poster=true&autoplayNextEpisode=true&nextEpisode=true&adFree=true` }
         ];
 
         const ANIME_SOURCES = [
@@ -690,6 +700,46 @@
             { id: 53, name: 'Thriller' }
         ];
 
+        const MOVIE_GENRES = [
+            { id: '', name: 'All Genres' },
+            { id: 28, name: 'Action' },
+            { id: 12, name: 'Adventure' },
+            { id: 16, name: 'Animation' },
+            { id: 35, name: 'Comedy' },
+            { id: 80, name: 'Crime' },
+            { id: 99, name: 'Documentary' },
+            { id: 18, name: 'Drama' },
+            { id: 10751, name: 'Family' },
+            { id: 14, name: 'Fantasy' },
+            { id: 36, name: 'History' },
+            { id: 27, name: 'Horror' },
+            { id: 10402, name: 'Music' },
+            { id: 9648, name: 'Mystery' },
+            { id: 10749, name: 'Romance' },
+            { id: 878, name: 'Sci-Fi' },
+            { id: 53, name: 'Thriller' }
+        ];
+
+        const TV_GENRES = [
+            { id: '', name: 'All Genres' },
+            { id: 10759, name: 'Action & Adventure' },
+            { id: 16, name: 'Animation' },
+            { id: 35, name: 'Comedy' },
+            { id: 80, name: 'Crime' },
+            { id: 99, name: 'Documentary' },
+            { id: 18, name: 'Drama' },
+            { id: 10751, name: 'Family' },
+            { id: 10762, name: 'Kids' },
+            { id: 9648, name: 'Mystery' },
+            { id: 10763, name: 'News' },
+            { id: 10764, name: 'Reality' },
+            { id: 10765, name: 'Sci-Fi & Fantasy' },
+            { id: 10766, name: 'Soap' },
+            { id: 10767, name: 'Talk' },
+            { id: 10768, name: 'War & Politics' },
+            { id: 37, name: 'Western' }
+        ];
+
         const TV_STATUS = [
             { value: '', name: 'All Status' },
             { value: '0', name: 'Returning Series' },
@@ -722,7 +772,7 @@
             },
             anilist: {
                 page: 1,
-                filters: { sort: 'TRENDING_DESC', genre: '', country: '' }, // countryOfOrigin in Anilist
+                filters: { sort: 'TRENDING_DESC', genre: '', country: '', upcoming: '' }, // countryOfOrigin in Anilist
                 data: [],
                 hero: [],
                 currentAnime: null,
@@ -861,9 +911,16 @@
             genreSelect.className = 'filter-select';
             if (isAnilist) {
                 genreSelect.innerHTML = `<option value="">All Genres</option>` + ANILIST_GENRES.map(g => `<option value="${g}">${g}</option>`).join('');
+            } else if (section === 'movies') {
+                genreSelect.innerHTML = MOVIE_GENRES.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
             } else {
-                genreSelect.innerHTML = TMDB_GENRES.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+                genreSelect.innerHTML = TV_GENRES.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
             }
+            // if (isAnilist) {
+            //     genreSelect.innerHTML = `<option value="">All Genres</option>` + ANILIST_GENRES.map(g => `<option value="${g}">${g}</option>`).join('');
+            // } else {
+            //     genreSelect.innerHTML = TMDB_GENRES.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            // }
             genreSelect.value = stateRef.genre;
             genreSelect.onchange = (e) => {
                 stateRef.genre = e.target.value;
@@ -898,6 +955,24 @@
 
             container.append(sortSelect, genreSelect);
             if (!isAnilist) container.append(statusSelect, countrySelect);
+
+            // New Upcoming Filter for Anilist
+            if (isAnilist) {
+                const upcomingSelect = document.createElement('select');
+                upcomingSelect.className = 'filter-select';
+                upcomingSelect.innerHTML = `
+                    <option value="">Upcoming: Off</option>
+                    <option value="POPULARITY_DESC">Upcoming: Popularity</option>
+                    <option value="TRENDING_DESC">Upcoming: Trending</option>
+                    <option value="START_DATE">Upcoming: Release Date</option>
+                `;
+                upcomingSelect.value = stateRef.upcoming;
+                upcomingSelect.onchange = (e) => {
+                    stateRef.upcoming = e.target.value;
+                    resetAndLoad(section);
+                };
+                container.append(upcomingSelect);
+            }
         }
 
         function resetAndLoad(section) {
@@ -1046,16 +1121,26 @@
             const gridId = 'grid-anilist';
 
             const query = `
-            query ($page: Int, $sort: [MediaSort], $genre: String, $country: CountryCode) {
+            query ($page: Int, $sort: [MediaSort], $genre: String, $country: CountryCode, $status: MediaStatus) {
                 Page(page: $page, perPage: 24) {
                     pageInfo { hasNextPage }
-                    media(sort: $sort, genre: $genre, countryOfOrigin: $country, type: ANIME, isAdult: false) {
+                    media(sort: $sort, genre: $genre, countryOfOrigin: $country, status: $status, type: ANIME, isAdult: false) {
                         id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
                     }
                 }
             }`;
 
-            const vars = { page: state.page, sort: state.filters.sort };
+            const vars = { page: state.page };
+
+            // Handle Upcoming Filter Logic
+            if (state.filters.upcoming) {
+                vars.status = 'NOT_YET_RELEASED';
+                vars.sort = state.filters.upcoming;
+            } else {
+                vars.sort = state.filters.sort;
+                // No status variable needed for default view (shows all)
+            }
+
             if (state.filters.genre) vars.genre = state.filters.genre;
             if (state.filters.country) vars.country = state.filters.country;
 
@@ -1288,6 +1373,11 @@
             const epGrid = document.getElementById('anilist-episodes-grid');
             epGrid.innerHTML = '';
 
+            if (anime.status === 'NOT_YET_RELEASED') {
+                epGrid.innerHTML = '<p class="text-xs text-gray-500">Not Yet Aired</p>';
+                return; // Exit the function early if not aired
+            }
+
             let maxEps = anime.episodes || 12;
             if (anime.nextAiringEpisode) {
                 maxEps = anime.nextAiringEpisode.episode - 1;
@@ -1361,7 +1451,7 @@
                 const val = e.target.value.trim();
                 if (val.length > 0) {
                     performSearch(val);
-                    document.getElementById('mobile-nav-menu').classList.add('hidden');
+                    // document.getElementById('mobile-nav-menu').classList.add('hidden'); // Removed to fix error
                     e.target.value = ''; // Clear input
                 }
             }
@@ -1381,6 +1471,7 @@
 
             const [anilistRes, tmdbRes] = await Promise.all([anilistPromise, tmdbPromise]);
 
+            searchInput.value = '';
             grid.innerHTML = '';
 
             // Render Anilist Results
@@ -1418,12 +1509,12 @@
             document.getElementById('banner-content').innerHTML = `
                 <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white">${title}</h1>
                 <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
-                <div class="flex gap-4">
-                    <button class="bg-red-600 md:hover:bg-opacity-60 text-white font-bold py-3 px-5 rounded-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
+                <div class="flex">
+                    <button class="bg-red-600 md:hover:bg-opacity-60 text-white font-bold py-2 px-5 rounded-l-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
                         <i class="fas fa-play mr-2"></i> Play Now
                     </button>
-                    <button id="banner-watchlist-btn-${item.id}" class="md:hover:bg-opacity-60 text-black font-bold py-3 px-5 rounded-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}')">
-                        <i class="fas fa-plus mr-2"></i> My List
+                    <button id="banner-watchlist-btn-${item.id}" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-primary text-black font-bold rounded-r-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}')">
+                        <i class="material-icons">bookmark_add</i>
                     </button>
                 </div>
             `;
@@ -1658,14 +1749,34 @@
                         
                         <!-- Left Column: Poster & Sidebar -->
                         <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
+                            <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium">
+                                <i class="fas fa-arrow-left"></i> Back to Browse
+                            </button>
                             <!-- Poster -->
-                            <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 rounded-md shadow-2xl">
+                            <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded-md shadow-2xl">
                             
                             <!-- Action Buttons -->
                             <div class="flex flex-col gap-2">
-                                <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn')" class="w-full py-2.5 bg-primary text-black font-bold rounded shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2">
-                                    <i class="fas fa-plus mr-2"></i> Add to List
+                                <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn')" class="w-full bg-primary pt-4 py-3.5 px-3.5 text-black font-bold rounded shadow-lg transition transform flex items-center justify-center gap-2">
+                                    <i class="material-icons">bookmark_add</i>
                                 </button>
+                            </div>
+
+                            <!-- Header Section -->
+                            <div class="mb-6">
+                                <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
+                                <p class="text-gray-400 italic text-sm mb-4">${tagline}</p>
+                                
+                                <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
+                                    <span class="text-primary font-bold"><i class="fas fa-star mr-1"></i> ${details.vote_average.toFixed(1)}</span>
+                                    <span class="px-2 py-0.5 border border-border-color rounded">${releaseDate.split('-')[0]}</span>
+                                    <span class="uppercase">${type}</span>
+                                </div>
+
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
+                                    <p class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto">${details.overview}</p>
+                                </div>
                             </div>
 
                             <!-- Sidebar Info -->
@@ -1693,23 +1804,10 @@
 
                         <!-- Right Column: Main Content -->
                         <div class="flex-1 pt-4 md:pt-16 min-w-0">
-                            <!-- Header Section -->
-                            <div class="mb-6">
-                                <button onclick="router(appState.lastView || 'home')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-arrow-left"></i> Back</button>
-                                <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
-                                <p class="text-gray-400 italic text-sm mb-4">${tagline}</p>
-                                
-                                <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
-                                    <span class="text-primary font-bold"><i class="fas fa-star mr-1"></i> ${details.vote_average.toFixed(1)}</span>
-                                    <span class="px-2 py-0.5 border border-border-color rounded">${releaseDate.split('-')[0]}</span>
-                                    <span class="uppercase">${type}</span>
-                                </div>
-
-                                <div class="mb-6">
-                                    <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
-                                    <p class="text-text-muted text-sm leading-relaxed whitespace-pre-line">${details.overview}</p>
-                                </div>
-                            </div>
+                            
+                            <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium">
+                                <i class="fas fa-arrow-left"></i> Back to Browse
+                            </button>
 
                             <!-- Player Section -->
                             <div class="mb-8 space-y-4">
@@ -1746,7 +1844,7 @@
 
             SOURCES.forEach((src, idx) => {
                 const btn = document.createElement('button');
-                btn.innerHTML = `<i class="fas fa-server mr-2"></i> ${src.name}`;
+                btn.innerHTML = `<i class="fas fa-server mr-1"></i> ${src.name}`;
                 btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === 0 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
                 btn.onclick = () => {
                     Array.from(serverContainer.children).forEach(b => {
@@ -1850,9 +1948,9 @@
             } else {
                 btn.innerHTML = '<i class="material-icons">bookmark_add</i>';
                 if (btnId.includes('banner')) {
-                    btn.className = "bg-white md:hover:bg-opacity-60 text-black font-bold py-3 px-5 rounded-md transition-colors";
+                    btn.className = "bg-primary md:hover:bg-opacity-60 text-black font-bold pt-4 py-2 px-3 rounded-r-md transition-colors";
                 } else {
-                    btn.className = "w-full py-3 bg-white text-black md:hover:bg-opacity-60 rounded font-bold transition-colors";
+                    btn.className = "pt-4 py-2 px-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors";
                 }
             }
         }
@@ -1869,8 +1967,8 @@
                     <div class="aspect-[2/3] overflow-hidden"><img src="${posterUrl}" class="w-full h-full object-cover"></div>
                     <div class="p-2">
                         <h4 class="truncate text-center text-text-main">${item.title}</h4>
-                        <button onclick="event.stopPropagation(); removeFromWatchlist(${item.id})" class="absolute top-1 right-1 z-20 flex items-center rounded-full shadow-xl h-8 w-8 bg-primary bg-opacity-40 md:hover:bg-red-400 justify-center transition-all">   
-                        <i class="fas fa-minus text-white"></i>     
+                        <button onclick="event.stopPropagation(); removeFromWatchlist(${item.id})" class="absolute top-1 right-1 z-20 flex items-center rounded-sm shadow-xl h-8 w-8 bg-primary text-black md:hover:bg-red-400 justify-center transition-all">   
+                        <i class="material-icons">bookmark_remove</i></i>     
                         </button>
                     </div>
                 `;
