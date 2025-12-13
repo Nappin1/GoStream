@@ -5,15 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
+    <!-- Relaxed CSP to prevent 'Failed to fetch' errors in preview environments -->
     <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self' data: gap: 'unsafe-eval';
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com;
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com;
-        img-src 'self' data: https://image.tmdb.org https://placehold.co https://s4.anilist.co https://*.anilist.co;
-        font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com;
-        connect-src 'self' https://api.themoviedb.org https://graphql.anilist.co;
-        frame-src 'self' https://vidsrc.cc https://vidsrc.icu https://vidlink.pro https://111movies.com https://vidrock.net https://player.videasy.net;
-        media-src 'self';
+        default-src * 'unsafe-inline' 'unsafe-eval' data: gap:;
+        style-src * 'unsafe-inline';
+        script-src * 'unsafe-inline' 'unsafe-eval';
+        img-src * data:;
+        font-src * data:;
+        connect-src *;
+        frame-src *;
+        media-src *;
     ">
 
     <title>Go Stream</title>
@@ -169,7 +170,7 @@
             width: 4px;
             background-color: var(--color-primary);
             margin-right: 10px;
-            height: 1.5rem;
+            height: 2rem;
             vertical-align: middle;
         }
 
@@ -181,18 +182,30 @@
             border-radius: 0.5rem;
         }
 
-        .movie-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 10px 20px var(--shadow-color);
-            border-color: var(--color-primary);
+        /* Hover effects only for devices that support hover */
+        @media (hover: hover) {
+            .movie-card:hover {
+                transform: scale(1.03);
+                box-shadow: 0 10px 20px var(--shadow-color);
+                border-color: var(--color-primary);
+            }
+
+            .movie-card:hover img {
+                opacity: 0.8;
+            }
+
+            /* General button hover opacity if not handled by tailwind classes */
+            button:hover {
+                opacity: 0.9;
+            }
         }
 
         .movie-card img {
             transition: opacity 0.2s ease-in-out;
         }
 
-        .movie-card:hover img {
-            opacity: 0.8;
+        .card-info {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0));
         }
 
         .results-grid {
@@ -210,6 +223,12 @@
         }
 
         .horizontal-scroll-container .movie-card {
+            flex-shrink: 0;
+            width: 160px;
+        }
+
+        .horizontal-scroll-container .movie-card.landscape-card {
+            width: 280px;
             min-width: 280px;
             max-width: 280px;
         }
@@ -326,13 +345,13 @@
                 <a onclick="router('anime-anilist')" class="nav-link text-text-main font-medium"
                     data-target="anime-anilist"><i class="fas fa-film mr-2"></i>ANIME</a>
                 <a onclick="router('watchlist')" class="nav-link text-text-main font-medium" data-target="watchlist"><i
-                        class="fas fa-layer-group mr-2"></i>LIBRARY</a>
+                        class="fas fa-lines-leaning mr-2"></i>LIBRARY</a>
 
             </div>
             <div class="flex items-center pl-3 space-x-4">
                 <div class="relative block">
                     <input id="global-search-input" type="text" placeholder="Search + Enter"
-                        class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 md:w-64 lg:w-80 w-36 sm:w-64 focus:outline-none focus:border-primary transition-colors">
+                        class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 w-full focus:outline-none focus:border-primary transition-colors">
                     <i class="fas fa-search text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
                 </div>
             </div>
@@ -358,7 +377,7 @@
                 class="text-[10px] font-medium tracking-wide">Anime</span></button>
         <button onclick="router('watchlist')"
             class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1"
-            data-target="watchlist"><i class="fas fa-layer-group"></i><span
+            data-target="watchlist"><i class="fas fa-lines-leaning"></i><span
                 class="text-[10px] font-medium tracking-wide">Library</span></button>
     </div>
 
@@ -377,50 +396,50 @@
                     <button onclick="clearHistory()"
                         class="ml-auto text-xs text-text-muted hover:text-primary underline">Clear</button>
                 </h2>
-                <div id="row-continue-watching" class="horizontal-scroll-container pb-4"></div>
+                <div id="row-continue-watching" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
 
             <div class="discovery-row">
                 <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
                         class="vline"></span>Trending Now</h2>
-                <div id="row-trending" class="horizontal-scroll-container pb-4"></div>
+                <div id="row-trending" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
             <div class="discovery-row">
                 <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
                         class="vline"></span>Top Rated Movies</h2>
-                <div id="row-top-rated" class="horizontal-scroll-container pb-4"></div>
+                <div id="row-top-rated" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
             <div class="discovery-row">
                 <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
                         class="vline"></span>Popular Action</h2>
-                <div id="row-action" class="horizontal-scroll-container pb-4"></div>
+                <div id="row-action" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
         </section>
 
-        <section id="view-movies" class="view-section px-4 w-full sm:px-6 lg:px-8 hidden">
+        <section id="view-movies" class="view-section px-4 mt-8 w-full sm:px-6 lg:px-8 hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center">Popular Movies<sup
-                        class="text-xs text-primary ml-2">TMDB</sup></h2>
+                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
+                        class="vline"></span>Movies<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
                 <div id="movies-filters" class="flex flex-wrap gap-2"></div>
             </div>
             <div id="grid-movies" class="results-grid"></div>
             <div id="pag-movies" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
-        <section id="view-tv" class="view-section px-4 w-full sm:px-6 lg:px-8 hidden">
+        <section id="view-tv" class="view-section px-4 mt-8 w-full sm:px-6 lg:px-8 hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center">Popular TV
-                    Shows<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
+                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
+                        class="vline"></span>TV<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
                 <div id="tv-filters" class="flex flex-wrap gap-2"></div>
             </div>
             <div id="grid-tv" class="results-grid"></div>
             <div id="pag-tv" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
-        <section id="view-anime-anilist" class="view-section hidden w-full px-4 sm:px-6 lg:px-8">
+        <section id="view-anime-anilist" class="view-section hidden w-full px-4 mt-8 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 px-2 flex items-center">Discover Anime <sup
-                        class="text-xs text-primary ml-2">ANILIST</sup></h2>
+                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
+                        class="vline"></span>Anime<sup class="text-xs text-primary ml-2">ANILIST</sup></h2>
                 <div id="anilist-filters" class="flex flex-wrap gap-2"></div>
             </div>
             <div id="grid-anilist" class="results-grid"></div>
@@ -436,7 +455,10 @@
         </section>
 
         <section id="view-watchlist" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
-            <h2 class="text-2xl md:text-3xl font-bold flex text-primary mb-6">Library</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
+                        class="vline"></span>Library<sup class="text-xs text-primary ml-2">TMDB | ANILIST</sup></h2>
+            </div>
             <div id="grid-watchlist" class="results-grid"></div>
         </section>
 
@@ -460,7 +482,7 @@
                             class="w-[180px] hidden md:block md:w-full mx-auto md:mx-0 rounded-md shadow-2xl">
                         <button onclick="router('anime-anilist')"
                             class="mb-4 text-gray-300 hover:text-white block md:hidden flex items-center gap-2 text-sm font-medium"><i
-                                class="fas fa-arrow-left"></i> Back to Browse</button>
+                                class="fas fa-chevron-left mr-2"></i> Back to Browse</button>
                         <div class="mb-6 bg-gradient-to-t from-dark-bg to-transparent">
                             <h1 id="anilist-player-title"
                                 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight"></h1>
@@ -470,7 +492,7 @@
                                     class="px-2 py-0.5 border border-border-color rounded"></span>
                                 <span id="anilist-banner-type" class="uppercase"></span>
                                 <span><button id="anilist-watchlist-btn"
-                                        class="w-full bg-primary text-black pt-4 py-3.5 px-3.5 font-bold rounded shadow-lg transition transform flex items-center justify-center gap-2"><i
+                                        class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded-md transition-colors"><i
                                             class="material-icons">bookmark_add</i></button></span>
                             </div>
                             <div class="mb-6">
@@ -485,21 +507,21 @@
                             <div>
                                 <p id="anilist-info-Romaji" class="text-text-main text-xs font-medium italic"></p>
                             </div>
-                            <div class="space-y-2">
-                                <div class="flex justify-between md:block"><span
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                <div class="flex justify-between md:hidden"><span
                                         class="text-text-muted text-xs">Format</span>
                                     <p id="anilist-info-Type"
-                                        class="text-text-main text-xs font-medium text-right md:text-left"></p>
-                                </div>
-                                <div class="flex justify-between md:block"><span
-                                        class="text-text-muted text-xs">Episodes</span>
-                                    <p id="anilist-info-Episodes"
                                         class="text-text-main text-xs font-medium text-right md:text-left"></p>
                                 </div>
                                 <div class="flex justify-between md:block"><span
                                         class="text-text-muted text-xs">Status</span>
                                     <p id="anilist-info-Status"
                                         class="text-primary text-xs font-medium text-right md:text-left"></p>
+                                </div>
+                                <div class="flex justify-between md:block"><span
+                                        class="text-text-muted text-xs">Episodes</span>
+                                    <p id="anilist-info-Episodes"
+                                        class="text-text-main text-xs font-medium text-right md:text-left"></p>
                                 </div>
                                 <div class="flex justify-between md:block"><span
                                         class="text-text-muted text-xs">Season</span>
@@ -522,9 +544,9 @@
                                         class="text-text-main text-xs font-medium text-right md:text-left line-clamp-2">
                                     </p>
                                 </div>
-                                <div><span class="text-text-muted text-xs">Genres</span>
-                                    <div id="anilist-info-Genres" class="flex flex-wrap gap-1 mt-1"></div>
-                                </div>
+                            </div>
+                            <div><span class="text-text-muted text-xs">Genres</span>
+                                <div id="anilist-info-Genres" class="flex flex-wrap gap-1 mt-1"></div>
                             </div>
                             <div class="mb-8 border-t border-border-color pt-2">
                                 <h3 class="text-lg font-bold text-text-main mb-3">Cast & Voice Actors</h3>
@@ -532,17 +554,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="anilist-info-Relations-Container"
-                            class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color hidden">
-                            <h4 class="font-bold text-text-main border-b border-border-color pb-2">Relations</h4>
-                            <div id="anilist-info-Relations" class="flex flex-col gap-3 max-h-60 overflow-y-auto pr-1">
-                            </div>
-                        </div>
                     </div>
                     <div class="flex-1 pt-4 md:pt-16 min-w-0">
                         <button onclick="router('anime-anilist')"
                             class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-sm font-medium"><i
-                                class="fas fa-arrow-left"></i> Back to Browse</button>
+                                class="fas fa-chevron-left mr-2"></i> Back to Browse</button>
                         <div class="mb-8 space-y-4">
                             <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
                                 <div
@@ -571,9 +587,18 @@
                                 class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto custom-scroll pr-2">
                             </div>
                         </div>
-                        <div class="mb-8">
+
+                        <div id="anilist-info-Relations-Container"
+                            class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color hidden">
+                            <h4 class="text-lg font-bold text-text-main mb-3 border-b border-border-color">Relations
+                            </h4>
+                            <div id="anilist-info-Relations" class="horizontal-scroll-container p-2">
+                            </div>
+                        </div>
+                        <div
+                            class="mt-3 bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
                             <h3 class="text-lg font-bold text-text-main mb-3">Recommendations</h3>
-                            <div id="anilist-recommendations-grid" class="horizontal-scroll-container"></div>
+                            <div id="anilist-recommendations-grid" class="horizontal-scroll-container p-2"></div>
                         </div>
                     </div>
                 </div>
@@ -599,7 +624,8 @@
         /**
          * GLOBAL CONFIGURATION & DATA
          */
-        const API_KEY = 'bea92ea47a50fb9e1cd25ca8443c5718';
+        // UPDATED API KEY - The previous one was likely revoked or invalid
+        const API_KEY = '3fd2be6f0c70a2a598f084ddfb75487c';
         const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
         const IMG_URL = 'https://image.tmdb.org/t/p/w500';
         const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
@@ -769,19 +795,19 @@
                     break;
                 case 'movies':
                     document.getElementById('view-movies').classList.remove('hidden');
-                    document.getElementById('shared-banner').classList.remove('hidden');
+                    // document.getElementById('shared-banner').classList.remove('hidden');
                     renderFilters('movies');
                     loadTMDBSection('movies', '/discover/movie');
                     break;
                 case 'tv':
                     document.getElementById('view-tv').classList.remove('hidden');
-                    document.getElementById('shared-banner').classList.remove('hidden');
+                    // document.getElementById('shared-banner').classList.remove('hidden');
                     renderFilters('tv');
                     loadTMDBSection('tv', '/discover/tv');
                     break;
                 case 'anime-anilist':
                     document.getElementById('view-anime-anilist').classList.remove('hidden');
-                    document.getElementById('shared-banner').classList.remove('hidden');
+                    // document.getElementById('shared-banner').classList.remove('hidden');
                     renderFilters('anilist');
                     loadAnilistSection();
                     break;
@@ -863,15 +889,12 @@
                         <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
                             <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg"></i>
                         </div>
-                        <div class="absolute bottom-0 w-full bg-black/80 p-2">
-                            <div class="h-1 bg-gray-600 rounded-full overflow-hidden">
-                                <div class="h-full bg-primary w-1/2"></div> </div>
-                        </div>
                     </div>
-                    <div class="p-3 bg-card-bg">
+                    <div class="absolute bottom-0 left-0 w-full p-3 card-info">
                         <h3 class="text-text-main text-sm font-semibold truncate">${item.title}</h3>
                         <div class="flex justify-between items-center text-xs text-text-muted mt-1">
                             <span class="uppercase text-[10px]">Resume</span>
+                            <span class="uppercase border border-border-color px-1 rounded text-[10px]">${item.type}</span>
                         </div>
                     </div>
                 `;
@@ -898,7 +921,7 @@
             if (!container || container.innerHTML !== '') return;
 
             // Apply responsive layout classes: Grid on mobile (2 cols), Flex on desktop
-            container.className = 'grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto';
+            container.className = 'grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto items-center';
 
             const isAnilist = section === 'anilist';
             const stateRef = isAnilist ? appState.anilist.filters : appState.tmdb[section].filters;
@@ -1152,6 +1175,7 @@
         async function loadAnilistSection() {
             const state = appState.anilist;
             const gridId = 'grid-anilist';
+            const grid = document.getElementById(gridId);
 
             // --- MODIFIED: Added $year variable ---
             const query = `
@@ -1222,7 +1246,7 @@
                     startDate { year month day }
                     genres
                     description
-                    relations { edges { relationType node { id title { romaji } format status coverImage { medium } } } }
+                    relations { edges { relationType node { id title { romaji } seasonYear averageScore format status coverImage { extraLarge } } } }
                     recommendations(sort: RATING_DESC, perPage: 10) {
                         nodes {
                             mediaRecommendation {
@@ -1250,18 +1274,22 @@
             } }`;
 
             const data = await fetchAnilist(query, { id });
+            // FIX START
             if (!data || !data.Media) return;
             const anime = data.Media;
+            // FIX END
             state.currentAnime = anime;
-            state.currentEp = startEpisode; // Use provided start episode
+            state.currentEp = startEpisode; // Use provided startEpisode
 
             const bannerUrl = getBackdropUrl(anime.bannerImage || anime.coverImage.extraLarge);
             document.getElementById('anilist-info-banner').style.backgroundImage = `url(${bannerUrl})`;
             document.getElementById('anilist-player-title').innerText = anime.title.english || anime.title.romaji;
             document.getElementById('anilist-info-img').src = anime.coverImage.extraLarge;
-            document.getElementById('anilist-banner-score').innerText = (anime.averageScore || '??') + '% Score';
+            const score = (anime.averageScore || '??') + '% Score';
+            document.getElementById('anilist-banner-score').innerText = score;
             document.getElementById('anilist-banner-type').innerText = anime.format || 'TV';
-            document.getElementById('anilist-banner-year').innerText = anime.seasonYear || 'N/A';
+            const yearStr = anime.seasonYear || (anime.startDate && anime.startDate.year ? anime.startDate.year : 'N/A');
+            document.getElementById('anilist-banner-year').innerText = yearStr;
             document.getElementById('anilist-info-desc').innerHTML = anime.description;
             document.getElementById('anilist-info-Romaji').innerText = anime.title.romaji;
             document.getElementById('anilist-info-Type').innerText = anime.format;
@@ -1307,24 +1335,29 @@
 
                 if (validRelations.length > 0) {
                     relContainer.classList.remove('hidden');
-                    validRelations.forEach(edge => {
-                        const div = document.createElement('div');
-                        div.className = 'cursor-pointer hover:bg-nav-bg p-1.5 rounded flex gap-3 items-center transition-colors group border border-transparent hover:border-border-color';
-                        const imgUrl = edge.node.coverImage?.medium || 'https://placehold.co/50x75?text=No+Img';
-                        const relationType = edge.relationType.replace(/_/g, ' ').toLowerCase();
 
-                        div.innerHTML = `
-                            <div class="flex-shrink-0 w-10 h-14 overflow-hidden rounded shadow-sm relative">
-                                <img src="${imgUrl}" class="w-full h-full object-cover md:group-hover:scale-110 transition-transform duration-300">
-                            </div>
-                            <div class="flex flex-col min-w-0 flex-1">
-                                <span class="text-[10px] text-primary uppercase font-bold tracking-wider mb-0.5">${relationType}</span>
-                                <span class="text-xs text-text-main font-medium truncate md:group-hover:text-primary transition-colors" title="${edge.node.title.romaji}">${edge.node.title.romaji}</span>
-                                <span class="text-[10px] text-text-muted truncate">${edge.node.format || 'TV'} · ${edge.node.status ? edge.node.status.replace(/_/g, ' ') : '?'}</span>
-                            </div>
-                        `;
-                        div.onclick = () => openAnilistPlayer(edge.node.id);
-                        relList.appendChild(div);
+                    // Update Title
+                    const relHeader = relContainer.querySelector('h4');
+                    if (relHeader) relHeader.innerText = `${anime.title.english || anime.title.romaji} Relations`;
+
+                    validRelations.forEach(edge => {
+                        // Use createCardHTML with isHorizontal = false for vertical cards
+                        const imgUrl = edge.node.coverImage?.extraLarge || 'https://placehold.co/160x240?text=No+Img';
+                        const relYear = edge.node.seasonYear || (edge.node.startDate ? edge.node.startDate.year : '');
+                        const relVote = edge.node.averageScore ? edge.node.averageScore / 10 : null; // Normalize to 10 scale
+
+                        const card = createCardHTML(
+                            edge.node.id,
+                            'anime',
+                            edge.node.title.romaji,
+                            imgUrl,
+                            relVote,
+                            relYear,
+                            `<div class="absolute top-1 right-1 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded-sm rounded-tr-md uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
+                            false,
+                            null
+                        );
+                        relList.appendChild(card);
                     });
                 } else {
                     relContainer.classList.add('hidden');
@@ -1334,7 +1367,9 @@
             }
 
             const watchlistBtn = document.getElementById('anilist-watchlist-btn');
-            watchlistBtn.onclick = () => toggleWatchlist(anime.id, 'anime', anime.title.english || anime.title.romaji, anime.coverImage.extraLarge, 'anilist-watchlist-btn');
+            // Pass vote and year to toggleWatchlist
+            const safeTitle = (anime.title.english || anime.title.romaji).replace(/'/g, "");
+            watchlistBtn.onclick = () => toggleWatchlist(anime.id, 'anime', safeTitle, anime.coverImage.extraLarge, 'anilist-watchlist-btn', (anime.averageScore || 0) / 10, yearStr);
             updateWatchlistButtonState(anime.id, 'anilist-watchlist-btn');
 
             const serverBtnContainer = document.getElementById('anime-server-buttons');
@@ -1386,14 +1421,32 @@
 
             const recsGrid = document.getElementById('anilist-recommendations-grid');
             recsGrid.innerHTML = '';
-            if (anime.recommendations && anime.recommendations.nodes) {
+            const recHeader = recsGrid.previousElementSibling; // The H3 tag
+
+            if (anime.recommendations && anime.recommendations.nodes && anime.recommendations.nodes.length > 0) {
+                if (recHeader) recHeader.innerText = "Recommendations";
                 const recItems = anime.recommendations.nodes
                     .map(n => n.mediaRecommendation)
                     .filter(m => m)
                     .map(mapAnilistToShared);
                 renderAnilistGrid('anilist-recommendations-grid', recItems, true);
+            } else {
+                // FALLBACK: Get by Genre
+                if (anime.genres && anime.genres.length > 0) {
+                    const genre = anime.genres[0];
+                    if (recHeader) recHeader.innerText = "Recommendation based in Genre";
+                    const fbQuery = `query ($genre: String) { Page(page: 1, perPage: 12) { media(genre: $genre, type: ANIME, sort: TRENDING_DESC) { id title { romaji english } coverImage { extraLarge } format averageScore status seasonYear } } }`;
+                    const fbData = await fetchAnilist(fbQuery, { genre });
+                    if (fbData && fbData.Page.media) {
+                        const recItems = fbData.Page.media.map(mapAnilistToShared);
+                        renderAnilistGrid('anilist-recommendations-grid', recItems, true);
+                    } else {
+                        recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
+                    }
+                } else {
+                    recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
+                }
             }
-            if (recsGrid.children.length === 0) recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
 
             const epGrid = document.getElementById('anilist-episodes-grid');
             epGrid.innerHTML = '';
@@ -1528,14 +1581,20 @@
             const desc = item.overview || 'No description available.';
             const type = item.media_type || 'movie';
 
+            // Extract safe values for watchlist
+            const safeTitle = title.replace(/'/g, "");
+            const vote = item.vote_average || 0;
+            const date = item.release_date || item.first_air_date || '';
+            const year = date.split('-')[0] || '';
+
             document.getElementById('banner-content').innerHTML = `
                 <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white">${title}</h1>
                 <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
                 <div class="flex">
-                    <button class="bg-red-600 md:hover:bg-opacity-60 text-white font-bold py-2 px-5 rounded-l-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
+                    <button class="bg-gray-600 md:hover:bg-opacity-60 text-white font-bold py-2 px-5 rounded-l-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
                         <i class="fas fa-play mr-2"></i> Play Now
                     </button>
-                    <button id="banner-watchlist-btn-${item.id}" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-primary text-black font-bold rounded-r-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${title.replace(/'/g, "")}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}')">
+                    <button id="banner-watchlist-btn-${item.id}" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded-r-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}')">
                         <i class="material-icons">bookmark_add</i>
                     </button>
                 </div>
@@ -1588,8 +1647,8 @@
                     displayStatus = releaseDate > now ? 'Upcoming' : 'Released';
                 }
 
-                const statusBadge = displayStatus ? `<div class="absolute top-2 left-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
-                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal);
+                const statusBadge = displayStatus ? `<div class="absolute top-1 right-1 bg-primary text-black text-[10px] px-2 py-1.5 font-bold rounded-sm rounded-tr-md uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
+                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             }
         }
@@ -1613,15 +1672,18 @@
                     posterUrl = getPosterUrl(item.poster_path);
                 }
 
-                const statusBadge = item.status ? `<div class="absolute top-2 left-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
-                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal);
+                const statusBadge = item.status ? `<div class="absolute top-1 right-1 bg-primary text-black text-[10px] px-2 py-1.5 font-bold rounded-sm rounded-tr-md uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
+                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             });
         }
 
-        function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal) {
+        function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview) {
+
+            // --- STANDARD GRID LOGIC ---
             const card = document.createElement('div');
-            card.className = 'movie-card cursor-pointer relative group';
+            const widthClass = isHorizontal ? 'landscape-card' : '';
+            card.className = `movie-card cursor-pointer relative group ${widthClass}`;
 
             // --- MODIFIED: Switch aspect ratio class based on isHorizontal flag ---
             const aspectClass = isHorizontal ? 'aspect-video' : 'aspect-[2/3]';
@@ -1629,22 +1691,24 @@
             card.innerHTML = `
             <div class="${aspectClass} overflow-hidden relative">
                 <img src="${posterUrl}" class="w-full h-full object-cover">
-                ${statusBadge}
-                <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold border border-[#333] z-10">
+                ${statusBadge || ''}
+                <div class="absolute top-1 left-1 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold border border-[#333] z-10">
                     ${vote ? vote.toFixed(1) : 'NR'}
                 </div>
                 <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
                     <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg"></i>
                 </div>
-            </div>
-            <div class="p-3 bg-card-bg">
-                <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors">${title}</h3>
-                <div class="flex justify-between items-center text-xs text-text-muted mt-1">
-                    <span>${year}</span>
-                    <span class="uppercase border border-border-color px-1 rounded text-[10px]">${type}</span>
+                <div class="absolute bottom-0 left-0 w-full p-3 card-info">
+                    <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors" title="${title}">${title}</h3>
+                    <div class="flex justify-between items-center text-xs text-text-muted mt-1">
+                        <span>${year}</span>
+                        <span class="uppercase border border-border-color px-1 rounded text-[10px]">${type}</span>
+                    </div>
                 </div>
             </div>
+            
         `;
+            card.title = `${title}`;
             card.onclick = () => openDetailsWrapper(id, type);
             return card;
         }
@@ -1690,34 +1754,9 @@
             if (!details) { container.innerHTML = 'Error loading'; return; }
 
             // Collection logic...
-            let collectionHtml = '';
+            let collectionData = null;
             if (type === 'movie' && details.belongs_to_collection) {
-                const collectionData = await fetchTMDB(`/collection/${details.belongs_to_collection.id}`);
-                if (collectionData && collectionData.parts && collectionData.parts.length > 0) {
-                    const sortedParts = collectionData.parts.sort((a, b) => {
-                        return new Date(a.release_date || '9999-12-31') - new Date(b.release_date || '9999-12-31');
-                    });
-                    collectionHtml = `
-                        <div class="mt-6 border-t border-border-color pt-4">
-                            <h4 class="font-bold text-text-main mb-3">Collection</h4>
-                            <div class="flex flex-col gap-3 max-h-60 overflow-y-auto pr-1 custom-scroll">`;
-                    sortedParts.forEach(part => {
-                        const partDate = part.release_date ? part.release_date.split('-')[0] : 'N/A';
-                        const partImg = part.poster_path ? IMG_URL + part.poster_path : 'https://placehold.co/50x75?text=No+Img';
-                        const isActive = part.id === id ? 'border-primary bg-nav-bg' : 'border-transparent';
-                        collectionHtml += `
-                            <div class="cursor-pointer hover:bg-nav-bg p-1.5 rounded flex gap-3 items-center transition-colors group border ${isActive} hover:border-border-color" onclick="openDetailsWrapper(${part.id}, 'movie')">
-                                <div class="flex-shrink-0 w-10 h-14 overflow-hidden rounded shadow-sm relative">
-                                    <img src="${partImg}" class="w-full h-full object-cover md:group-hover:scale-110 transition-transform duration-300">
-                                </div>
-                                <div class="flex flex-col min-w-0 flex-1">
-                                    <span class="text-xs text-text-main font-medium truncate md:group-hover:text-primary transition-colors" title="${part.title}">${part.title}</span>
-                                    <span class="text-[10px] text-text-muted truncate">${partDate}</span>
-                                </div>
-                            </div>`;
-                    });
-                    collectionHtml += `</div></div>`;
-                }
+                collectionData = await fetchTMDB(`/collection/${details.belongs_to_collection.id}`);
             }
 
             const title = details.title || details.name;
@@ -1764,7 +1803,7 @@
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
                     <div class="flex flex-col md:flex-row gap-8">
                         <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
-                            <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-arrow-left"></i> Back to Browse</button>
+                            <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-chevron-left mr-2"></i> Back to Browse</button>
                             <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded-md shadow-2xl">
                             <div class="mb-6">
                                 <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
@@ -1773,7 +1812,7 @@
                                     <span class="text-primary font-bold"><i class="fas fa-star mr-1"></i> ${details.vote_average.toFixed(1)}</span>
                                     <span class="px-2 py-0.5 border border-border-color rounded">${releaseDate.split('-')[0]}</span>
                                     <span class="uppercase">${type}</span>
-                                    <span><button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn')" class="w-full bg-primary pt-4 py-3.5 px-3.5 text-black rounded shadow-lg transition transform flex items-center justify-center gap-2"><i class="material-icons">bookmark_add</i></button></span>
+                                    <span><button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}')" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded-md transition-colors"><i class="material-icons">bookmark_add</i></button></span>
                                 </div>
                                 <div class="mb-6">
                                     <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
@@ -1782,20 +1821,20 @@
                             </div>
                             <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
                                 <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
-                                <div class="space-y-2">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                                     <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Type</span><p class="text-text-main text-xs font-medium text-right md:text-left uppercase">${type}</p></div>
                                     <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Status</span><p class="text-primary text-xs font-medium text-right md:text-left">${status}</p></div>
                                     <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Released</span><p class="text-text-main text-xs font-medium text-right md:text-left">${relDate}</p></div>
                                     <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Runtime</span><p class="text-text-main text-xs font-medium text-right md:text-left">${runtime}</p></div>
                                     <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Production</span><p class="text-text-main text-xs font-medium text-right md:text-left">${details.production_companies?.[0]?.name || 'N/A'}</p></div>
-                                    <div class=" border-b border-border-color pb-2"><span class="text-text-muted text-xs">Genres</span><div class="flex flex-wrap gap-1 mt-1">${genresHtml}</div></div>
                                 </div>
+                                    <div class=" border-b border-border-color pb-2"><span class="text-text-muted text-xs">Genres</span><div class="flex flex-wrap gap-1 mt-1">${genresHtml}</div></div>
                                 <div class="mb-0"><h3 class="text-lg font-bold text-text-main mb-3">Cast</h3><div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">${castHtml}</div></div>
-                                ${collectionHtml}
+                                
                             </div>
                         </div>
                         <div class="flex-1 pt-4 md:pt-16 min-w-0">
-                            <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-arrow-left"></i> Back to Browse</button>
+                            <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-chevron-left mr-2"></i> Back to Browse</button>
                             <div class="mb-8 space-y-4">
                                 <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
                                     <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
@@ -1806,15 +1845,62 @@
                                     <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
                                 </div>
                             </div>
-                            <div class="mb-8"><h3 class="text-lg font-bold text-text-main mb-3">You may also like</h3><div id="tmdb-recommendations" class="horizontal-scroll-container"></div></div>
+                            <div id="tmdb-collection-container" class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color ${collectionData ? '' : 'hidden'}">
+                                <h4 class="text-lg font-bold text-text-main mb-3 border-b border-border-color">${collectionData ? collectionData.name : 'Relations'}</h4>
+                                <div id="tmdb-collection-list" class="horizontal-scroll-container p-2"></div>
+                            </div>
+                            <div
+                            class="mt-3 bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
+                            <h3 id="tmdb-rec-title" class="text-lg font-bold text-text-main mb-3">Recommendations</h3><div id="tmdb-recommendations" class="horizontal-scroll-container p-2"></div></div>
                         </div>
                     </div>
                 </div>
             `;
 
             updateWatchlistButtonState(id, 'tmdb-watchlist-btn');
-            if (recommendations && recommendations.results) {
+
+            const recContainer = document.getElementById('tmdb-recommendations');
+            const recTitle = document.getElementById('tmdb-rec-title');
+
+            if (recommendations && recommendations.results && recommendations.results.length > 0) {
                 renderTMDBGrid('tmdb-recommendations', recommendations.results, type, true);
+            } else {
+                // FALLBACK: Get by Genre
+                if (details.genres && details.genres.length > 0) {
+                    const genreIds = details.genres.slice(0, 2).map(g => g.id).join(',');
+                    if (recTitle) recTitle.innerText = "Recommendation based in Genre";
+                    const fbData = await fetchTMDB(`/discover/${type}`, { with_genres: genreIds });
+                    if (fbData && fbData.results) {
+                        renderTMDBGrid('tmdb-recommendations', fbData.results, type, true);
+                    } else {
+                        recContainer.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
+                    }
+                } else {
+                    recContainer.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
+                }
+            }
+
+            // Populate Collection if exists
+            if (collectionData && collectionData.parts && collectionData.parts.length > 0) {
+                const sortedParts = collectionData.parts.sort((a, b) => {
+                    return new Date(a.release_date || '9999-12-31') - new Date(b.release_date || '9999-12-31');
+                });
+                const colContainer = document.getElementById('tmdb-collection-list');
+                sortedParts.forEach(part => {
+                    const imgUrl = part.poster_path ? IMG_URL + part.poster_path : 'https://placehold.co/160x240?text=No+Img';
+                    const card = createCardHTML(
+                        part.id,
+                        'movie',
+                        part.title,
+                        imgUrl,
+                        part.vote_average,
+                        part.release_date ? part.release_date.split('-')[0] : '',
+                        '', // No specific status badge for collection items typically
+                        false, // Vertical
+                        part.overview
+                    );
+                    colContainer.appendChild(card);
+                });
             }
 
             let season = startSeason;
@@ -1915,13 +2001,14 @@
             }
         }
 
-        function toggleWatchlist(id, type, title, poster, btnId) {
+        function toggleWatchlist(id, type, title, poster, btnId, vote = null, year = null) {
             const exists = appState.watchlist.find(i => i.id === id);
             if (exists) {
                 appState.watchlist = appState.watchlist.filter(i => i.id !== id);
                 showToast('Removed from Library');
             } else {
-                appState.watchlist.push({ id, type, title, poster_path: poster });
+                // Store vote and year to match default card design
+                appState.watchlist.push({ id, type, title, poster_path: poster, vote_average: vote, release_date: year });
                 showToast('Added to Library');
             }
             localStorage.setItem('goStreamWatchlist', JSON.stringify(appState.watchlist));
@@ -1934,14 +2021,12 @@
             const exists = appState.watchlist.find(i => i.id === id);
             if (exists) {
                 btn.innerHTML = '<i class="material-icons">bookmark_added</i>';
-                btn.className = btn.className.replace('bg-white', 'bg-primary').replace('bg-white', 'bg-primary');
-                if (!btn.className.includes('bg-primary')) btn.classList.add('bg-primary', 'text-black');
             } else {
                 btn.innerHTML = '<i class="material-icons">bookmark_add</i>';
                 if (btnId.includes('banner')) {
-                    btn.className = "bg-primary md:hover:bg-opacity-60 text-black font-bold pt-4 py-2 px-3 rounded-r-md transition-colors";
+                    btn.className = "bg-card-bg md:hover:bg-opacity-60 text-primary font-bold pt-4 py-2 px-3 rounded-r-md transition-colors";
                 } else {
-                    btn.className = "pt-4 py-2 px-3 bg-primary text-black md:hover:bg-opacity-60 rounded font-bold transition-colors";
+                    btn.className = "pt-4 py-2 px-3 bg-card-bg text-primary md:hover:bg-opacity-60 rounded font-bold transition-colors";
                 }
             }
         }
@@ -1952,18 +2037,32 @@
             if (appState.watchlist.length === 0) { grid.innerHTML = '<p class="text-text-muted">Your Library is empty.</p>'; return; }
             appState.watchlist.forEach(item => {
                 const posterUrl = getPosterUrl(item.poster_path);
-                const card = document.createElement('div');
-                card.className = 'movie-card cursor-pointer relative';
-                card.innerHTML = `
-                    <div class="aspect-[2/3] overflow-hidden"><img src="${posterUrl}" class="w-full h-full object-cover"></div>
-                    <div class="p-2">
-                        <h4 class="truncate text-center text-text-main">${item.title}</h4>
-                        <button onclick="event.stopPropagation(); removeFromWatchlist(${item.id})" class="absolute top-1 right-1 z-20 flex items-center rounded-sm shadow-xl h-8 w-8 bg-primary text-black md:hover:bg-red-400 justify-center transition-all">   
-                        <i class="material-icons">bookmark_remove</i></i>     
-                        </button>
-                    </div>
-                `;
-                card.onclick = () => openDetailsWrapper(item.id, item.type);
+
+                // Use standard vertical card format
+                // Pass stored vote and year. If missing, pass defaults.
+                const card = createCardHTML(
+                    item.id,
+                    item.type,
+                    item.title,
+                    posterUrl,
+                    item.vote_average, // vote
+                    item.release_date,   // year/date
+                    '',   // Status unknown
+                    false, // Vertical (grid) layout
+                    null // Overview not needed for card
+                );
+
+                // Cleaner Remove Button: Circular, top-right, semi-transparent black
+                const removeBtn = document.createElement('button');
+                removeBtn.className = "absolute top-1 right-1 z-30 bg-black/60 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-red-600 transition-colors backdrop-blur-sm shadow-md";
+                removeBtn.innerHTML = '<i class="fas fa-times text-xs"></i>';
+                removeBtn.title = "Remove from Library";
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation(); // Prevent card click
+                    removeFromWatchlist(item.id);
+                };
+
+                card.querySelector('.relative').appendChild(removeBtn); // Append to the main wrapper
                 grid.appendChild(card);
             });
         }
@@ -1971,6 +2070,7 @@
         function removeFromWatchlist(id) {
             appState.watchlist = appState.watchlist.filter(i => i.id !== id);
             localStorage.setItem('goStreamWatchlist', JSON.stringify(appState.watchlist));
+            showToast('Removed from Library');
             renderWatchlist();
         }
 
@@ -2007,6 +2107,47 @@
         }
         document.addEventListener('deviceready', onDeviceReady, false);
 
+        /**
+         * ANTI-INSPECT DETECTION
+         * Attempts to detect devtools via key shortcuts and right-click.
+         * Redirects to blank page if detected.
+         */
+        function detectInspector() {
+            // Disable Right Click
+            document.addEventListener('contextmenu', event => event.preventDefault());
+
+            // Disable Shortcuts
+            document.addEventListener('keydown', function (e) {
+                // F12
+                if (e.keyCode == 123) {
+                    window.location.href = 'about:blank';
+                    return false;
+                }
+                // Ctrl+Shift+I (Inspector)
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                    window.location.href = 'about:blank';
+                    return false;
+                }
+                // Ctrl+Shift+C (Element Selector)
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+                    window.location.href = 'about:blank';
+                    return false;
+                }
+                // Ctrl+Shift+J (Console)
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                    window.location.href = 'about:blank';
+                    return false;
+                }
+                // Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                    window.location.href = 'about:blank';
+                    return false;
+                }
+            });
+        }
+
+        detectInspector();
+
         window.addEventListener('DOMContentLoaded', () => {
             router('home');
         });
@@ -2017,4 +2158,3 @@
 </body>
 
 </html>
-
