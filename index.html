@@ -1678,7 +1678,7 @@
                     displayStatus = releaseDate > now ? 'Upcoming' : 'Released';
                 }
 
-                const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-primary text-black text-[10px] px-2 py-1 font-bold rounded rounded-tr-md uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
+                const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-primary text-black text-[10px] px-2 py-1 font-bold rounded uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             }
@@ -1703,7 +1703,7 @@
                     posterUrl = getPosterUrl(item.poster_path);
                 }
 
-                const statusBadge = item.status ? `<div class="absolute top-1.5 right-1.5 bg-primary text-black text-[10px] px-2 py-1 font-bold rounded rounded-tr-md uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
+                const statusBadge = item.status ? `<div class="absolute top-1.5 right-1.5 bg-primary text-black text-[10px] px-2 py-1 font-bold rounded uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             });
@@ -2281,3 +2281,4 @@
 </body>
 
 </html>
+
