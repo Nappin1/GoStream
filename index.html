@@ -350,7 +350,7 @@
             </div>
             <div class="flex items-center pl-3 space-x-4">
                 <div class="relative block">
-                    <input id="global-search-input" type="text" placeholder="Search + Enter"
+                    <input id="global-search-input" type="text" placeholder="Search movies, people..."
                         class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 w-full focus:outline-none focus:border-primary transition-colors">
                     <i class="fas fa-search text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
                 </div>
@@ -469,6 +469,10 @@
 
         <section id="view-details" class="view-section hidden w-full">
             <div id="details-content" class="animate-fade-in"></div>
+        </section>
+
+        <section id="view-actor" class="view-section hidden w-full">
+            <div id="actor-content" class="animate-fade-in"></div>
         </section>
 
         <section id="view-anilist-player" class="view-section hidden w-full bg-dark-bg">
@@ -754,8 +758,7 @@
 
             // 1. Update History Strategy
             // If we are currently on a main view, and we are navigating AWAY to a sub-view (details/search/player)
-            // OR simply navigating to another main view, update logic.
-            // Actually, simpler: If the *current* view before switching IS a main view, save it as lastView.
+            // OR simply navigating to another main view, save it as lastView.
             if (mainViews.includes(appState.currentView)) {
                 appState.lastView = appState.currentView;
             }
@@ -764,7 +767,7 @@
             // Default target is the view we are going to
             let activeTarget = viewName;
 
-            // If the destination is NOT a main view (e.g. details, search, player),
+            // If the destination is NOT a main view (e.g. details, search, player, actor),
             // fallback to highlighting the last visited main view.
             if (!mainViews.includes(viewName)) {
                 activeTarget = appState.lastView || 'home';
@@ -823,6 +826,9 @@
                     break;
                 case 'anilist-player':
                     document.getElementById('view-anilist-player').classList.remove('hidden');
+                    break;
+                case 'actor':
+                    document.getElementById('view-actor').classList.remove('hidden');
                     break;
             }
         }
@@ -1353,7 +1359,7 @@
                             imgUrl,
                             relVote,
                             relYear,
-                            `<div class="absolute top-1 right-1 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded-sm rounded-tr-md uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
+                            `<div class="absolute top-2 right-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
                             false,
                             null
                         );
@@ -1474,7 +1480,7 @@
 
                 if (anime.status === 'RELEASING' && i === maxEps) {
                     const badge = document.createElement('sup');
-                    badge.className = "absolute -top-0.5 -right-0.5 text-[9px] text-primary font-bold bg-black rounded z-10 shadow-sm";
+                    badge.className = "absolute -top-0 -right-0 text-[9px] inline-block text-primary font-bold bg-black rounded z-10 shadow-sm";
                     badge.innerText = "NEW";
                     wrapper.appendChild(badge);
                 }
@@ -1558,9 +1564,14 @@
             }
 
             if (tmdbRes && tmdbRes.results) {
+                // Modified filter: allow Person, Movie, TV, but EXCLUDE Anime from TMDB results
                 const filtered = tmdbRes.results.filter(i => {
-                    const isMedia = i.media_type === 'movie' || i.media_type === 'tv';
+                    const isMedia = i.media_type === 'movie' || i.media_type === 'tv' || i.media_type === 'person';
+                    // TMDB Anime Detection: Genre 16 (Animation) + Country JP
                     const isAnime = i.genre_ids && i.genre_ids.includes(16) && i.origin_country && i.origin_country.includes('JP');
+
+                    // Allow everything that is Media/Person, BUT if it is anime, block it (unless it's a person, people aren't 'anime')
+                    if (i.media_type === 'person') return true;
                     return isMedia && !isAnime;
                 });
                 await renderTMDBGrid('grid-search', filtered, null, false, true);
@@ -1622,7 +1633,18 @@
             if (!append) container.innerHTML = '';
 
             for (const item of items) {
-                if (!item.poster_path) continue;
+                // If person, use profile_path, else poster_path
+                const imgPath = item.poster_path || item.profile_path;
+                if (!imgPath) continue;
+
+                // --- NEW ANIME FILTER: Do not render items that are likely anime ---
+                // Only check for non-person items. People don't have genre_ids.
+                if (item.media_type !== 'person') {
+                    if (item.genre_ids && item.genre_ids.includes(16) && item.origin_country && item.origin_country.includes('JP')) {
+                        continue;
+                    }
+                }
+
                 const title = item.title || item.name;
                 if (/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f\u3131-\uD79D\uAC00-\uD7A3]/.test(title)) continue;
 
@@ -1635,7 +1657,16 @@
                 if (isHorizontal && item.backdrop_path) {
                     posterUrl = item.backdrop_path.startsWith('http') ? item.backdrop_path : IMG_URL + item.backdrop_path;
                 } else {
-                    posterUrl = getPosterUrl(item.poster_path);
+                    posterUrl = getPosterUrl(imgPath);
+                }
+
+                // Handling for Person Type
+                if (type === 'person') {
+                    const card = createCardHTML(item.id, 'actor', title, posterUrl, item.popularity, '', '', false, 'Actor');
+                    // Override click for actors
+                    card.onclick = () => openActorDetails(item.id);
+                    container.appendChild(card);
+                    continue;
                 }
 
                 const tmdbStatus = await fetchAndDetermineStatus(type, item.id);
@@ -1647,7 +1678,7 @@
                     displayStatus = releaseDate > now ? 'Upcoming' : 'Released';
                 }
 
-                const statusBadge = displayStatus ? `<div class="absolute top-1 right-1 bg-primary text-black text-[10px] px-2 py-1.5 font-bold rounded-sm rounded-tr-md uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
+                const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-primary text-black text-[10px] px-2 py-1 font-bold rounded rounded-tr-md uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             }
@@ -1672,7 +1703,7 @@
                     posterUrl = getPosterUrl(item.poster_path);
                 }
 
-                const statusBadge = item.status ? `<div class="absolute top-1 right-1 bg-primary text-black text-[10px] px-2 py-1.5 font-bold rounded-sm rounded-tr-md uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
+                const statusBadge = item.status ? `<div class="absolute top-1.5 right-1.5 bg-primary text-black text-[10px] px-2 py-1 font-bold rounded rounded-tr-md uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             });
@@ -1688,15 +1719,18 @@
             // --- MODIFIED: Switch aspect ratio class based on isHorizontal flag ---
             const aspectClass = isHorizontal ? 'aspect-video' : 'aspect-[2/3]';
 
+            // Format vote if it's a number, handles person popularity too (loosely)
+            const voteDisplay = typeof vote === 'number' ? vote.toFixed(1) : 'NR';
+
             card.innerHTML = `
             <div class="${aspectClass} overflow-hidden relative">
                 <img src="${posterUrl}" class="w-full h-full object-cover">
                 ${statusBadge || ''}
-                <div class="absolute top-1 left-1 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold border border-[#333] z-10">
-                    ${vote ? vote.toFixed(1) : 'NR'}
+                <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold z-10">
+                    ${type === 'actor' ? '<i class="fas fa-user"></i>' : voteDisplay}
                 </div>
                 <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
-                    <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg"></i>
+                    <i class="mdi ${type === 'actor' ? 'mdi-account-search' : 'mdi-play-circle'} text-primary text-5xl drop-shadow-lg"></i>
                 </div>
                 <div class="absolute bottom-0 left-0 w-full p-3 card-info">
                     <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors" title="${title}">${title}</h3>
@@ -1770,9 +1804,9 @@
                 castHtml += cast.map(c => {
                     const profile = c.profile_path ? `${IMG_URL}${c.profile_path}` : 'https://placehold.co/100x100/333/555?text=No+Img';
                     return `
-                        <div class="flex-shrink-0 w-24 text-center">
-                            <img src="${profile}" alt="${c.name}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-border-color">
-                            <p class="text-xs font-semibold text-text-main truncate" title="${c.name}">${c.name}</p>
+                        <div class="flex-shrink-0 w-24 text-center cursor-pointer group" onclick="openActorDetails(${c.id})">
+                            <img src="${profile}" alt="${c.name}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-border-color group-hover:border-primary transition-colors">
+                            <p class="text-xs font-semibold text-text-main truncate group-hover:text-primary transition-colors" title="${c.name}">${c.name}</p>
                             <p class="text-[10px] text-text-muted truncate" title="${c.character}">${c.character}</p>
                         </div>
                     `;
@@ -1987,6 +2021,95 @@
             } else {
                 updatePlayerSource(SOURCES[0], id, 'movie', 1, 1, details.poster_path, title, details.backdrop_path);
             }
+            loader.hide();
+        }
+
+        async function openActorDetails(id) {
+            router('actor');
+            const container = document.getElementById('actor-content');
+            container.innerHTML = '';
+            loader.show();
+
+            const [person, credits] = await Promise.all([
+                fetchTMDB(`/person/${id}`),
+                fetchTMDB(`/person/${id}/combined_credits`)
+            ]);
+
+            if (!person) {
+                container.innerHTML = '<div class="text-center text-text-muted mt-20">Error loading actor details.</div>';
+                loader.hide();
+                return;
+            }
+
+            const profile = person.profile_path ? IMG_URL + person.profile_path : 'https://placehold.co/300x450/333/FFF?text=No+Image';
+            const name = person.name;
+            const knownf = person.known_for_department;
+            const knownFor = person.known_for_department == "Acting";
+            const knownas = person.also_known_as.join(', ') || person.name;
+            const birthday = person.birthday;
+            const displayBirthday = birthday
+                ? new Date(birthday).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })
+                : 'N/A';
+            const place = person.place_of_birth || 'N/A';
+            const bio = person.biography || 'No biography available.';
+
+            // Sort credits by popularity
+            const sortedCredits = credits ? credits.cast.sort((a, b) => b.vote_count - a.vote_count) : [];
+            // Remove duplicates
+            const uniqueCredits = [];
+            const seenIds = new Set();
+            sortedCredits.forEach(c => {
+                if (!seenIds.has(c.id)) {
+                    seenIds.add(c.id);
+                    uniqueCredits.push(c);
+                }
+            });
+
+            container.innerHTML = `
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-chevron-left mr-2"></i> Back</button>
+                    
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="w-full md:w-[300px] flex-shrink-0">
+                            <img src="${profile}" class="w-[200px] md:w-full mx-auto md:mx-0 rounded-lg shadow-2xl border border-border-color mb-6">
+                            <h1 class="text-3xl md:text-5xl text-center block md:hidden font-extrabold text-white mb-6">${name}</h1>
+                            <div class="bg-card-bg p-5 rounded-lg border border-border-color space-y-4">
+                                <h3 class="font-bold text-lg text-white border-b border-border-color pb-2">Personal Info</h3>
+                                <div><span class="text-text-muted text-xs block">Known For</span><span class="text-sm font-medium">${knownf}</span></div>
+                                <div><span class="text-text-muted text-xs block">Gender</span><span class="text-sm font-medium">${person.gender === 1 ? 'Female' : 'Male'}</span></div>
+                                <div><span class="text-text-muted text-xs block">Birthday</span><span class="text-sm font-medium">${displayBirthday}</span></div>
+                                <div><span class="text-text-muted text-xs block">Place of Birth</span><span class="text-sm font-medium">${place}</span></div>
+                                <div><span class="text-text-muted text-xs block">Also known as</span><span class="text-sm font-medium text-primary">${knownas}</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <h1 class="text-3xl md:text-5xl hidden md:block font-extrabold text-white border-b border-border-color mb-6">${name}</h1>
+                            
+                            <div class="mb-8">
+                                <h3 class="text-xl font-bold text-white mb-3">Biography</h3>
+                                <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-line max-h-60 overflow-y-auto pr-2 custom-scroll">${bio}</p>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-4">Known For</h3>
+                                <div id="actor-credits-grid" class="results-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (uniqueCredits.length > 0) {
+                renderTMDBGrid('actor-credits-grid', uniqueCredits, null, false, true);
+            } else {
+                document.getElementById('actor-credits-grid').innerHTML = '<p class="text-gray-500">No known credits.</p>';
+            }
+
             loader.hide();
         }
 
