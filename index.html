@@ -93,7 +93,7 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--bg-main);
+            background: var(--bg-input);
         }
 
         ::-webkit-scrollbar-thumb {
@@ -305,6 +305,7 @@
         }
 
         .line-clamp-2 {
+            line-clamp: 2;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -312,10 +313,96 @@
         }
 
         .line-clamp-3 {
+            line-clamp: 3;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            max-width: 90%;
+            width: 500px;
+            padding: 1.5rem;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+        }
+
+        /* Carousel Styles */
+        .banner-bg-wrapper {
+            position: absolute;
+            inset: 0;
+            transition: opacity 0.8s ease-in-out;
+            opacity: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .banner-bg-wrapper.active {
+            opacity: 1;
+        }
+
+        .carousel-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .carousel-indicator.active {
+            background-color: var(--color-primary);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .carousel-btn {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
+        }
+
+        .carousel-btn:hover {
+            background-color: var(--color-primary);
+            color: black;
         }
     </style>
 </head>
@@ -349,6 +436,10 @@
 
             </div>
             <div class="flex items-center pl-3 space-x-4">
+                <button onclick="installApp()" id="nav-install-btn"
+                    class="hidden sm:flex items-center gap-2 text-text-muted hover:text-primary transition-colors text-sm font-bold">
+                    <i class="fas fa-download"></i> Install
+                </button>
                 <div class="relative block">
                     <input id="global-search-input" type="text" placeholder="Search movies, people..."
                         class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 w-full focus:outline-none focus:border-primary transition-colors">
@@ -359,7 +450,7 @@
     </nav>
 
     <div id="bottom-nav"
-        class="nav-bp:hidden fixed bottom-4 left-4 right-4 bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl z-50 flex justify-around items-center h-[60px] shadow-2xl">
+        class="nav-bp:hidden fixed bottom-4 left-4 right-4 bg-black/50 backdrop-blur-xl border-2 border-primary rounded-2xl z-50 flex justify-around items-center h-[60px] shadow-2xl">
         <button onclick="router('home')"
             class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1" data-target="home"><i
                 class="fas fa-house"></i><span class="text-[10px] font-medium tracking-wide">Home</span></button>
@@ -381,12 +472,167 @@
                 class="text-[10px] font-medium tracking-wide">Library</span></button>
     </div>
 
+    <!-- Floating FAQ Button -->
+    <div class="fixed bottom-24 right-5 z-[55]">
+        <!-- First Button (FAQ - lower position) -->
+        <button onclick="toggleFAQ()"
+            class="relative w-10 h-10 rounded-full bg-card-bg text-white flex border-2 border-primary items-center justify-center shadow-lg hover:scale-110 transition-transform mb-2">
+            <i class="fas fa-question text-sm"></i>
+        </button>
+
+        <!-- Second Button (Info - upper position) -->
+        <button onclick="toggleFAQs()"
+            class="relative w-10 h-10 rounded-full bg-card-bg text-white flex border-2 border-primary items-center justify-center shadow-lg hover:scale-110 transition-transform">
+            <i class="fas fa-info text-sm"></i>
+        </button>
+    </div>
+
+    <!-- FAQ Modal -->
+    <div id="faq-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button onclick="toggleFAQ()" class="absolute top-4 right-4 text-text-muted hover:text-white"><i
+                    class="fas fa-times text-lg"></i></button>
+            <h2 class="text-xl font-bold text-text-main mb-4 border-b border-border-color pb-2">How to Use</h2>
+            <div class="space-y-4 text-sm text-text-muted max-h-[60vh] overflow-y-auto">
+                <div class="space-y-1">
+                    <h3 class="font-bold text-white"><i class="fas fa-search mr-2 text-primary"></i>1. Search</h3>
+                    <p>Use the search bar at the top to find movies, TV shows, anime, or people. You can also browse by
+                        category or use filters.</p>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-bold text-white"><i class="fas fa-play-circle mr-2 text-primary"></i>2. Watch</h3>
+                    <p>Click on a poster to view details. To watch, use the player at the top of the details page. If a
+                        server doesn't work, try switching servers using the buttons above the player.</p>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-bold text-white"><i class="fas fa-bookmark mr-2 text-primary"></i>3. Library</h3>
+                    <p>Click the bookmark icon to add content to your personal library. Your progress is also saved
+                        automatically in "Continue Watching".</p>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-bold text-white"><i class="fas fa-download mr-2 text-primary"></i>4. Install</h3>
+                    <p>For the best experience, install GoStream as an app.</p>
+                    <p>Tap the menu icon (three dots) in the top right, then select <span
+                            class="font-bold text-primary">Install App</span> or <span
+                            class="font-bold text-primary">Add to Home Screen</span> on mobile.</p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-border-color text-center">
+                <button onclick="toggleFAQ()"
+                    class="bg-primary text-black font-bold py-2 px-6 rounded hover:bg-opacity-80 transition-colors w-full sm:w-auto">Got
+                    it!</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="faqs-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button onclick="toggleFAQs()" class="absolute top-4 right-4 text-text-muted hover:text-white"><i
+                    class="fas fa-times text-lg"></i></button>
+            <h2 class="text-xl font-bold text-text-main mb-4 border-b border-border-color pb-2">Third-Party Hosting &
+                Copyright Disclaimer</h2>
+            <div class="space-y-4 text-sm text-text-muted max-h-[60vh] overflow-y-auto">
+                <div class="space-y-1">
+                    <h3 class="font-bold text-white"><i class="fas fa-database mr-2 text-primary"></i>1. No Content
+                        Hosting</h3>
+                    <p><span class="font-bold text-primary">GoStream</span> acts strictly as a search index and
+                        information retrieval tool. The Website does not host, upload, manage, or store any video,
+                        audio, or media files on its own servers. All media content accessible through this Website is
+                        embedded from external, third-party services.</p>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-bold text-white"><i class="fas fa-network-wired mr-2 text-primary"></i>2.
+                        Third-Party
+                        Control</h3>
+                    <p>Since the Website does not control the underlying media files, we cannot guarantee the
+                        availability, accuracy, or permanence of any content. Issues such as:</p>
+                    <p>&bull; Broken or dead links (404 errors).</p>
+                    <p>&bull; Incorrect video titles or metadata.</p>
+                    <p>&bull; Content removal due to DMCA takedowns or inactivity.</p>
+                    <p>...are entirely outside the control of <span class="font-bold text-primary">GoStream</span>.
+                        These technical issues originate
+                        from the third-party file hosts (e.g., vidsrc).</p>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-bold text-white"><i class="fas fa-copyright mr-2 text-primary"></i>3. Copyright &
+                        Removal Requests</h3>
+                    <p>If you have legal concerns regarding copyright, please contact the original file host where the
+                        media is stored. <span class="font-bold text-primary">GoStream</span> does not possess the files
+                        and therefore cannot remove
+                        them from the internet.</p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-border-color text-center">
+                <button onclick="toggleFAQs()"
+                    class="bg-primary text-black font-bold py-2 px-6 rounded hover:bg-opacity-80 transition-colors w-full sm:w-auto">Got
+                    it!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Install Modal (Fallback) -->
+    <div id="install-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button onclick="toggleInstallModal()" class="absolute top-4 right-4 text-text-muted hover:text-white"><i
+                    class="fas fa-times text-lg"></i></button>
+            <h2 class="text-xl font-bold text-text-main mb-4 border-b border-border-color pb-2"><i
+                    class="fas fa-download mr-2 text-primary"></i>Install GoStream</h2>
+            <div class="space-y-4 text-sm text-text-muted">
+                <p>Install GoStream on your device for a fullscreen, app-like experience.</p>
+
+                <div class="bg-input-bg p-3 rounded border border-border-color">
+                    <h3 class="font-bold text-white mb-1"><i class="fab fa-apple mr-2"></i>iOS (Safari)</h3>
+                    <p>Tap the <span class="font-bold text-primary">Share</span> button in the toolbar, then scroll down
+                        and select <span class="font-bold text-primary">Add to Home Screen</span>.</p>
+                </div>
+
+                <div class="bg-input-bg p-3 rounded border border-border-color">
+                    <h3 class="font-bold text-white mb-1"><i class="fab fa-android mr-2"></i>Android (Chrome)</h3>
+                    <p>Tap the menu icon (three dots) in the top right, then select <span
+                            class="font-bold text-primary">Install App</span> or <span
+                            class="font-bold text-primary">Add to Home Screen</span>.</p>
+                </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-border-color text-center">
+                <button onclick="toggleInstallModal()"
+                    class="bg-input-bg border border-border-color text-white font-bold py-2 px-6 rounded hover:bg-white/10 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
     <main id="main-content" class="pt-16 pb-20 min-h-screen">
         <section id="shared-banner"
-            class="relative h-[45vh] md:h-[75vh] flex items-end p-4 md:p-12 bg-cover bg-center bg-no-repeat transition-all duration-500 hidden">
-            <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-dark-bg via-dark-bg/60 to-transparent"></div>
-            <div id="banner-content" class="z-10 max-w-4xl relative fade-in"></div>
+            class="relative h-[45vh] md:h-[75vh] flex items-end p-0 bg-dark-bg transition-all duration-500 hidden overflow-hidden group">
+
+            <!-- Banner Background Layers -->
+            <div id="banner-bg-container" class="absolute inset-0">
+                <!-- JS will inject .banner-bg-wrapper divs here -->
+            </div>
+
+            <!-- Gradients -->
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent z-10 pointer-events-none">
+            </div>
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-dark-bg via-dark-bg/60 to-transparent z-10 pointer-events-none">
+            </div>
+
+            <!-- Carousel Controls -->
+            <div
+                class="absolute inset-0 z-30 flex justify-between items-center px-4 md:px-8 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <button onclick="prevBanner()" class="carousel-btn pointer-events-auto"><i
+                        class="fas fa-chevron-left"></i></button>
+                <button onclick="nextBanner()" class="carousel-btn pointer-events-auto"><i
+                        class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <!-- Banner Content -->
+            <div class="z-20 w-full max-w-4xl relative p-4 md:p-12 mb-8 md:mb-0 fade-in">
+                <div id="banner-content" class="transition-opacity duration-500"></div>
+
+                <!-- Indicators -->
+                <div id="banner-indicators" class="flex gap-2 mt-6"></div>
+            </div>
         </section>
 
         <section id="view-home" class="view-section px-4 sm:px-6 lg:px-8 py-8 space-y-8 hidden">
@@ -416,7 +662,7 @@
             </div>
         </section>
 
-        <section id="view-movies" class="view-section px-4 mt-8 w-full sm:px-6 lg:px-8 hidden">
+        <section id="view-movies" class="view-section px-4 mt-8 mb-4 w-full sm:px-6 lg:px-8 hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
                         class="vline"></span>Movies<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
@@ -426,7 +672,7 @@
             <div id="pag-movies" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
-        <section id="view-tv" class="view-section px-4 mt-8 w-full sm:px-6 lg:px-8 hidden">
+        <section id="view-tv" class="view-section px-4 mt-8 mb-4 w-full sm:px-6 lg:px-8 hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
                         class="vline"></span>TV<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
@@ -436,21 +682,56 @@
             <div id="pag-tv" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
-        <section id="view-anime-anilist" class="view-section hidden w-full px-4 mt-8 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
-                        class="vline"></span>Anime<sup class="text-xs text-primary ml-2">ANILIST</sup></h2>
-                <div id="anilist-filters" class="flex flex-wrap gap-2"></div>
+        <section id="view-anime-anilist" class="view-section hidden w-full px-4 mt-8 mb-4 sm:px-6 lg:px-8">
+            <!-- TABS -->
+            <div class="flex items-center space-x-6 mb-6 border-b border-white/10 pb-1">
+                <button onclick="switchAnilistTab('anime')" id="tab-btn-anime"
+                    class="text-lg font-bold text-primary border-b-2 border-primary pb-2 transition-colors">Anime</button>
+                <button onclick="switchAnilistTab('va')" id="tab-btn-va"
+                    class="text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors">Voice
+                    Actors</button>
             </div>
-            <div id="grid-anilist" class="results-grid"></div>
-            <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
-                <button onclick="changeAnilistPage(-1)"
-                    class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
-                        class="fas fa-chevron-left"></i></button>
-                <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
-                <button onclick="changeAnilistPage(1)"
-                    class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
-                        class="fas fa-chevron-right"></i></button>
+
+            <!-- TAB CONTENT: ANIME (Existing) -->
+            <div id="anilist-tab-anime">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
+                            class="vline"></span>Anime<sup class="text-xs text-primary ml-2">ANILIST</sup></h2>
+                    <div id="anilist-filters" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div id="grid-anilist" class="results-grid"></div>
+                <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
+                    <button onclick="changeAnilistPage(-1)"
+                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                            class="fas fa-chevron-left"></i></button>
+                    <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
+                    <button onclick="changeAnilistPage(1)"
+                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                            class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT: VOICE ACTORS (New) -->
+            <div id="anilist-tab-va" class="hidden w-full">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl md:text-3xl font-bold text-text-main flex items-center"><span
+                            class="vline"></span>Voice Actors<sup class="text-xs text-primary ml-2">ANILIST</sup></h2>
+                    <div class="relative w-full md:w-64">
+                        <input id="va-search-input" type="text" placeholder="Search Voice Actors..."
+                            class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-2 pl-8 pr-3 w-full focus:outline-none focus:border-primary transition-colors">
+                        <i class="fas fa-search text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+                    </div>
+                </div>
+                <div id="grid-anilist-va" class="results-grid"></div>
+                <div id="pag-anilist-va" class="pagination-controls mt-8 flex justify-center gap-2">
+                    <button onclick="changeAnilistVAPage(-1)"
+                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                            class="fas fa-chevron-left"></i></button>
+                    <span id="anilist-va-page-num" class="px-3 py-1 text-primary font-bold">1</span>
+                    <button onclick="changeAnilistVAPage(1)"
+                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                            class="fas fa-chevron-right"></i></button>
+                </div>
             </div>
         </section>
 
@@ -486,7 +767,7 @@
                             class="w-[180px] hidden md:block md:w-full mx-auto md:mx-0 rounded-md shadow-2xl">
                         <button onclick="router('anime-anilist')"
                             class="mb-4 text-gray-300 hover:text-white block md:hidden flex items-center gap-2 text-sm font-medium"><i
-                                class="fas fa-chevron-left mr-2"></i> Back to Browse</button>
+                                class="fas fa-angles-left mr-2"></i> Back</button>
                         <div class="mb-6 bg-gradient-to-t from-dark-bg to-transparent">
                             <h1 id="anilist-player-title"
                                 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight"></h1>
@@ -562,7 +843,7 @@
                     <div class="flex-1 pt-4 md:pt-16 min-w-0">
                         <button onclick="router('anime-anilist')"
                             class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-sm font-medium"><i
-                                class="fas fa-chevron-left mr-2"></i> Back to Browse</button>
+                                class="fas fa-angles-left mr-2"></i> Back</button>
                         <div class="mb-8 space-y-4">
                             <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
                                 <div
@@ -704,18 +985,26 @@
             lastView: 'home',
             watchlist: JSON.parse(localStorage.getItem('goStreamWatchlist')) || [],
             continueWatching: JSON.parse(localStorage.getItem('goStreamContinueWatching')) || [],
+            bannerInterval: null,
+            bannerItems: [],
+            bannerIndex: 0,
             tmdb: {
                 movies: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '', status: '', year: '' }, data: [] },
                 tv: { page: 1, filters: { sort: 'popularity.desc', genre: '', country: '', status: '', year: '' }, data: [] }
             },
             anilist: {
+                currentTab: 'anime', // anime or va
                 page: 1,
                 filters: { sort: 'TRENDING_DESC', genre: '', country: '', upcoming: '', year: '' },
                 data: [],
                 hero: [],
                 currentAnime: null,
                 currentEp: 1,
-                currentServerIdx: 0
+                currentServerIdx: 0,
+                // Voice Actor State
+                vaPage: 1,
+                vaSearch: '',
+                vaData: []
             }
         };
 
@@ -747,11 +1036,20 @@
             return path.startsWith('http') ? path : BACKDROP_URL + path;
         };
 
+        function stopBannerRotation() {
+            if (appState.bannerInterval) {
+                clearInterval(appState.bannerInterval);
+                appState.bannerInterval = null;
+            }
+        }
+
         function router(viewName) {
             const tmdbFrame = document.getElementById('tmdb-player');
             const aniFrame = document.getElementById('anilist-iframe');
             if (tmdbFrame) tmdbFrame.src = "";
             if (aniFrame) aniFrame.src = "";
+
+            stopBannerRotation();
 
             // List of top-level navigation pages
             const mainViews = ['home', 'movies', 'tv', 'anime-anilist', 'watchlist'];
@@ -798,21 +1096,18 @@
                     break;
                 case 'movies':
                     document.getElementById('view-movies').classList.remove('hidden');
-                    // document.getElementById('shared-banner').classList.remove('hidden');
                     renderFilters('movies');
                     loadTMDBSection('movies', '/discover/movie');
                     break;
                 case 'tv':
                     document.getElementById('view-tv').classList.remove('hidden');
-                    // document.getElementById('shared-banner').classList.remove('hidden');
                     renderFilters('tv');
                     loadTMDBSection('tv', '/discover/tv');
                     break;
                 case 'anime-anilist':
                     document.getElementById('view-anime-anilist').classList.remove('hidden');
-                    // document.getElementById('shared-banner').classList.remove('hidden');
                     renderFilters('anilist');
-                    loadAnilistSection();
+                    switchAnilistTab(appState.anilist.currentTab); // Load current active tab
                     break;
                 case 'watchlist':
                     document.getElementById('view-watchlist').classList.remove('hidden');
@@ -1065,13 +1360,155 @@
 
             const container = document.getElementById('row-trending');
             if (container.innerHTML !== '') return;
-            const trending = await fetchTMDB('/trending/all/day');
-            if (trending) renderTMDBGrid('row-trending', trending.results, null, true);
-            if (trending && trending.results.length > 0) updateSharedBanner(trending.results[0]);
-            const topRated = await fetchTMDB('/movie/top_rated');
+
+            // Fetch TMDB Trending
+            const trendingTMDBPromise = fetchTMDB('/trending/all/day');
+
+            // Fetch Anilist Trending for Banner
+            const anilistQuery = `
+            query {
+                Page(page: 1, perPage: 6) {
+                    media(sort: TRENDING_DESC, type: ANIME, isAdult: false) {
+                        id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
+                    }
+                }
+            }`;
+            const anilistPromise = fetchAnilist(anilistQuery);
+
+            const topRatedPromise = fetchTMDB('/movie/top_rated');
+            const actionPromise = fetchTMDB('/discover/movie', { with_genres: 28 });
+
+            const [trendingTMDB, anilistData, topRated, action] = await Promise.all([
+                trendingTMDBPromise,
+                anilistPromise,
+                topRatedPromise,
+                actionPromise
+            ]);
+
+            // Combine for Banner: Top 5 TMDB + Top 5 Anilist
+            let bannerCandidates = [];
+            if (trendingTMDB && trendingTMDB.results) {
+                renderTMDBGrid('row-trending', trendingTMDB.results, null, true);
+                bannerCandidates = [...bannerCandidates, ...trendingTMDB.results.slice(0, 6)];
+            }
+
+            if (anilistData && anilistData.Page && anilistData.Page.media) {
+                const mappedAnilist = anilistData.Page.media.map(mapAnilistToShared);
+                bannerCandidates = [...bannerCandidates, ...mappedAnilist];
+            }
+
+            // Shuffle once for randomness as requested, but then act as a carousel
+            appState.bannerItems = bannerCandidates.sort(() => 0.5 - Math.random());
+
+            if (appState.bannerItems.length > 0) {
+                appState.bannerIndex = 0;
+                renderBannerIndicators();
+                updateSharedBanner();
+                startBannerRotation();
+            }
+
             if (topRated) renderTMDBGrid('row-top-rated', topRated.results, null, true);
-            const action = await fetchTMDB('/discover/movie', { with_genres: 28 });
             if (action) renderTMDBGrid('row-action', action.results, null, true);
+        }
+
+        function startBannerRotation() {
+            if (appState.bannerInterval) clearInterval(appState.bannerInterval);
+            appState.bannerInterval = setInterval(() => {
+                nextBanner();
+            }, 5000);
+        }
+
+        function nextBanner() {
+            appState.bannerIndex = (appState.bannerIndex + 1) % appState.bannerItems.length;
+            updateSharedBanner();
+            startBannerRotation(); // Reset timer on manual interaction
+        }
+
+        function prevBanner() {
+            appState.bannerIndex = (appState.bannerIndex - 1 + appState.bannerItems.length) % appState.bannerItems.length;
+            updateSharedBanner();
+            startBannerRotation(); // Reset timer
+        }
+
+        function goToBanner(index) {
+            appState.bannerIndex = index;
+            updateSharedBanner();
+            startBannerRotation();
+        }
+
+        function renderBannerIndicators() {
+            const container = document.getElementById('banner-indicators');
+            container.innerHTML = '';
+            appState.bannerItems.forEach((_, idx) => {
+                const dot = document.createElement('div');
+                dot.className = `carousel-indicator ${idx === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToBanner(idx);
+                container.appendChild(dot);
+            });
+        }
+
+        function updateSharedBanner() {
+            const item = appState.bannerItems[appState.bannerIndex];
+            if (!item) return;
+
+            const bgUrl = getBackdropUrl(item.backdrop_path);
+            const container = document.getElementById('banner-bg-container');
+
+            // Background Fade Logic
+            const newBg = document.createElement('div');
+            newBg.className = 'banner-bg-wrapper';
+            newBg.style.backgroundImage = `url(${bgUrl})`;
+            container.appendChild(newBg);
+
+            // Force reflow
+            void newBg.offsetWidth;
+            newBg.classList.add('active');
+
+            // Remove old backgrounds
+            if (container.children.length > 1) {
+                setTimeout(() => {
+                    if (container.children.length > 1) {
+                        container.removeChild(container.firstElementChild);
+                    }
+                }, 800); // Match CSS transition duration
+            }
+
+            const title = item.title || item.name;
+            const desc = item.overview || 'No description available.';
+            const type = item.media_type || 'movie';
+            const safeTitle = title.replace(/'/g, "");
+            const vote = item.vote_average || 0;
+            const date = item.release_date || item.first_air_date || '';
+            const year = date.split('-')[0] || '';
+
+            const contentDiv = document.getElementById('banner-content');
+
+            // Fade out content slightly before changing
+            contentDiv.style.opacity = '0';
+
+            setTimeout(() => {
+                contentDiv.innerHTML = `
+                    <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white line-clamp-2">${title}</h1>
+                    <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
+                    <div class="flex">
+                        <button class="bg-gray-600 md:hover:bg-opacity-60 text-white font-bold py-2 px-5 rounded-l-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
+                            <i class="fas fa-play mr-2"></i> Play Now
+                        </button>
+                        <button id="banner-watchlist-btn-${item.id}" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded-r-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}')">
+                            <i class="material-icons">bookmark_add</i>
+                        </button>
+                    </div>
+                `;
+                contentDiv.style.opacity = '1';
+                updateWatchlistButtonState(item.id, `banner-watchlist-btn-${item.id}`);
+            }, 300); // Short delay for content fade
+
+            // Update Indicators
+            const dots = document.querySelectorAll('.carousel-indicator');
+            dots.forEach((d, i) => {
+                if (i === appState.bannerIndex) d.classList.add('active');
+                else d.classList.remove('active');
+            });
         }
 
         async function loadTMDBSection(key, endpoint, extraParams = {}) {
@@ -1125,9 +1562,9 @@
 
             grid.innerHTML = '';
             if (data && data.results && data.results.length > 0) {
-                const bannerItem = data.results[Math.floor(Math.random() * Math.min(5, data.results.length))];
-                bannerItem.media_type = key === 'movies' ? 'movie' : 'tv';
-                updateSharedBanner(bannerItem);
+                // Banner is now handled separately in loadHomeData for the Home view.
+                // For sub-pages (Movies/TV), we usually don't have a banner, but if we did, we'd update it here.
+                // Since shared-banner is hidden in sub-views per router logic, we skip banner update here.
 
                 await renderTMDBGrid(gridId, data.results, key === 'movies' ? 'movie' : 'tv');
 
@@ -1178,12 +1615,53 @@
             };
         }
 
+        // --- NEW: Tab Switching Logic for Anime Section ---
+        function switchAnilistTab(tab) {
+            appState.anilist.currentTab = tab;
+            const animeTab = document.getElementById('anilist-tab-anime');
+            const vaTab = document.getElementById('anilist-tab-va');
+            const btnAnime = document.getElementById('tab-btn-anime');
+            const btnVa = document.getElementById('tab-btn-va');
+
+            if (tab === 'anime') {
+                animeTab.classList.remove('hidden');
+                vaTab.classList.add('hidden');
+
+                // Active Styles
+                btnAnime.classList.add('text-primary', 'border-b-2', 'border-primary');
+                btnAnime.classList.remove('text-text-muted', 'hover:text-white');
+
+                // Inactive Styles
+                btnVa.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                btnVa.classList.add('text-text-muted', 'hover:text-white');
+
+                // Load Data if empty
+                const grid = document.getElementById('grid-anilist');
+                if (grid.innerHTML === '') loadAnilistSection();
+
+            } else {
+                animeTab.classList.add('hidden');
+                vaTab.classList.remove('hidden');
+
+                // Active Styles
+                btnVa.classList.add('text-primary', 'border-b-2', 'border-primary');
+                btnVa.classList.remove('text-text-muted', 'hover:text-white');
+
+                // Inactive Styles
+                btnAnime.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                btnAnime.classList.add('text-text-muted', 'hover:text-white');
+
+                // Load Data if empty
+                const grid = document.getElementById('grid-anilist-va');
+                if (grid.innerHTML === '') loadAnilistVoiceActors();
+            }
+        }
+
         async function loadAnilistSection() {
             const state = appState.anilist;
             const gridId = 'grid-anilist';
             const grid = document.getElementById(gridId);
 
-            // --- MODIFIED: Added $year variable ---
             const query = `
             query ($page: Int, $sort: [MediaSort], $genre: String, $country: CountryCode, $status: MediaStatus, $year: Int) {
                 Page(page: $page, perPage: 24) {
@@ -1205,19 +1683,80 @@
 
             if (state.filters.genre) vars.genre = state.filters.genre;
             if (state.filters.country) vars.country = state.filters.country;
-            if (state.filters.year) vars.year = parseInt(state.filters.year); // --- ADDED YEAR FILTER ---
+            if (state.filters.year) vars.year = parseInt(state.filters.year);
 
             const data = await fetchAnilist(query, vars);
             if (data && data.Page.media) {
                 state.data = data.Page.media;
                 const mappedData = state.data.map(mapAnilistToShared);
 
-                if (mappedData.length > 0) {
-                    updateSharedBanner(mappedData[Math.floor(Math.random() * mappedData.length)]);
-                }
-
                 renderAnilistGrid(gridId, mappedData);
                 document.getElementById('anilist-page-num').innerText = state.page;
+            }
+        }
+
+        // --- NEW: Voice Actor Loading Logic ---
+        async function loadAnilistVoiceActors() {
+            const gridId = 'grid-anilist-va';
+            const grid = document.getElementById(gridId);
+            const state = appState.anilist;
+
+            const query = `
+            query ($page: Int, $search: String) {
+                Page(page: $page, perPage: 24) {
+                    pageInfo { total perPage currentPage lastPage hasNextPage }
+                    staff(search: $search, sort: [FAVOURITES_DESC]) {
+                        id
+                        name { full }
+                        image { large }
+                        primaryOccupations
+                    }
+                }
+            }`;
+
+            const vars = { page: state.vaPage };
+            if (state.vaSearch && state.vaSearch.trim() !== '') {
+                vars.search = state.vaSearch;
+            }
+
+            const data = await fetchAnilist(query, vars);
+
+            grid.innerHTML = '';
+            if (data && data.Page.staff) {
+                state.vaData = data.Page.staff;
+
+                if (state.vaData.length === 0) {
+                    grid.innerHTML = '<p class="text-gray-500 col-span-full text-center">No voice actors found.</p>';
+                } else {
+                    state.vaData.forEach(staff => {
+                        const imgUrl = staff.image ? staff.image.large : 'https://placehold.co/300x450/333/FFF?text=No+Image';
+                        const occupations = staff.primaryOccupations ? staff.primaryOccupations[0] : 'Voice Actor';
+
+                        // Using createCardHTML adapted for VA
+                        // We use 'actor' type to trigger the round icon logic in standard card creation, 
+                        // but since createCardHTML is strict about layout, we'll manually create a nice card for VAs or reuse.
+                        // Actually, reusing createCardHTML with type 'actor' works well if we tweak the click handler.
+
+                        const card = createCardHTML(
+                            staff.id,
+                            'actor', // Visual style
+                            staff.name.full,
+                            imgUrl,
+                            null, // No rating 
+                            occupations, // Subtext instead of year
+                            '',
+                            false,
+                            null
+                        );
+
+                        // OVERRIDE CLICK for Voice Actor
+                        card.onclick = () => openVoiceActorDetails(staff.id);
+
+                        grid.appendChild(card);
+                    });
+                }
+
+                document.getElementById('anilist-va-page-num').innerText = state.vaPage;
             }
         }
 
@@ -1230,6 +1769,34 @@
                 loadAnilistSection();
             }
         }
+
+        // --- NEW: Voice Actor Pagination ---
+        function changeAnilistVAPage(dir) {
+            const currentPage = parseInt(appState.anilist.vaPage) || 1;
+            const next = currentPage + dir;
+            if (next > 0) {
+                appState.anilist.vaPage = next;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                loadAnilistVoiceActors();
+            }
+        }
+
+        // --- NEW: Voice Actor Search Listener ---
+        const vaSearchInput = document.getElementById('va-search-input');
+
+        vaSearchInput.addEventListener('keydown', (e) => {
+            // Check if the key pressed is 'Enter' (key code 13)
+            if (e.key === 'Enter') {
+                // Prevent the default behavior of the Enter key (like form submission)
+                e.preventDefault();
+
+                // Execute the search function immediately
+                appState.anilist.vaSearch = e.target.value;
+                appState.anilist.vaPage = 1;
+                loadAnilistVoiceActors();
+                vaSearchInput.value = '';
+            }
+        });
 
         // Updated to accept an optional startEpisode
         async function openAnilistPlayer(id, startEpisode = 1) {
@@ -1359,7 +1926,7 @@
                             imgUrl,
                             relVote,
                             relYear,
-                            `<div class="absolute top-2 right-2 bg-primary text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
+                            `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
                             false,
                             null
                         );
@@ -1406,14 +1973,15 @@
                     if (charEdge.voiceActors && charEdge.voiceActors.length > 0) {
                         charEdge.voiceActors.forEach(va => {
                             const el = document.createElement('div');
-                            el.className = "flex flex-col gap-2 min-w-[80px]";
+                            el.className = "flex flex-col gap-2 min-w-[80px] cursor-pointer group";
+                            el.onclick = () => openVoiceActorDetails(va.id);
                             const roleDisplay = charEdge.role.charAt(0).toUpperCase() + charEdge.role.slice(1).toLowerCase();
                             el.innerHTML = `
-                            <div class="aspect-square rounded-full overflow-hidden border border-border-color w-20 h-20 mx-auto">
+                            <div class="aspect-square rounded-full overflow-hidden border border-border-color w-20 h-20 mx-auto group-hover:border-primary transition-colors">
                                 <img src="${va.image.medium}" class="w-full h-full object-cover" alt="Voice Actor Image">
                             </div>
                             <div class="text-center">
-                                <p class="text-xs text-text-main font-semibold truncate" title="${va.name.full}">${va.name.full}</p>
+                                <p class="text-xs text-text-main font-semibold truncate group-hover:text-primary transition-colors" title="${va.name.full}">${va.name.full}</p>
                                 <p class="text-[10px] text-text-muted truncate" title="${charEdge.node.name.userPreferred} (${roleDisplay})">
                                     ${charEdge.node.name.userPreferred} | ${roleDisplay}
                                 </p>
@@ -1480,7 +2048,7 @@
 
                 if (anime.status === 'RELEASING' && i === maxEps) {
                     const badge = document.createElement('sup');
-                    badge.className = "absolute -top-0 -right-0 text-[9px] inline-block text-primary font-bold bg-black rounded z-10 shadow-sm";
+                    badge.className = "absolute -top-0.5 -right-0.5 text-[9px] text-primary font-bold bg-black rounded z-10 shadow-sm";
                     badge.innerText = "NEW";
                     wrapper.appendChild(badge);
                 }
@@ -1583,36 +2151,6 @@
         /**
          * RENDERERS
          */
-        function updateSharedBanner(item) {
-            const banner = document.getElementById('shared-banner');
-            const bgUrl = getBackdropUrl(item.backdrop_path);
-
-            banner.style.backgroundImage = `url(${bgUrl})`;
-            const title = item.title || item.name;
-            const desc = item.overview || 'No description available.';
-            const type = item.media_type || 'movie';
-
-            // Extract safe values for watchlist
-            const safeTitle = title.replace(/'/g, "");
-            const vote = item.vote_average || 0;
-            const date = item.release_date || item.first_air_date || '';
-            const year = date.split('-')[0] || '';
-
-            document.getElementById('banner-content').innerHTML = `
-                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white">${title}</h1>
-                <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
-                <div class="flex">
-                    <button class="bg-gray-600 md:hover:bg-opacity-60 text-white font-bold py-2 px-5 rounded-l-md transition-colors" onclick="openDetailsWrapper(${item.id}, '${type}')">
-                        <i class="fas fa-play mr-2"></i> Play Now
-                    </button>
-                    <button id="banner-watchlist-btn-${item.id}" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded-r-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}')">
-                        <i class="material-icons">bookmark_add</i>
-                    </button>
-                </div>
-            `;
-            updateWatchlistButtonState(item.id, `banner-watchlist-btn-${item.id}`);
-        }
-
         function openDetailsWrapper(id, type) {
             if (type === 'anime') openAnilistPlayer(id);
             else openDetails(id, type);
@@ -1678,7 +2216,7 @@
                     displayStatus = releaseDate > now ? 'Upcoming' : 'Released';
                 }
 
-                const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-primary text-black text-[10px] px-2 py-1 font-bold rounded uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
+                const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-card-bg text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             }
@@ -1703,7 +2241,7 @@
                     posterUrl = getPosterUrl(item.poster_path);
                 }
 
-                const statusBadge = item.status ? `<div class="absolute top-1.5 right-1.5 bg-primary text-black text-[10px] px-2 py-1 font-bold rounded uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
+                const statusBadge = item.status ? `<div class="absolute top-1.5 right-1.5 bg-card-bg text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             });
@@ -1726,7 +2264,7 @@
             <div class="${aspectClass} overflow-hidden relative">
                 <img src="${posterUrl}" class="w-full h-full object-cover">
                 ${statusBadge || ''}
-                <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-xs px-2 py-1 rounded font-bold z-10">
+                <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-xs px-2 py-1 border border-primary rounded font-bold z-10">
                     ${type === 'actor' ? '<i class="fas fa-user"></i>' : voteDisplay}
                 </div>
                 <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
@@ -1736,7 +2274,7 @@
                     <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors" title="${title}">${title}</h3>
                     <div class="flex justify-between items-center text-xs text-text-muted mt-1">
                         <span>${year}</span>
-                        <span class="uppercase border border-border-color px-1 rounded text-[10px]">${type}</span>
+                        <span class="uppercase border border-border-color px-1 rounded text-[10px] truncate max-w-[80px]">${type}</span>
                     </div>
                 </div>
             </div>
@@ -1837,7 +2375,7 @@
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
                     <div class="flex flex-col md:flex-row gap-8">
                         <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
-                            <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-chevron-left mr-2"></i> Back to Browse</button>
+                            <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
                             <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded-md shadow-2xl">
                             <div class="mb-6">
                                 <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
@@ -1868,7 +2406,7 @@
                             </div>
                         </div>
                         <div class="flex-1 pt-4 md:pt-16 min-w-0">
-                            <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-chevron-left mr-2"></i> Back to Browse</button>
+                            <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
                             <div class="mb-8 space-y-4">
                                 <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
                                     <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
@@ -2030,9 +2568,10 @@
             container.innerHTML = '';
             loader.show();
 
-            const [person, credits] = await Promise.all([
+            const [person, credits, externalIds] = await Promise.all([
                 fetchTMDB(`/person/${id}`),
-                fetchTMDB(`/person/${id}/combined_credits`)
+                fetchTMDB(`/person/${id}/combined_credits`),
+                fetchTMDB(`/person/${id}/external_ids`)
             ]);
 
             if (!person) {
@@ -2050,7 +2589,7 @@
             const displayBirthday = birthday
                 ? new Date(birthday).toLocaleDateString('en-US', {
                     year: 'numeric',
-                    month: 'long',
+                    month: 'short',
                     day: 'numeric'
                 })
                 : 'N/A';
@@ -2069,21 +2608,53 @@
                 }
             });
 
+            // Social Media Links - UPDATED DESIGN
+            let socialLinksHtml = '';
+
+            // Changed 'h-50 w-50' to 'h-10 w-10' for a standard size, adjust as needed.
+            // Changed 'rounded' to 'rounded-full' for a circular shape.
+            const socialBtnClass = 'text-white border-2 border-border-color hover:border-primary text-center mt-2 inline-flex items-center justify-center m-0.5 px-3 py-2 h-10 w-10 rounded-full bg-card-bg text-xs font-bold transition-colors';
+
+            if (externalIds) {
+                if (externalIds.imdb_id) {
+                    // Removed redundant classes within the specific link definitions
+                    socialLinksHtml += `<a href="https://www.imdb.com/name/${externalIds.imdb_id}" target="_blank" class="${socialBtnClass}"><i class="fab fa-imdb text-lg"></i></a>`;
+                }
+                if (externalIds.facebook_id) {
+                    socialLinksHtml += `<a href="https://facebook.com/${externalIds.facebook_id}" target="_blank" class="${socialBtnClass}"><i class="fab fa-facebook text-lg"></i></a>`;
+                }
+                if (externalIds.instagram_id) {
+                    socialLinksHtml += `<a href="https://instagram.com/${externalIds.instagram_id}" target="_blank" class="${socialBtnClass}"><i class="fab fa-instagram text-lg"></i></a>`;
+                }
+                if (externalIds.twitter_id) {
+                    socialLinksHtml += `<a href="https://twitter.com/${externalIds.twitter_id}" target="_blank" class="${socialBtnClass}"><i class="fab fa-twitter text-lg"></i></a>`;
+                }
+                if (externalIds.tiktok_id) {
+                    socialLinksHtml += `<a href="https://tiktok.com/@${externalIds.tiktok_id}" target="_blank" class="${socialBtnClass}"><i class="fab fa-tiktok text-lg"></i></a>`;
+                }
+                if (externalIds.youtube_id) {
+                    // You didn't finish the last URL, but the class application is correct.
+                    socialLinksHtml += `<a href="https://youtube.com/${externalIds.youtube_id}" target="_blank" class="${socialBtnClass}"><i class="fab fa-youtube text-lg"></i></a>`;
+                }
+            }
+
             container.innerHTML = `
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-chevron-left mr-2"></i> Back</button>
+                    <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
                     
                     <div class="flex flex-col md:flex-row gap-8">
                         <div class="w-full md:w-[300px] flex-shrink-0">
                             <img src="${profile}" class="w-[200px] md:w-full mx-auto md:mx-0 rounded-lg shadow-2xl border border-border-color mb-6">
-                            <h1 class="text-3xl md:text-5xl text-center block md:hidden font-extrabold text-white mb-6">${name}</h1>
+                            <h1 class="text-3xl md:text-5xl text-center block md:hidden font-extrabold text-white">${name}</h1>
+                                <div class="gap-2 mb-3 text-center text-primary">${socialLinksHtml || '<span class="text-xs text-text-muted">None social accounts available</span>'}</div>
                             <div class="bg-card-bg p-5 rounded-lg border border-border-color space-y-4">
                                 <h3 class="font-bold text-lg text-white border-b border-border-color pb-2">Personal Info</h3>
+                                
                                 <div><span class="text-text-muted text-xs block">Known For</span><span class="text-sm font-medium">${knownf}</span></div>
                                 <div><span class="text-text-muted text-xs block">Gender</span><span class="text-sm font-medium">${person.gender === 1 ? 'Female' : 'Male'}</span></div>
                                 <div><span class="text-text-muted text-xs block">Birthday</span><span class="text-sm font-medium">${displayBirthday}</span></div>
                                 <div><span class="text-text-muted text-xs block">Place of Birth</span><span class="text-sm font-medium">${place}</span></div>
-                                <div><span class="text-text-muted text-xs block">Also known as</span><span class="text-sm font-medium text-primary">${knownas}</span></div>
+                                <div><span class="text-text-muted text-xs block">Also known as</span><span class="text-sm font-medium">${knownas}</span></div>
                             </div>
                         </div>
                         
@@ -2106,6 +2677,135 @@
 
             if (uniqueCredits.length > 0) {
                 renderTMDBGrid('actor-credits-grid', uniqueCredits, null, false, true);
+            } else {
+                document.getElementById('actor-credits-grid').innerHTML = '<p class="text-gray-500">No known credits.</p>';
+            }
+
+            loader.hide();
+        }
+
+        async function openVoiceActorDetails(id) {
+            router('actor');
+            const container = document.getElementById('actor-content');
+            container.innerHTML = '';
+            loader.show();
+
+            const query = `query ($id: Int) {
+                Staff(id: $id) {
+                    id
+                    name { full native }
+                    image { large }
+                    description
+                    gender
+                    dateOfBirth { year month day }
+                    homeTown
+                    age
+                    primaryOccupations
+                    characterMedia(page: 1, perPage: 50, sort: POPULARITY_DESC) {
+                        nodes {
+                            id
+                            title { romaji english }
+                            coverImage { extraLarge }
+                            format
+                            averageScore
+                            status
+                            seasonYear
+                            startDate { year }
+                        }
+                    }
+                }
+            }`;
+
+            const data = await fetchAnilist(query, { id });
+            if (!data || !data.Staff) {
+                container.innerHTML = '<div class="text-center text-text-muted mt-20">Error loading voice actor details.</div>';
+                loader.hide();
+                return;
+            }
+
+            const staff = data.Staff;
+            const profile = staff.image ? staff.image.large : 'https://placehold.co/300x450/333/FFF?text=No+Image';
+            const name = staff.name.full;
+            const nativeName = staff.name.native || '';
+
+            // --- PARSE BIO LINKS ---
+            let bio = staff.description || 'No biography available.';
+
+            // Replace markdown links [Label](URL) with Icon + Label
+            bio = bio.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, url) => {
+                let iconClass = 'fas fa-link';
+                const lowerUrl = url.toLowerCase();
+
+                if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) iconClass = 'fab fa-twitter';
+                else if (lowerUrl.includes('instagram.com')) iconClass = 'fab fa-instagram';
+                else if (lowerUrl.includes('facebook.com')) iconClass = 'fab fa-facebook';
+                else if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) iconClass = 'fab fa-youtube';
+                else if (lowerUrl.includes('wikipedia')) iconClass = 'fab fa-wikipedia-w';
+                else if (lowerUrl.includes('tiktok.com')) iconClass = 'fab fa-tiktok';
+                else if (lowerUrl.includes('ameblo.jp') || lowerUrl.includes('blog')) iconClass = 'fas fa-blog';
+                else if (lowerUrl.includes('website')) iconClass = 'fas fa-globe';
+
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-white inline-flex items-center gap-1 mx-1 font-semibold transition-colors"><i class="${iconClass}"></i> ${label}</a>`;
+            });
+
+            // Basic Markdown formatting
+            bio = bio.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+                .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+            let birthday = 'N/A';
+            if (staff.dateOfBirth && staff.dateOfBirth.year) {
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const m = staff.dateOfBirth.month ? months[staff.dateOfBirth.month - 1] : '';
+                const d = staff.dateOfBirth.day || '';
+                const y = staff.dateOfBirth.year || '';
+                birthday = `${m} ${d}, ${y}`.replace(/^ ,/, '').trim();
+            }
+
+            const place = staff.homeTown || 'N/A';
+            const occupations = staff.primaryOccupations && staff.primaryOccupations.length > 0
+                ? staff.primaryOccupations.join(', ')
+                : 'Voice Actor';
+
+            container.innerHTML = `
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
+                    
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="w-full md:w-[300px] flex-shrink-0">
+                            <img src="${profile}" class="w-[200px] md:w-full mx-auto md:mx-0 rounded-lg shadow-2xl border border-border-color mb-6">
+                            <h1 class="text-3xl md:text-5xl block md:hidden text-center font-extrabold text-white mb-6">${name}</h1>
+                            
+                            <div class="bg-card-bg p-5 rounded-lg border border-border-color space-y-4">
+                                <h3 class="font-bold text-lg text-white border-b border-border-color pb-2">Personal Info</h3>
+                                <div><span class="text-text-muted text-xs block">Occupations</span><span class="text-sm font-medium">${occupations}</span></div>
+                                <div><span class="text-text-muted text-xs block">Gender</span><span class="text-sm font-medium">${staff.gender || 'Unknown'}</span></div>
+                                <div><span class="text-text-muted text-xs block">Birthday</span><span class="text-sm font-medium">${birthday}</span></div>
+                                <div><span class="text-text-muted text-xs block">Hometown</span><span class="text-sm font-medium">${place}</span></div>
+                                ${nativeName ? `<div><span class="text-text-muted text-xs block">Native Name</span><span class="text-sm font-medium">${nativeName}</span></div>` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <h1 class="text-3xl md:text-5xl hidden md:block font-extrabold text-white mb-6">${name}</h1>
+                            
+                            <div class="mb-8">
+                                <h3 class="text-xl font-bold text-white mb-3">Biography</h3>
+                                <div class="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto pr-2 custom-scroll">${bio}</div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-4">Known For (Voice Roles)</h3>
+                                <div id="actor-credits-grid" class="results-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (staff.characterMedia && staff.characterMedia.nodes && staff.characterMedia.nodes.length > 0) {
+                const mappedMedia = staff.characterMedia.nodes.map(mapAnilistToShared);
+                renderAnilistGrid('actor-credits-grid', mappedMedia, false, false);
             } else {
                 document.getElementById('actor-credits-grid').innerHTML = '<p class="text-gray-500">No known credits.</p>';
             }
@@ -2231,6 +2931,66 @@
         document.addEventListener('deviceready', onDeviceReady, false);
 
         /**
+         * INSTALL & FAQ LOGIC
+         */
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            // Update UI to notify the user they can add to home screen
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            const btn = document.getElementById('nav-install-btn');
+            if (btn) btn.classList.remove('hidden');
+        }
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the A2HS prompt');
+                    } else {
+                        console.log('User dismissed the A2HS prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // If no prompt available (iOS or already installed or desktop), show instructions
+                toggleInstallModal();
+            }
+        }
+
+        function toggleInstallModal() {
+            const modal = document.getElementById('install-modal');
+            modal.classList.toggle('open');
+        }
+
+        function toggleFAQ() {
+            const modal = document.getElementById('faq-modal');
+            modal.classList.toggle('open');
+        }
+
+        function toggleFAQs() {
+            const modal = document.getElementById('faqs-modal');
+            modal.classList.toggle('open');
+        }
+
+        // Close Modals on Outside Click
+        window.onclick = function (event) {
+            const faqModal = document.getElementById('faq-modal');
+            const faqsModal = document.getElementById('faqs-modal');
+            const installModal = document.getElementById('install-modal');
+            if (event.target === faqModal) toggleFAQ();
+            if (event.target === faqsModal) toggleFAQs();
+            if (event.target === installModal) toggleInstallModal();
+        }
+
+        /**
          * ANTI-INSPECT DETECTION
          * Attempts to detect devtools via key shortcuts and right-click.
          * Redirects to blank page if detected.
@@ -2281,4 +3041,3 @@
 </body>
 
 </html>
-
