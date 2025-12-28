@@ -603,7 +603,7 @@
 
     <main id="main-content" class="pt-16 pb-20 min-h-screen">
         <section id="shared-banner"
-            class="relative h-[45vh] md:h-[75vh] flex items-end p-0 bg-dark-bg transition-all duration-500 hidden overflow-hidden group">
+            class="relative h-[45vh] md:h-[65vh] flex items-end p-0 bg-dark-bg transition-all duration-500 hidden overflow-hidden group">
 
             <!-- Banner Background Layers -->
             <div id="banner-bg-container" class="absolute inset-0">
@@ -1098,11 +1098,13 @@
                     break;
                 case 'movies':
                     document.getElementById('view-movies').classList.remove('hidden');
+                    appState.tmdb.movies.page = 1; // Reset pagination
                     renderFilters('movies');
                     loadTMDBSection('movies', '/discover/movie');
                     break;
                 case 'tv':
                     document.getElementById('view-tv').classList.remove('hidden');
+                    appState.tmdb.tv.page = 1; // Reset pagination
                     renderFilters('tv');
                     loadTMDBSection('tv', '/discover/tv');
                     break;
@@ -1637,9 +1639,9 @@
                 btnVa.classList.remove('text-primary', 'border-b-2', 'border-primary');
                 btnVa.classList.add('text-text-muted', 'hover:text-white');
 
-                // Load Data if empty
-                const grid = document.getElementById('grid-anilist');
-                if (grid.innerHTML === '') loadAnilistSection();
+                // Reset Pagination & Load Data
+                appState.anilist.page = 1;
+                loadAnilistSection();
 
             } else {
                 animeTab.classList.add('hidden');
@@ -1653,9 +1655,9 @@
                 btnAnime.classList.remove('text-primary', 'border-b-2', 'border-primary');
                 btnAnime.classList.add('text-text-muted', 'hover:text-white');
 
-                // Load Data if empty
-                const grid = document.getElementById('grid-anilist-va');
-                if (grid.innerHTML === '') loadAnilistVoiceActors();
+                // Reset Pagination & Load Data
+                appState.anilist.vaPage = 1;
+                loadAnilistVoiceActors();
             }
         }
 
@@ -2428,19 +2430,19 @@
                                 <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
                                     <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
                                         <div class="flex items-center gap-2">
-                                            <span class="text-primary font-bold"><i class="fas fa-play-circle mr-2"></i>${type === 'tv' ? `<span id="tv-player-info">Season${startSeason} Episode${startEpisode}</span>` : ''} </span>
-                                            
+                                            <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
+                                            ${type === 'tv' ? `<span id="tv-player-info" class="text-xs text-text-muted border border-border-color rounded px-2 py-0.5">S${startSeason} E${startEpisode}</span>` : ''}
                                         </div>
                                         <div class="flex gap-2" id="server-buttons"></div>
                                     </div>
                                     <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
+                                </div>
                                 ${type === 'tv' ? `
                                 <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 rounded-b-lg border-x border-b">
                                     <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
                                     <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
                                 </div>
                                 ` : ''}
-                                </div>
                             </div>
 
                             <!-- TV SHOW SEASONS & EPISODES CONTAINER -->
@@ -2577,7 +2579,7 @@
                 const loadSeasonData = async (seasonNum) => {
                     season = seasonNum;
                     document.getElementById('tv-season-title').innerText = `Season ${seasonNum}`;
-                    if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`;
+                    if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} E${ep}`;
 
                     // Update Seasons List (exclude current)
                     renderSeasonsList(details.seasons, seasonNum);
@@ -2606,7 +2608,7 @@
                             btn.onclick = () => {
                                 ep = e.episode_number;
                                 // Update player info text
-                                if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} - Episode ${ep}`;
+                                if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} E${ep}`;
                                 
                                 // Update button styles in grid
                                 Array.from(epGrid.children).forEach(child => {
@@ -3157,4 +3159,3 @@
 </body>
 
 </html>
-
