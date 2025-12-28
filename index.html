@@ -846,7 +846,7 @@
                             class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-sm font-medium"><i
                                 class="fas fa-angles-left mr-2"></i> Back</button>
                         <div class="mb-8 space-y-4">
-                            <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
+                            <div class="rounded overflow-hidden border border-border-color bg-black shadow-xl">
                                 <div
                                     class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
                                     <div class="flex items-center gap-2 text-primary font-bold"><i
@@ -2427,28 +2427,29 @@
                         <div class="flex-1 pt-4 md:pt-16 min-w-0">
                             <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
                             <div class="mb-8 space-y-4">
-                                <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
+                                <div class="rounded overflow-hidden border border-border-color bg-black shadow-xl">
                                     <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
                                         <div class="flex items-center gap-2">
-                                            <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
-                                            ${type === 'tv' ? `<span id="tv-player-info" class="text-xs text-text-muted border border-border-color rounded px-2 py-0.5">S${startSeason} E${startEpisode}</span>` : ''}
+                                            <span class="text-primary font-bold"><i class="fas fa-play-circle mr-2"></i> ${type === 'tv' ? `<span id="tv-player-info">S${startSeason} E${startEpisode}</span>` : ''}</span>
+                                            
                                         </div>
                                         <div class="flex gap-2" id="server-buttons"></div>
                                     </div>
                                     <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
-                                </div>
                                 ${type === 'tv' ? `
-                                <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 rounded-b-lg border-x border-b">
+                                <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 border-x border-b">
                                     <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
                                     <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
                                 </div>
                                 ` : ''}
+                                </div>
                             </div>
 
                             <!-- TV SHOW SEASONS & EPISODES CONTAINER -->
                              ${type === 'tv' ? `
                                 <div class="mb-8">
-                                    <h3 class="text-lg font-bold text-text-main mb-3">Episodes <span id="tv-season-title" class="text-sm font-normal text-text-muted ml-2">Season ${startSeason}</span></h3>
+                                    <h2 id="tv-season-title" class="text-lg hidden font-normal text-text-muted">Season ${startSeason}</h2>
+                                    <h3 class="text-lg font-bold text-text-main mb-3">Episodes </h3>
                                     <div id="tv-episodes-grid" class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto custom-scroll pr-2"></div>
                                 </div>
                                 
@@ -2579,7 +2580,7 @@
                 const loadSeasonData = async (seasonNum) => {
                     season = seasonNum;
                     document.getElementById('tv-season-title').innerText = `Season ${seasonNum}`;
-                    if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} E${ep}`;
+                    if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`;
 
                     // Update Seasons List (exclude current)
                     renderSeasonsList(details.seasons, seasonNum);
@@ -2608,7 +2609,7 @@
                             btn.onclick = () => {
                                 ep = e.episode_number;
                                 // Update player info text
-                                if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} E${ep}`;
+                                if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} - Episode ${ep}`;
                                 
                                 // Update button styles in grid
                                 Array.from(epGrid.children).forEach(child => {
