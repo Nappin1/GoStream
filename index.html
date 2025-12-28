@@ -764,7 +764,7 @@
                 <div class="flex flex-col md:flex-row gap-8">
                     <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
                         <img id="anilist-info-img" src=""
-                            class="w-[180px] hidden md:block md:w-full mx-auto md:mx-0 rounded-md shadow-2xl">
+                            class="w-[180px] hidden md:block md:w-full mx-auto md:mx-0 rounded shadow-2xl">
                         <button onclick="router('anime-anilist')"
                             class="mb-4 text-gray-300 hover:text-white block md:hidden flex items-center gap-2 text-sm font-medium"><i
                                 class="fas fa-angles-left mr-2"></i> Back</button>
@@ -936,7 +936,8 @@
 
         const ANIME_SOURCES = [
             { name: '1', url: (id, ep) => `https://vidsrc.cc/v2/embed/anime/ani${id}/${ep}/sub` },
-            { name: '2', url: (id, ep) => `https://vidsrc.icu/embed/anime/${id}/${ep}/0` }
+            { name: '2', url: (id, ep) => `https://vidsrc.icu/embed/anime/${id}/${ep}/0` },
+            { name: '3', url: (id, ep) => `https://vidnest.fun/animepahe/${id}/${ep}/SUB` }
         ];
 
         // Constants for Filters
@@ -1173,7 +1174,7 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = 'movie-card cursor-pointer relative group';
+                card.className = 'movie-card cursor-pointer rounded relative group';
 
                 let badge = '';
                 if (item.type === 'tv' && item.season) {
@@ -2216,7 +2217,7 @@
                     displayStatus = releaseDate > now ? 'Upcoming' : 'Released';
                 }
 
-                const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-card-bg text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
+                const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             }
@@ -2241,46 +2242,60 @@
                     posterUrl = getPosterUrl(item.poster_path);
                 }
 
-                const statusBadge = item.status ? `<div class="absolute top-1.5 right-1.5 bg-card-bg text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
+                const statusBadge = item.status ? `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             });
         }
 
-        function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview) {
-
-            // --- STANDARD GRID LOGIC ---
+        function createCardHTML( id,type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview ) {
             const card = document.createElement('div');
             const widthClass = isHorizontal ? 'landscape-card' : '';
-            card.className = `movie-card cursor-pointer relative group ${widthClass}`;
+            card.className = `movie-card rounded cursor-pointer relative group ${widthClass}`;
 
-            // --- MODIFIED: Switch aspect ratio class based on isHorizontal flag ---
             const aspectClass = isHorizontal ? 'aspect-video' : 'aspect-[2/3]';
 
-            // Format vote if it's a number, handles person popularity too (loosely)
-            const voteDisplay = typeof vote === 'number' ? vote.toFixed(1) : 'NR';
+            // ✅ Normalize vote (handles numbers & numeric strings)
+            const numericVote = vote !== null && vote !== undefined && !isNaN(vote) ? Number(vote) : null;
+
+            // ✅ Display logic
+            const voteDisplay =
+                numericVote !== null && numericVote > 0 ? numericVote.toFixed(1) : 'NR';
 
             card.innerHTML = `
-            <div class="${aspectClass} overflow-hidden relative">
+                <div class="${aspectClass} overflow-hidden relative">
                 <img src="${posterUrl}" class="w-full h-full object-cover">
+
                 ${statusBadge || ''}
-                <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-xs px-2 py-1 border border-primary rounded font-bold z-10">
-                    ${type === 'actor' ? '<i class="fas fa-user"></i>' : voteDisplay}
-                </div>
+
+                ${ type !== 'actor' ? ` <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10 flex items-center gap-1">
+                    ${type === 'season' ? '' : ''} ${voteDisplay} </div> `  : `
+                <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10">
+                    <i class="fas fa-user"></i>
+                </div> ` }
+
                 <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
-                    <i class="mdi ${type === 'actor' ? 'mdi-account-search' : 'mdi-play-circle'} text-primary text-5xl drop-shadow-lg"></i>
+                    <i class="mdi ${
+                    type === 'actor'
+                        ? 'mdi-account-search'
+                        : 'mdi-play-circle'
+                } text-primary text-5xl drop-shadow-lg"></i>
                 </div>
+
                 <div class="absolute bottom-0 left-0 w-full p-3 card-info">
-                    <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors" title="${title}">${title}</h3>
+                    <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors" title="${title}">
+                        ${title}
+                    </h3>
                     <div class="flex justify-between items-center text-xs text-text-muted mt-1">
-                        <span>${year}</span>
-                        <span class="uppercase border border-border-color px-1 rounded text-[10px] truncate max-w-[80px]">${type}</span>
+                        <span>${year || ''}</span>
+                        <span class="uppercase border border-border-color px-1 rounded text-[10px] truncate max-w-[80px]">
+                        ${type}
+                        </span>
                     </div>
                 </div>
-            </div>
-            
-        `;
-            card.title = `${title}`;
+            </div> `;
+
+            card.title = title;
             card.onclick = () => openDetailsWrapper(id, type);
             return card;
         }
@@ -2310,6 +2325,7 @@
             container.append(prev, pageSpan, next);
         }
 
+        // Updated openDetails to accept season/episode args for history resume
         // Updated openDetails to accept season/episode args for history resume
         async function openDetails(id, type, startSeason = 1, startEpisode = 1) {
             router('details');
@@ -2376,7 +2392,7 @@
                     <div class="flex flex-col md:flex-row gap-8">
                         <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
                             <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
-                            <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded-md shadow-2xl">
+                            <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded shadow-2xl">
                             <div class="mb-6">
                                 <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
                                 <p class="text-gray-400 italic text-sm mb-4">${tagline}</p>
@@ -2410,13 +2426,36 @@
                             <div class="mb-8 space-y-4">
                                 <div class="rounded-lg overflow-hidden border border-border-color bg-black shadow-xl">
                                     <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
-                                        <span class="text-primary font-bold"><i class="fas fa-play-circle"></i> Player</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-primary font-bold"><i class="fas fa-play-circle mr-2"></i>${type === 'tv' ? `<span id="tv-player-info">Season${startSeason} Episode${startEpisode}</span>` : ''} </span>
+                                            
+                                        </div>
                                         <div class="flex gap-2" id="server-buttons"></div>
                                     </div>
-                                    ${type === 'tv' ? `<div class="p-3 bg-nav-bg flex gap-4 border-b border-border-color"><select id="season-select" class="bg-input-bg text-text-main p-2 rounded text-sm w-full outline-none border border-border-color cursor-pointer"></select><select id="ep-select" class="bg-input-bg text-text-main p-2 rounded text-sm w-full outline-none border border-border-color cursor-pointer"></select></div>` : ''}
                                     <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
+                                ${type === 'tv' ? `
+                                <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 rounded-b-lg border-x border-b">
+                                    <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
+                                    <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
+                                </div>
+                                ` : ''}
                                 </div>
                             </div>
+
+                            <!-- TV SHOW SEASONS & EPISODES CONTAINER -->
+                             ${type === 'tv' ? `
+                                <div class="mb-8">
+                                    <h3 class="text-lg font-bold text-text-main mb-3">Episodes <span id="tv-season-title" class="text-sm font-normal text-text-muted ml-2">Season ${startSeason}</span></h3>
+                                    <div id="tv-episodes-grid" class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto custom-scroll pr-2"></div>
+                                </div>
+                                
+                                <div id="tv-seasons-container" class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
+                                    <h4 class="text-lg font-bold text-text-main mb-3 border-b border-border-color">Other Seasons</h4>
+                                    <div id="tv-seasons-list" class="horizontal-scroll-container p-2"></div>
+                                </div>
+                             ` : ''}
+
+
                             <div id="tmdb-collection-container" class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color ${collectionData ? '' : 'hidden'}">
                                 <h4 class="text-lg font-bold text-text-main mb-3 border-b border-border-color">${collectionData ? collectionData.name : 'Relations'}</h4>
                                 <div id="tmdb-collection-list" class="horizontal-scroll-container p-2"></div>
@@ -2430,6 +2469,30 @@
             `;
 
             updateWatchlistButtonState(id, 'tmdb-watchlist-btn');
+
+            // --- TV Episode Navigation Logic ---
+            if (type === 'tv') {
+                const changeTvEpisode = (dir) => {
+                    const nextEp = ep + dir;
+                    const grid = document.getElementById('tv-episodes-grid');
+                    if (!grid) return;
+                    
+                    // Find the button corresponding to the next episode
+                    const buttons = grid.querySelectorAll('button');
+                    for (let btn of buttons) {
+                        if (parseInt(btn.innerText) === nextEp) {
+                            btn.click();
+                            // Optional: Scroll the button into view inside the grid
+                            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                            return;
+                        }
+                    }
+                };
+
+                document.getElementById('btn-tv-prev').onclick = () => changeTvEpisode(-1);
+                document.getElementById('btn-tv-next').onclick = () => changeTvEpisode(1);
+            }
+            // -----------------------------------
 
             const recContainer = document.getElementById('tmdb-recommendations');
             const recTitle = document.getElementById('tmdb-rec-title');
@@ -2481,82 +2544,134 @@
             const serverContainer = document.getElementById('server-buttons');
             const SOURCES = type === 'movie' ? MOVIE_SOURCES : TV_SOURCES;
 
-            SOURCES.forEach((src, idx) => {
-                const btn = document.createElement('button');
-                btn.innerHTML = `<i class="fas fa-server mr-1"></i> ${src.name}`;
-                btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === 0 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
-                btn.onclick = () => {
-                    Array.from(serverContainer.children).forEach(b => {
-                        b.className = 'px-3 py-1 rounded text-xs font-bold bg-input-bg text-text-muted hover:text-white transition-colors';
-                    });
-                    btn.className = 'px-3 py-1 rounded-sm text-xs font-bold bg-primary text-black transition-colors';
-                    updatePlayerSource(src, id, type, season, ep, details.poster_path, title, details.backdrop_path);
-                }
-                serverContainer.appendChild(btn);
-            });
+            // Setup Server Buttons
+            const renderServerButtons = () => {
+                 serverContainer.innerHTML = '';
+                 SOURCES.forEach((src, idx) => {
+                    const btn = document.createElement('button');
+                    btn.innerHTML = `<i class="fas fa-server mr-1"></i> ${src.name}`;
+                    // Use a generic 'active' class check logic if needed, but simple toggle works
+                    // We default to idx 0 active on load
+                    const isActive = (iframe.src.includes(src.name) || idx === 0 && iframe.src === ""); 
+                    btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === 0 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
+                    
+                    btn.onclick = () => {
+                        Array.from(serverContainer.children).forEach(b => {
+                            b.className = 'px-3 py-1 rounded text-xs font-bold bg-input-bg text-text-muted hover:text-white transition-colors';
+                        });
+                        btn.className = 'px-3 py-1 rounded-sm text-xs font-bold bg-primary text-black transition-colors';
+                        updatePlayerSource(src, id, type, season, ep, details.poster_path, title, details.backdrop_path);
+                    }
+                    serverContainer.appendChild(btn);
+                });
+            }
+
+            const iframe = document.getElementById('tmdb-player');
+            renderServerButtons(); // Initial render
 
             if (type === 'tv') {
-                const sSelect = document.getElementById('season-select');
-                const eSelect = document.getElementById('ep-select');
+                // TV SHOW SPECIFIC LOGIC
+                
+                // 1. Fetch episodes for current season (startSeason)
+                const loadSeasonData = async (seasonNum) => {
+                    season = seasonNum;
+                    document.getElementById('tv-season-title').innerText = `Season ${seasonNum}`;
+                    if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`;
 
-                details.seasons.forEach(s => {
-                    if (s.season_number > 0) {
-                        const opt = document.createElement('option');
-                        opt.value = s.season_number;
-                        opt.text = s.name;
-                        sSelect.add(opt);
-                    }
-                });
+                    // Update Seasons List (exclude current)
+                    renderSeasonsList(details.seasons, seasonNum);
 
-                const updateEps = async () => {
                     loader.show();
-                    season = sSelect.value;
-                    const seasonData = await fetchTMDB(`/tv/${id}/season/${season}`);
-                    eSelect.innerHTML = '';
-                    if (seasonData && seasonData.episodes) {
-                        const today = new Date();
-                        const validEps = seasonData.episodes.filter(e => {
-                            if (!e.air_date) return false;
-                            return new Date(e.air_date) <= today;
-                        });
-                        if (validEps.length === 0) {
-                            eSelect.innerHTML = '<option>No aired episodes</option>';
-                        } else {
-                            validEps.forEach(e => {
-                                const opt = document.createElement('option');
-                                opt.value = e.episode_number;
-                                opt.text = `Episode ${e.episode_number}: ${e.name}`;
-                                eSelect.add(opt);
-                            });
-                        }
-                    } else {
-                        eSelect.innerHTML = '<option>Error loading episodes</option>';
-                    }
+                    const seasonData = await fetchTMDB(`/tv/${id}/season/${seasonNum}`);
                     loader.hide();
 
-                    // Set specific episode if provided, otherwise default to first
-                    if (eSelect.options.length > 0) {
-                        // If the requested episode exists in this season, select it
-                        const optionExists = [...eSelect.options].some(o => o.value == startEpisode);
-                        if (season == startSeason && optionExists) {
-                            eSelect.value = startEpisode;
-                            ep = startEpisode;
-                        } else {
-                            ep = eSelect.options[0].value;
-                        }
+                    const epGrid = document.getElementById('tv-episodes-grid');
+                    epGrid.innerHTML = '';
 
-                        updatePlayerSource(SOURCES[0], id, 'tv', season, ep, details.poster_path, title, details.backdrop_path);
+                    if (seasonData && seasonData.episodes && seasonData.episodes.length > 0) {
+                         const today = new Date();
+                         seasonData.episodes.forEach(e => {
+                            if (!e.air_date || new Date(e.air_date) > today) return; // Skip unaired
+
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'relative group';
+                            const btn = document.createElement('button');
+                            // Highlight if it's the current playing episode
+                            const isCurrent = (e.episode_number == ep);
+                            btn.className = `w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary ${isCurrent ? 'bg-primary text-black' : 'bg-input-bg text-text-muted'}`;
+                            btn.innerText = e.episode_number;
+                            btn.title = e.name;
+                            
+                            btn.onclick = () => {
+                                ep = e.episode_number;
+                                // Update player info text
+                                if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} - Episode ${ep}`;
+                                
+                                // Update button styles in grid
+                                Array.from(epGrid.children).forEach(child => {
+                                    const b = child.querySelector('button');
+                                    b.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-input-bg text-text-muted';
+                                });
+                                btn.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black';
+
+                                // Play
+                                updatePlayerSource(SOURCES[0], id, 'tv', season, ep, details.poster_path, title, details.backdrop_path);
+                                
+                                // Reset server buttons visual state to first one
+                                renderServerButtons();
+                            };
+                            wrapper.appendChild(btn);
+                            epGrid.appendChild(wrapper);
+                         });
+                    } else {
+                        epGrid.innerHTML = '<p class="text-gray-500 col-span-full">No episodes found.</p>';
                     }
                 };
 
-                sSelect.value = startSeason; // Select the resume season
-                sSelect.onchange = updateEps;
-                eSelect.onchange = () => {
-                    ep = eSelect.value;
-                    updatePlayerSource(SOURCES[0], id, 'tv', season, ep, details.poster_path, title, details.backdrop_path);
+                // 2. Render Seasons List
+                const renderSeasonsList = (seasons, currentSeasonNum) => {
+                    const seasonsContainer = document.getElementById('tv-seasons-list');
+                    seasonsContainer.innerHTML = '';
+                    const wrapper = document.getElementById('tv-seasons-container');
+
+                    const validSeasons = seasons.filter(s => s.season_number > 0 && s.season_number != currentSeasonNum);
+                    
+                    if (validSeasons.length === 0) {
+                        wrapper.classList.add('hidden');
+                        return;
+                    }
+                    wrapper.classList.remove('hidden');
+
+                    validSeasons.forEach(s => {
+                         const imgUrl = s.poster_path ? IMG_URL + s.poster_path : 'https://placehold.co/160x240?text=No+Img';
+                         const card = createCardHTML(
+                            id, // We keep the TV Show ID
+                            'season', // Special type for visuals
+                            s.name,
+                            imgUrl,
+                            s.vote_average ? s.vote_average.toFixed(1) : null, // No vote
+                            s.air_date ? s.air_date.split('-')[0] : '', // Year
+                            `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${s.episode_count} EPS</div>`,
+                            false,
+                            null
+                        );
+                        // Override click to load season
+                        card.onclick = () => {
+                            ep = 1; // Reset to ep 1 when changing seasons
+                            loadSeasonData(s.season_number);
+                            updatePlayerSource(SOURCES[0], id, 'tv', s.season_number, 1, details.poster_path, title, details.backdrop_path);
+                             renderServerButtons();
+                        };
+                        seasonsContainer.appendChild(card);
+                    });
                 };
-                if (sSelect.options.length > 0) updateEps();
+
+                // Initial Load for TV
+                await loadSeasonData(startSeason);
+                updatePlayerSource(SOURCES[0], id, 'tv', startSeason, startEpisode, details.poster_path, title, details.backdrop_path);
+
             } else {
+                // MOVIE
                 updatePlayerSource(SOURCES[0], id, 'movie', 1, 1, details.poster_path, title, details.backdrop_path);
             }
             loader.hide();
