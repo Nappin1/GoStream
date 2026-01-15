@@ -737,8 +737,9 @@
         </section>
 
         <section id="view-search" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
-            <h2 class="text-2xl font-bold text-text-main mb-6">Search Results</h2>
+            <h2 id="search-header" class="text-2xl font-bold text-text-main mb-6">Search Results</h2>
             <div id="grid-search" class="results-grid"></div>
+            <div id="pag-search" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
         <section id="view-tmdb-details" class="view-section hidden w-full">
@@ -792,22 +793,22 @@
                         <button onclick="router('anime-anilist')"
                             class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-sm font-medium"><i
                                 class="fas fa-angles-left mr-2"></i> Back</button>
-                        
-                            <h1 id="anilist-details-title"
-                                class="text-2xl md:text-4xl font-extrabold text-white mb-2 leading-tight"></h1>
-                            <div>
-                                <p id="anilist-info-Romaji" class="text-text-main text-xs mb-5 font-medium italic"></p>
-                            </div>
-                        
+
+                        <h1 id="anilist-details-title"
+                            class="text-2xl md:text-4xl font-extrabold text-white mb-2 leading-tight"></h1>
+                        <div>
+                            <p id="anilist-info-Romaji" class="text-text-main text-xs mb-5 font-medium italic"></p>
+                        </div>
+
                         <div class="mb-6">
-                                <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
-                                <div id="anilist-info-desc"
-                                    class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto pr-2">
-                                </div>
+                            <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
+                            <div id="anilist-info-desc"
+                                class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto pr-2">
+                            </div>
                         </div>
                         <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
                             <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
-                            
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                                 <div class="flex justify-between md:hidden"><span
                                         class="text-text-muted text-xs">Format</span>
@@ -894,8 +895,7 @@
                         class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto custom-scroll pr-2">
                     </div>
                 </div>
-                <div id="anilist-info-Relations-Container"
-                    class="text-sm space-y-3 hidden">
+                <div id="anilist-info-Relations-Container" class="text-sm space-y-3 hidden">
                     <h4 class="text-lg font-bold text-text-main mb-3">Relations
                     </h4>
                     <div id="anilist-info-Relations" class="horizontal-scroll-container p-2">
@@ -1024,6 +1024,11 @@
                 vaPage: 1,
                 vaSearch: '',
                 vaData: []
+            },
+            search: {
+                query: '',
+                page: 1,
+                totalPages: 1
             }
         };
 
@@ -2158,30 +2163,41 @@
                 e.preventDefault();
                 const val = e.target.value.trim();
                 if (val.length > 0) {
-                    performSearch(val);
-                    e.target.value = '';
+                    appState.search.query = val;
+                    appState.search.page = 1;
+                    performSearch(val, 1);
+                    // e.target.value = ''; // Keep the text
                 }
             }
         }
         searchInput.addEventListener('keypress', handleSearch);
 
-        async function performSearch(query) {
+        async function performSearch(query, page = 1) {
             router('search');
             const grid = document.getElementById('grid-search');
             grid.innerHTML = '<p class="text-gray-400">Searching...</p>';
+            document.getElementById('pag-search').innerHTML = ''; // Clear pagination
 
-            const anilistQuery = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { extraLarge } format averageScore episodes } } }`;
-            const anilistPromise = fetchAnilist(anilistQuery, { search: query });
-            const tmdbPromise = fetchTMDB('/search/multi', { query });
+            const anilistQuery = `query ($search: String, $page: Int) { Page(page: $page, perPage: 20) { pageInfo { lastPage } media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { extraLarge } format averageScore episodes } } }`;
+            const anilistPromise = fetchAnilist(anilistQuery, { search: query, page: page });
+            const tmdbPromise = fetchTMDB('/search/multi', { query, page: page });
 
             const [anilistRes, tmdbRes] = await Promise.all([anilistPromise, tmdbPromise]);
 
-            searchInput.value = '';
+            // Update Header
+            document.getElementById('search-header').innerText = `Search Results for '${query}'`;
+
+            // searchInput.value = ''; // Keep the text
             grid.innerHTML = '';
+
+            let hasResults = false;
+            let maxPages = 1;
 
             if (anilistRes && anilistRes.Page.media) {
                 const animeItems = anilistRes.Page.media.map(mapAnilistToShared);
                 renderAnilistGrid('grid-search', animeItems, false, true);
+                if (animeItems.length > 0) hasResults = true;
+                if (anilistRes.Page.pageInfo.lastPage > maxPages) maxPages = anilistRes.Page.pageInfo.lastPage;
             }
 
             if (tmdbRes && tmdbRes.results) {
@@ -2196,9 +2212,19 @@
                     return isMedia && !isAnime;
                 });
                 await renderTMDBGrid('grid-search', filtered, null, false, true);
+                if (filtered.length > 0) hasResults = true;
+                if (tmdbRes.total_pages > maxPages) maxPages = tmdbRes.total_pages;
             }
 
-            if (grid.children.length === 0) grid.innerHTML = '<p class="text-gray-400">No results found.</p>';
+            if (!hasResults) {
+                grid.innerHTML = '<p class="text-gray-400">No results found.</p>';
+            } else {
+                renderPagination('pag-search', page, maxPages, (newPage) => {
+                    appState.search.page = newPage;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    performSearch(appState.search.query, newPage);
+                });
+            }
         }
 
         /**
