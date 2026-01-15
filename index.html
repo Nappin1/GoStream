@@ -95,6 +95,7 @@
 
         ::-webkit-scrollbar-track {
             background: var(--bg-input);
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -434,7 +435,6 @@
                     data-target="anime-anilist"><i class="fas fa-dragon mr-2"></i>ANIME</a>
                 <a onclick="router('watchlist')" class="nav-link text-text-main font-medium" data-target="watchlist"><i
                         class="fas fa-lines-leaning mr-2"></i>LIBRARY</a>
-
             </div>
             <div class="flex items-center pl-3 space-x-4">
                 <button onclick="installApp()" id="nav-install-btn"
@@ -542,24 +542,21 @@
                 </div>
                 <div class="space-y-1">
                     <h3 class="font-bold text-white"><i class="fas fa-network-wired mr-2 text-primary"></i>2.
-                        Third-Party
-                        Control</h3>
+                        Third-Party Control</h3>
                     <p>Since the Website does not control the underlying media files, we cannot guarantee the
                         availability, accuracy, or permanence of any content. Issues such as:</p>
                     <p>&bull; Broken or dead links (404 errors).</p>
                     <p>&bull; Incorrect video titles or metadata.</p>
                     <p>&bull; Content removal due to DMCA takedowns or inactivity.</p>
                     <p>...are entirely outside the control of <span class="font-bold text-primary">GoStream</span>.
-                        These technical issues originate
-                        from the third-party file hosts (e.g., vidsrc).</p>
+                        These technical issues originate from the third-party file hosts (e.g., vidsrc).</p>
                 </div>
                 <div class="space-y-1">
                     <h3 class="font-bold text-white"><i class="fas fa-copyright mr-2 text-primary"></i>3. Copyright &
                         Removal Requests</h3>
                     <p>If you have legal concerns regarding copyright, please contact the original file host where the
                         media is stored. <span class="font-bold text-primary">GoStream</span> does not possess the files
-                        and therefore cannot remove
-                        them from the internet.</p>
+                        and therefore cannot remove them from the internet.</p>
                 </div>
             </div>
             <div class="mt-6 pt-4 border-t border-border-color text-center">
@@ -579,13 +576,11 @@
                     class="fas fa-download mr-2 text-primary"></i>Install GoStream</h2>
             <div class="space-y-4 text-sm text-text-muted">
                 <p>Install GoStream on your device for a fullscreen, app-like experience.</p>
-
                 <div class="bg-input-bg p-3 rounded border border-border-color">
                     <h3 class="font-bold text-white mb-1"><i class="fab fa-apple mr-2"></i>iOS (Safari)</h3>
                     <p>Tap the <span class="font-bold text-primary">Share</span> button in the toolbar, then scroll down
                         and select <span class="font-bold text-primary">Add to Home Screen</span>.</p>
                 </div>
-
                 <div class="bg-input-bg p-3 rounded border border-border-color">
                     <h3 class="font-bold text-white mb-1"><i class="fab fa-android mr-2"></i>Android (Chrome)</h3>
                     <p>Tap the menu icon (three dots) in the top right, then select <span
@@ -603,7 +598,6 @@
     <main id="main-content" class="pt-16 pb-20 min-h-screen">
         <section id="shared-banner"
             class="relative h-[45vh] md:h-[65vh] flex items-end p-0 bg-dark-bg transition-all duration-500 hidden overflow-hidden group">
-
             <!-- Banner Background Layers -->
             <div id="banner-bg-container" class="absolute inset-0">
                 <!-- JS will inject .banner-bg-wrapper divs here -->
@@ -629,7 +623,6 @@
             <!-- Banner Content -->
             <div class="z-20 w-full max-w-4xl relative p-4 md:p-12 mb-8 md:mb-0 fade-in">
                 <div id="banner-content" class="transition-opacity duration-500"></div>
-
                 <!-- Indicators -->
                 <div id="banner-indicators" class="flex gap-2 mt-6"></div>
             </div>
@@ -748,50 +741,73 @@
             <div id="grid-search" class="results-grid"></div>
         </section>
 
-        <section id="view-details" class="view-section hidden w-full">
-            <div id="details-content" class="animate-fade-in"></div>
+        <section id="view-tmdb-details" class="view-section hidden w-full">
+            <div id="tmdb-details-content" class="animate-fade-in">
+                <!-- Content injected by JS -->
+            </div>
+        </section>
+
+        <section id="view-tmdb-player" class="view-section hidden w-full">
+            <div id="tmdb-player-content" class="animate-fade-in">
+                <!-- Content injected by JS -->
+            </div>
         </section>
 
         <section id="view-actor" class="view-section hidden w-full">
             <div id="actor-content" class="animate-fade-in"></div>
         </section>
 
-        <section id="view-anilist-player" class="view-section hidden w-full bg-dark-bg">
-            <div id="anilist-info-banner" class="w-full h-[300px] md:h-[400px] bg-cover bg-center relative">
+        <section id="view-anilist-details" class="view-section hidden w-full bg-dark-bg">
+            <div id="anilist-details-banner" class="w-full h-[300px] md:h-[400px] bg-cover bg-center relative">
                 <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
             </div>
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
                 <div class="flex flex-col md:flex-row gap-8">
                     <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
-                        <img id="anilist-info-img" src=""
+                        <img id="anilist-details-img" src=""
                             class="w-[180px] hidden md:block md:w-full mx-auto md:mx-0 rounded shadow-2xl">
                         <button onclick="router('anime-anilist')"
                             class="mb-4 text-gray-300 hover:text-white block md:hidden flex items-center gap-2 text-sm font-medium"><i
                                 class="fas fa-angles-left mr-2"></i> Back</button>
-                        <div class="mb-6 bg-gradient-to-t from-dark-bg to-transparent">
-                            <h1 id="anilist-player-title"
-                                class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight"></h1>
+                        <div>
                             <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
-                                <span id="anilist-banner-score" class="text-primary font-bold"></span>
-                                <span id="anilist-banner-year"
+                                <span id="anilist-details-score" class="text-primary font-bold"></span>
+                                <span id="anilist-details-year"
                                     class="px-2 py-0.5 border border-border-color rounded"></span>
-                                <span id="anilist-banner-type" class="uppercase"></span>
-                                <span><button id="anilist-watchlist-btn"
+                                <span id="anilist-details-type" class="uppercase"></span>
+                                <span><button id="anilist-details-watchlist-btn"
                                         class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded-md transition-colors"><i
                                             class="material-icons">bookmark_add</i></button></span>
                             </div>
-                            <div class="mb-6">
+                        </div>
+                        <!-- WATCH NOW BUTTON SECTION -->
+                        <div class="mb-8">
+                            <button id="anilist-watch-now-btn"
+                                class="w-full bg-primary text-black font-extrabold text-lg py-3 px-8 rounded shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-play"></i> WATCH NOW
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 pt-4 md:pt-16 min-w-0">
+                        <button onclick="router('anime-anilist')"
+                            class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-sm font-medium"><i
+                                class="fas fa-angles-left mr-2"></i> Back</button>
+                        
+                            <h1 id="anilist-details-title"
+                                class="text-2xl md:text-4xl font-extrabold text-white mb-2 leading-tight"></h1>
+                            <div>
+                                <p id="anilist-info-Romaji" class="text-text-main text-xs mb-5 font-medium italic"></p>
+                            </div>
+                        
+                        <div class="mb-6">
                                 <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
                                 <div id="anilist-info-desc"
                                     class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto pr-2">
                                 </div>
-                            </div>
                         </div>
                         <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
                             <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
-                            <div>
-                                <p id="anilist-info-Romaji" class="text-text-main text-xs font-medium italic"></p>
-                            </div>
+                            
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                                 <div class="flex justify-between md:hidden"><span
                                         class="text-text-muted text-xs">Format</span>
@@ -839,53 +855,55 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex-1 pt-4 md:pt-16 min-w-0">
-                        <button onclick="router('anime-anilist')"
-                            class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-sm font-medium"><i
-                                class="fas fa-angles-left mr-2"></i> Back</button>
-                        <div class="mb-8 space-y-4">
-                            <div class="rounded overflow-hidden border border-border-color bg-black shadow-xl">
-                                <div
-                                    class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
-                                    <div class="flex items-center gap-2 text-primary font-bold"><i
-                                            class="fas fa-play-circle"></i> <span id="anilist-player-ep">Episode
-                                            1</span></div>
-                                    <div id="anime-server-buttons" class="flex flex-wrap gap-2"></div>
-                                </div>
-                                <div class="aspect-video relative bg-black"><iframe id="anilist-iframe"
-                                        class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe></div>
-                                <div
-                                    class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
-                                    <button onclick="changeAnilistEp(-1)"
-                                        class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i
-                                            class="fas fa-backward mr-1"></i> Prev</button>
-                                    <button onclick="changeAnilistEp(1)"
-                                        class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next
-                                        <i class="fas fa-forward ml-1"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-8">
-                            <h3 class="text-lg font-bold text-text-main mb-3">Episodes</h3>
-                            <div id="anilist-episodes-grid"
-                                class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto custom-scroll pr-2">
-                            </div>
-                        </div>
 
-                        <div id="anilist-info-Relations-Container"
-                            class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color hidden">
-                            <h4 class="text-lg font-bold text-text-main mb-3 border-b border-border-color">Relations
-                            </h4>
-                            <div id="anilist-info-Relations" class="horizontal-scroll-container p-2">
-                            </div>
-                        </div>
-                        <div
-                            class="mt-3 bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
-                            <h3 class="text-lg font-bold text-text-main mb-3">Recommendations</h3>
-                            <div id="anilist-recommendations-grid" class="horizontal-scroll-container p-2"></div>
-                        </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-anilist-player" class="view-section hidden w-full bg-dark-bg">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+                <button id="anilist-player-back-btn"
+                    class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i
+                        class="fas fa-angles-left mr-2"></i> Back to Details</button>
+                <h1 id="anilist-player-title" class="text-2xl md:text-3xl font-extrabold text-white mb-6"></h1>
+
+                <div class="rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8">
+                    <div
+                        class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
+                        <div class="flex items-center gap-2 text-primary font-bold"><i class="fas fa-play-circle"></i>
+                            <span id="anilist-player-ep">Episode 1</span>
+                        </div>
+                        <div id="anime-server-buttons" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="aspect-video relative bg-black"><iframe id="anilist-iframe" class="w-full h-full" src=""
+                            frameborder="0" allowfullscreen></iframe></div>
+                    <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
+                        <button onclick="changeAnilistEp(-1)"
+                            class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">
+                            <i class="fas fa-backward mr-1"></i> Prev</button>
+                        <button onclick="changeAnilistEp(1)"
+                            class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next
+                            <i class="fas fa-forward ml-1"></i></button>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-text-main mb-3">Episodes</h3>
+                    <div id="anilist-episodes-grid"
+                        class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto custom-scroll pr-2">
+                    </div>
+                </div>
+                <div id="anilist-info-Relations-Container"
+                    class="text-sm space-y-3 hidden">
+                    <h4 class="text-lg font-bold text-text-main mb-3">Relations
+                    </h4>
+                    <div id="anilist-info-Relations" class="horizontal-scroll-container p-2">
+                    </div>
+                </div>
+                <div class="mt-3 text-sm space-y-3">
+                    <h3 class="text-lg font-bold text-text-main mb-3">Recommendations</h3>
+                    <div id="anilist-recommendations-grid" class="horizontal-scroll-container p-2"></div>
                 </div>
             </div>
         </section>
@@ -1125,6 +1143,15 @@
                 case 'anilist-player':
                     document.getElementById('view-anilist-player').classList.remove('hidden');
                     break;
+                case 'anilist-details':
+                    document.getElementById('view-anilist-details').classList.remove('hidden');
+                    break;
+                case 'tmdb-details':
+                    document.getElementById('view-tmdb-details').classList.remove('hidden');
+                    break;
+                case 'tmdb-player':
+                    document.getElementById('view-tmdb-player').classList.remove('hidden');
+                    break;
                 case 'actor':
                     document.getElementById('view-actor').classList.remove('hidden');
                     break;
@@ -1204,12 +1231,7 @@
                 `;
 
                 card.onclick = () => {
-                    if (item.type === 'anime') {
-                        // Pre-load specific anime episode (needs slight mod to openAnilistPlayer)
-                        openAnilistPlayer(item.id, item.episode);
-                    } else {
-                        openDetails(item.id, item.type, item.season, item.episode);
-                    }
+                    openDetailsWrapper(item.id, item.type, item.season, item.episode);
                 };
                 container.appendChild(card);
             });
@@ -1801,10 +1823,11 @@
             }
         });
 
-        // Updated to accept an optional startEpisode
-        async function openAnilistPlayer(id, startEpisode = 1) {
-            router('anilist-player');
+        // NEW: Open Anime Details
+        async function openAnilistDetails(id) {
+            router('anilist-details');
             const state = appState.anilist;
+            loader.show();
 
             const query = `query ($id: Int) { Media(id: $id) { id title { romaji english } 
             description 
@@ -1850,26 +1873,37 @@
             } }`;
 
             const data = await fetchAnilist(query, { id });
-            // FIX START
-            if (!data || !data.Media) return;
+            if (!data || !data.Media) { loader.hide(); return; }
             const anime = data.Media;
-            // FIX END
             state.currentAnime = anime;
-            state.currentEp = startEpisode; // Use provided startEpisode
+            loader.hide();
 
+            // Populate Details View
             const bannerUrl = getBackdropUrl(anime.bannerImage || anime.coverImage.extraLarge);
-            document.getElementById('anilist-info-banner').style.backgroundImage = `url(${bannerUrl})`;
-            document.getElementById('anilist-player-title').innerText = anime.title.english || anime.title.romaji;
-            document.getElementById('anilist-info-img').src = anime.coverImage.extraLarge;
+            document.getElementById('anilist-details-banner').style.backgroundImage = `url(${bannerUrl})`;
+
+            const title = anime.title.english || anime.title.romaji;
+            document.getElementById('anilist-details-title').innerText = title;
+            document.getElementById('anilist-details-img').src = anime.coverImage.extraLarge;
+
             const score = (anime.averageScore || '??') + '% Score';
-            document.getElementById('anilist-banner-score').innerText = score;
-            document.getElementById('anilist-banner-type').innerText = anime.format || 'TV';
+            document.getElementById('anilist-details-score').innerText = score;
+            document.getElementById('anilist-details-type').innerText = anime.format || 'TV';
             const yearStr = anime.seasonYear || (anime.startDate && anime.startDate.year ? anime.startDate.year : 'N/A');
-            document.getElementById('anilist-banner-year').innerText = yearStr;
-            document.getElementById('anilist-info-desc').innerHTML = anime.description;
+            document.getElementById('anilist-details-year').innerText = yearStr;
+
+            // Watchlist Button
+            const safeTitle = title.replace(/'/g, "");
+            const wlBtn = document.getElementById('anilist-details-watchlist-btn');
+            wlBtn.onclick = () => toggleWatchlist(anime.id, 'anime', safeTitle, anime.coverImage.extraLarge, 'anilist-details-watchlist-btn', (anime.averageScore || 0) / 10, yearStr);
+            updateWatchlistButtonState(anime.id, 'anilist-details-watchlist-btn');
+
+            // Metadata
+            document.getElementById('anilist-info-desc').innerHTML = anime.description || 'No description available.';
             document.getElementById('anilist-info-Romaji').innerText = anime.title.romaji;
             document.getElementById('anilist-info-Type').innerText = anime.format;
             document.getElementById('anilist-info-Status').innerText = anime.status ? anime.status.replace(/_/g, ' ') : 'Unknown';
+
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             document.getElementById('anilist-info-Date').innerText = anime.startDate && anime.startDate.year ? `${months[anime.startDate.month - 1]} ${anime.startDate.day} ${anime.startDate.year}` : '?';
 
@@ -1891,6 +1925,7 @@
             document.getElementById('anilist-info-Studio').innerText = studios.join(', ') || 'N/A';
             document.getElementById('anilist-info-Producers').innerText = producers.slice(0, 4).join(', ') || 'N/A';
 
+            // Genres
             const genreContainer = document.getElementById('anilist-info-Genres');
             genreContainer.innerHTML = '';
             if (anime.genres) {
@@ -1902,75 +1937,10 @@
                 });
             }
 
-            const relContainer = document.getElementById('anilist-info-Relations-Container');
-            const relList = document.getElementById('anilist-info-Relations');
-            relList.innerHTML = '';
-
-            if (anime.relations && anime.relations.edges && anime.relations.edges.length > 0) {
-                const validRelations = anime.relations.edges.filter(r => r.node.format !== 'MANGA' && r.node.format !== 'NOVEL' && r.node.format !== 'MUSIC' && r.node.format !== 'ONE_SHOT');
-
-                if (validRelations.length > 0) {
-                    relContainer.classList.remove('hidden');
-
-                    // Update Title
-                    const relHeader = relContainer.querySelector('h4');
-                    if (relHeader) relHeader.innerText = `${anime.title.english || anime.title.romaji} Relations`;
-
-                    validRelations.forEach(edge => {
-                        // Use createCardHTML with isHorizontal = false for vertical cards
-                        const imgUrl = edge.node.coverImage?.extraLarge || 'https://placehold.co/160x240?text=No+Img';
-                        const relYear = edge.node.seasonYear || (edge.node.startDate ? edge.node.startDate.year : '');
-                        const relVote = edge.node.averageScore ? edge.node.averageScore / 10 : null; // Normalize to 10 scale
-
-                        const card = createCardHTML(
-                            edge.node.id,
-                            'anime',
-                            edge.node.title.romaji,
-                            imgUrl,
-                            relVote,
-                            relYear,
-                            `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
-                            false,
-                            null
-                        );
-                        relList.appendChild(card);
-                    });
-                } else {
-                    relContainer.classList.add('hidden');
-                }
-            } else {
-                relContainer.classList.add('hidden');
-            }
-
-            const watchlistBtn = document.getElementById('anilist-watchlist-btn');
-            // Pass vote and year to toggleWatchlist
-            const safeTitle = (anime.title.english || anime.title.romaji).replace(/'/g, "");
-            watchlistBtn.onclick = () => toggleWatchlist(anime.id, 'anime', safeTitle, anime.coverImage.extraLarge, 'anilist-watchlist-btn', (anime.averageScore || 0) / 10, yearStr);
-            updateWatchlistButtonState(anime.id, 'anilist-watchlist-btn');
-
-            const serverBtnContainer = document.getElementById('anime-server-buttons');
-            serverBtnContainer.innerHTML = '';
-            ANIME_SOURCES.forEach((src, idx) => {
-                const btn = document.createElement('button');
-                btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
-                btn.innerHTML = `<i class="fas fa-server mr-2"></i> ${src.name.split(/\s+/).slice(0, 2).join(" ")}`;
-                btn.onclick = () => {
-                    state.currentServerIdx = idx;
-                    Array.from(serverBtnContainer.children).forEach(b => {
-                        b.classList.remove('bg-primary', 'text-black');
-                        b.classList.add('bg-input-bg', 'text-text-muted');
-                    });
-                    btn.classList.remove('bg-input-bg', 'text-text-muted');
-                    btn.classList.add('bg-primary', 'text-black');
-                    playAnilistEp(state.currentEp);
-                };
-                serverBtnContainer.appendChild(btn);
-            });
-
+            // Cast
             const castGrid = document.getElementById('anilist-cast-grid');
             castGrid.className = 'flex overflow-x-auto space-x-4 pb-4';
             castGrid.innerHTML = '';
-
             if (anime.characters && anime.characters.edges) {
                 anime.characters.edges.forEach(charEdge => {
                     if (charEdge.voiceActors && charEdge.voiceActors.length > 0) {
@@ -1995,36 +1965,116 @@
                     }
                 });
             }
+            if (castGrid.innerHTML === '') castGrid.innerHTML = '<p class="text-gray-500 text-xs">No cast info.</p>';
 
+            // Relations
+            const relContainer = document.getElementById('anilist-info-Relations-Container');
+            const relList = document.getElementById('anilist-info-Relations');
+            relList.innerHTML = '';
+
+            if (anime.relations && anime.relations.edges && anime.relations.edges.length > 0) {
+                const validRelations = anime.relations.edges.filter(r => r.node.format !== 'MANGA' && r.node.format !== 'NOVEL' && r.node.format !== 'MUSIC' && r.node.format !== 'ONE_SHOT');
+
+                if (validRelations.length > 0) {
+                    relContainer.classList.remove('hidden');
+                    const relHeader = relContainer.querySelector('h4');
+                    if (relHeader) relHeader.innerText = `${anime.title.english || anime.title.romaji} Relations`;
+
+                    validRelations.forEach(edge => {
+                        const imgUrl = edge.node.coverImage?.extraLarge || 'https://placehold.co/160x240?text=No+Img';
+                        const relYear = edge.node.seasonYear || (edge.node.startDate ? edge.node.startDate.year : '');
+                        const relVote = edge.node.averageScore ? edge.node.averageScore / 10 : null;
+                        const card = createCardHTML(
+                            edge.node.id,
+                            'anime',
+                            edge.node.title.romaji,
+                            imgUrl,
+                            relVote,
+                            relYear,
+                            `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
+                            false,
+                            null
+                        );
+                        relList.appendChild(card);
+                    });
+                } else relContainer.classList.add('hidden');
+            } else relContainer.classList.add('hidden');
+
+            // Recommendations
             const recsGrid = document.getElementById('anilist-recommendations-grid');
             recsGrid.innerHTML = '';
-            const recHeader = recsGrid.previousElementSibling; // The H3 tag
-
             if (anime.recommendations && anime.recommendations.nodes && anime.recommendations.nodes.length > 0) {
-                if (recHeader) recHeader.innerText = "Recommendations";
                 const recItems = anime.recommendations.nodes
-                    .map(n => n.mediaRecommendation)
-                    .filter(m => m)
-                    .map(mapAnilistToShared);
+                    .map(n => n.mediaRecommendation).filter(m => m).map(mapAnilistToShared);
                 renderAnilistGrid('anilist-recommendations-grid', recItems, true);
             } else {
-                // FALLBACK: Get by Genre
-                if (anime.genres && anime.genres.length > 0) {
-                    const genre = anime.genres[0];
-                    if (recHeader) recHeader.innerText = "Recommendation based in Genre";
-                    const fbQuery = `query ($genre: String) { Page(page: 1, perPage: 12) { media(genre: $genre, type: ANIME, sort: TRENDING_DESC) { id title { romaji english } coverImage { extraLarge } format averageScore status seasonYear } } }`;
-                    const fbData = await fetchAnilist(fbQuery, { genre });
-                    if (fbData && fbData.Page.media) {
-                        const recItems = fbData.Page.media.map(mapAnilistToShared);
-                        renderAnilistGrid('anilist-recommendations-grid', recItems, true);
-                    } else {
-                        recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
-                    }
-                } else {
-                    recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
-                }
+                recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
             }
 
+            // Watch Now Button Action
+            // Check continue watching for resume context
+            const resumeItem = appState.continueWatching.find(i => i.id === id && i.type === 'anime');
+            let startEp = 1;
+            let btnText = "WATCH NOW";
+            if (resumeItem && resumeItem.episode) {
+                startEp = resumeItem.episode;
+                btnText = `RESUME EP ${startEp}`;
+            }
+
+            const watchBtn = document.getElementById('anilist-watch-now-btn');
+            watchBtn.innerHTML = `<i class="fas fa-play"></i> ${btnText}`;
+            watchBtn.onclick = () => openAnilistPlayer(id, startEp);
+        }
+
+        // Updated for separated view
+        async function openAnilistPlayer(id, startEpisode = 1) {
+            router('anilist-player');
+            const state = appState.anilist;
+
+            // If we already have the data in state (from Details view), reuse it (unless ID changed)
+            // But to be safe, we can re-fetch or check availability. 
+            // For robustness, let's allow fetching if currentAnime is null or mismatch.
+            if (!state.currentAnime || state.currentAnime.id !== id) {
+                loader.show();
+                const query = `query ($id: Int) { Media(id: $id) { id title { romaji english } coverImage { extraLarge } bannerImage episodes nextAiringEpisode { episode } status } }`;
+                const data = await fetchAnilist(query, { id });
+                if (!data || !data.Media) { loader.hide(); return; }
+                state.currentAnime = data.Media;
+                loader.hide();
+            }
+
+            state.currentEp = startEpisode;
+            const anime = state.currentAnime;
+
+            // Setup Player View
+            const title = anime.title.english || anime.title.romaji;
+            document.getElementById('anilist-player-title').innerText = title;
+
+            // Back Button
+            const backBtn = document.getElementById('anilist-player-back-btn');
+            if (backBtn) backBtn.onclick = () => openAnilistDetails(id);
+
+            // Server Buttons
+            const serverBtnContainer = document.getElementById('anime-server-buttons');
+            serverBtnContainer.innerHTML = '';
+            ANIME_SOURCES.forEach((src, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === state.currentServerIdx ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
+                btn.innerHTML = `<i class="fas fa-server mr-2"></i> ${src.name.split(/\s+/).slice(0, 2).join(" ")}`;
+                btn.onclick = () => {
+                    state.currentServerIdx = idx;
+                    Array.from(serverBtnContainer.children).forEach(b => {
+                        b.classList.remove('bg-primary', 'text-black');
+                        b.classList.add('bg-input-bg', 'text-text-muted');
+                    });
+                    btn.classList.remove('bg-input-bg', 'text-text-muted');
+                    btn.classList.add('bg-primary', 'text-black');
+                    playAnilistEp(state.currentEp);
+                };
+                serverBtnContainer.appendChild(btn);
+            });
+
+            // Episodes Grid
             const epGrid = document.getElementById('anilist-episodes-grid');
             epGrid.innerHTML = '';
 
@@ -2154,9 +2204,16 @@
         /**
          * RENDERERS
          */
-        function openDetailsWrapper(id, type) {
-            if (type === 'anime') openAnilistPlayer(id);
-            else openDetails(id, type);
+        // Updated wrapper to route to new functions
+        // If season or ep is provided, it implies a "Resume" or specific play action, so go to Player.
+        function openDetailsWrapper(id, type, season, ep) {
+            if (season !== undefined || ep !== undefined) {
+                if (type === 'anime') openAnilistPlayer(id, ep || 1);
+                else openTMDBPlayer(id, type, season || 1, ep || 1);
+            } else {
+                if (type === 'anime') openAnilistDetails(id);
+                else openTMDBDetails(id, type);
+            }
         }
 
         async function fetchAndDetermineStatus(type, id) {
@@ -2250,7 +2307,7 @@
             });
         }
 
-        function createCardHTML( id,type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview ) {
+        function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview) {
             const card = document.createElement('div');
             const widthClass = isHorizontal ? 'landscape-card' : '';
             card.className = `movie-card rounded cursor-pointer relative group ${widthClass}`;
@@ -2270,17 +2327,16 @@
 
                 ${statusBadge || ''}
 
-                ${ type !== 'actor' ? ` <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10 flex items-center gap-1">
-                    ${type === 'season' ? '' : ''} ${voteDisplay} </div> `  : `
+                ${type !== 'actor' ? ` <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10 flex items-center gap-1">
+                    ${type === 'season' ? '' : ''} ${voteDisplay} </div> ` : `
                 <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10">
                     <i class="fas fa-user"></i>
                 </div> ` }
 
                 <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
-                    <i class="mdi ${
-                    type === 'actor'
-                        ? 'mdi-account-search'
-                        : 'mdi-play-circle'
+                    <i class="mdi ${type === 'actor'
+                    ? 'mdi-account-search'
+                    : 'mdi-play-circle'
                 } text-primary text-5xl drop-shadow-lg"></i>
                 </div>
 
@@ -2327,357 +2383,365 @@
             container.append(prev, pageSpan, next);
         }
 
-        // Updated openDetails to accept season/episode args for history resume
-        // Updated openDetails to accept season/episode args for history resume
-        async function openDetails(id, type, startSeason = 1, startEpisode = 1) {
-            router('details');
-            const container = document.getElementById('details-content');
-            container.innerHTML = '';
-            loader.show();
+        // NEW: Open TMDB Details View
+        async function openTMDBDetails(id, type) {
+            try {
+                router('tmdb-details');
+                const container = document.getElementById('tmdb-details-content');
+                container.innerHTML = '';
+                loader.show();
 
-            const [details, credits, recommendations] = await Promise.all([
-                fetchTMDB(`/${type}/${id}`),
-                fetchTMDB(`/${type}/${id}/credits`),
-                fetchTMDB(`/${type}/${id}/recommendations`)
-            ]);
+                const [details, credits] = await Promise.all([
+                    fetchTMDB(`/${type}/${id}`, {}, false),
+                    fetchTMDB(`/${type}/${id}/credits`, {}, false)
+                ]);
 
-            if (!details) { container.innerHTML = 'Error loading'; return; }
+                if (!details) { container.innerHTML = 'Error loading'; loader.hide(); return; }
 
-            // Collection logic...
-            let collectionData = null;
-            if (type === 'movie' && details.belongs_to_collection) {
-                collectionData = await fetchTMDB(`/collection/${details.belongs_to_collection.id}`);
-            }
+                // Check history for resume context
+                const historyItem = appState.continueWatching.find(i => i.id === id && i.type === type);
+                let resumeSeason = 1;
+                let resumeEp = 1;
+                let btnText = "WATCH NOW";
+                if (historyItem && historyItem.season) {
+                    resumeSeason = historyItem.season;
+                    resumeEp = historyItem.episode;
+                    if (type === 'tv') btnText = `RESUME S${resumeSeason} E${resumeEp}`;
+                    else btnText = "RESUME";
+                }
 
-            const title = details.title || details.name;
-            const backdrop = getBackdropUrl(details.backdrop_path);
-            const poster = getPosterUrl(details.poster_path);
-            const runtime = details.runtime || (details.episode_run_time ? details.episode_run_time[0] : '?') + 'm';
+                const title = details.title || details.name;
+                const backdrop = getBackdropUrl(details.backdrop_path);
+                const poster = getPosterUrl(details.poster_path);
+                const runtime = details.runtime || (details.episode_run_time ? details.episode_run_time[0] : '?') + 'm';
 
-            const cast = credits && credits.cast ? credits.cast.slice(0, 15) : [];
-            let castHtml = '<div class="flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">';
-            if (cast.length > 0) {
-                castHtml += cast.map(c => {
-                    const profile = c.profile_path ? `${IMG_URL}${c.profile_path}` : 'https://placehold.co/100x100/333/555?text=No+Img';
-                    return `
-                        <div class="flex-shrink-0 w-24 text-center cursor-pointer group" onclick="openActorDetails(${c.id})">
-                            <img src="${profile}" alt="${c.name}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-border-color group-hover:border-primary transition-colors">
-                            <p class="text-xs font-semibold text-text-main truncate group-hover:text-primary transition-colors" title="${c.name}">${c.name}</p>
-                            <p class="text-[10px] text-text-muted truncate" title="${c.character}">${c.character}</p>
-                        </div>
-                    `;
-                }).join('');
-            } else {
-                castHtml += '<p class="text-text-muted text-sm">No cast information available.</p>';
-            }
-            castHtml += '</div>';
+                const cast = credits && credits.cast ? credits.cast.slice(0, 15) : [];
+                let castHtml = '<div class="flex overflow-x-auto gap-4 pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">';
+                if (cast.length > 0) {
+                    castHtml += cast.map(c => {
+                        const profile = c.profile_path ? `${IMG_URL}${c.profile_path}` : 'https://placehold.co/100x100/333/555?text=No+Img';
+                        const safeName = c.name.replace(/['"]/g, '');
+                        const safeChar = c.character ? c.character.replace(/['"]/g, '') : '';
+                        return `
+                            <div class="flex-shrink-0 w-24 text-center cursor-pointer group" onclick="openActorDetails(${c.id})">
+                                <img src="${profile}" alt="${safeName}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-border-color group-hover:border-primary transition-colors">
+                                <p class="text-xs font-semibold text-text-main truncate group-hover:text-primary transition-colors" title="${safeName}">${safeName}</p>
+                                <p class="text-[10px] text-text-muted truncate" title="${safeChar}">${safeChar}</p>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    castHtml += '<p class="text-text-muted text-sm">No cast information available.</p>';
+                }
+                castHtml += '</div>';
 
-            const releaseDate = details.release_date || details.first_air_date || 'N/A';
-            const rawDateString = details.release_date || details.first_air_date || null;
-            let relDate = 'N/A';
-            if (rawDateString) {
-                const dateObject = new Date(rawDateString);
-                relDate = dateObject.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-            }
-            const status = details.status || 'N/A';
-            let genresHtml = '';
-            if (details.genres) {
-                genresHtml = details.genres.map(g => `<span class="px-2 py-0.5 bg-input-bg border border-border-color rounded text-[10px] text-text-muted">${g.name}</span>`).join('');
-            }
-            const tagline = details.tagline ? `"${details.tagline}"` : '';
+                const releaseDate = details.release_date || details.first_air_date || 'N/A';
+                const rawDateString = details.release_date || details.first_air_date || null;
+                let relDate = 'N/A';
+                if (rawDateString) {
+                    const dateObject = new Date(rawDateString);
+                    relDate = dateObject.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                }
+                const status = details.status || 'N/A';
+                let genresHtml = '';
+                if (details.genres) {
+                    genresHtml = details.genres.map(g => `<span class="px-2 py-0.5 bg-input-bg border border-border-color rounded text-[10px] text-text-muted">${g.name}</span>`).join('');
+                }
+                const tagline = details.tagline ? `"${details.tagline.replace(/"/g, '&quot;')}"` : '';
+                const overview = details.overview ? details.overview.replace(/</g, "&lt;") : 'No overview available.';
+                const safeTitle = title.replace(/['"]/g, "");
 
-            container.innerHTML = `
-                <div class="w-full h-[300px] md:h-[400px] bg-cover bg-center relative" style="background-image: url('${backdrop}')">
-                    <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
-                </div>
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
-                    <div class="flex flex-col md:flex-row gap-8">
-                        <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
-                            <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
-                            <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded shadow-2xl">
-                            <div class="mb-6">
-                                <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
-                                <p class="text-gray-400 italic text-sm mb-4">${tagline}</p>
-                                <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
-                                    <span class="text-primary font-bold"><i class="fas fa-star mr-1"></i> ${details.vote_average.toFixed(1)}</span>
-                                    <span class="px-2 py-0.5 border border-border-color rounded">${releaseDate.split('-')[0]}</span>
-                                    <span class="uppercase">${type}</span>
-                                    <span><button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${title.replace(/'/g, "")}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}')" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded-md transition-colors"><i class="material-icons">bookmark_add</i></button></span>
-                                </div>
+                container.innerHTML = `
+                    <div class="w-full h-[300px] md:h-[400px] bg-cover bg-center relative" style="background-image: url('${backdrop}')">
+                        <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
+                    </div>
+                    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
+                                <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
+                                <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded shadow-2xl">
                                 <div class="mb-6">
-                                    <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
-                                    <p class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto">${details.overview}</p>
-                                </div>
-                            </div>
-                            <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
-                                <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Type</span><p class="text-text-main text-xs font-medium text-right md:text-left uppercase">${type}</p></div>
-                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Status</span><p class="text-primary text-xs font-medium text-right md:text-left">${status}</p></div>
-                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Released</span><p class="text-text-main text-xs font-medium text-right md:text-left">${relDate}</p></div>
-                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Runtime</span><p class="text-text-main text-xs font-medium text-right md:text-left">${runtime}</p></div>
-                                    <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Production</span><p class="text-text-main text-xs font-medium text-right md:text-left">${details.production_companies?.[0]?.name || 'N/A'}</p></div>
-                                </div>
-                                    <div class=" border-b border-border-color pb-2"><span class="text-text-muted text-xs">Genres</span><div class="flex flex-wrap gap-1 mt-1">${genresHtml}</div></div>
-                                <div class="mb-0"><h3 class="text-lg font-bold text-text-main mb-3">Cast</h3><div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">${castHtml}</div></div>
-                                
-                            </div>
-                        </div>
-                        <div class="flex-1 pt-4 md:pt-16 min-w-0">
-                            <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
-                            <div class="mb-8 space-y-4">
-                                <div class="rounded overflow-hidden border border-border-color bg-black shadow-xl">
-                                    <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-primary font-bold"><i class="fas fa-play-circle mr-2"></i> ${type === 'tv' ? `<span id="tv-player-info">S${startSeason} E${startEpisode}</span>` : ''}</span>
-                                            
-                                        </div>
-                                        <div class="flex gap-2" id="server-buttons"></div>
+                                    <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-6">
+                                        <span class="text-primary font-bold"><i class="fas fa-star mr-1"></i> ${details.vote_average.toFixed(1)}</span>
+                                        <span class="px-2 py-0.5 border border-border-color rounded">${releaseDate.split('-')[0]}</span>
+                                        <span class="uppercase">${type}</span>
+                                        <span><button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${safeTitle}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}')" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded transition-colors"><i class="material-icons">bookmark_add</i></button></span>
                                     </div>
-                                    <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
-                                ${type === 'tv' ? `
-                                <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 border-x border-b">
-                                    <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
-                                    <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
+                                <!-- WATCH NOW BUTTON -->
+                                <div>
+                                    <button id="tmdb-watch-now-btn" class="w-full bg-primary text-black font-extrabold text-lg py-3 px-8 rounded shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all flex items-center justify-center gap-2">
+                                        <i class="fas fa-play"></i> ${btnText}
+                                    </button>
                                 </div>
-                                ` : ''}
                                 </div>
                             </div>
-
-                            <!-- TV SHOW SEASONS & EPISODES CONTAINER -->
-                             ${type === 'tv' ? `
-                                <div class="mb-8">
-                                    <h2 id="tv-season-title" class="text-lg hidden font-normal text-text-muted">Season ${startSeason}</h2>
-                                    <h3 class="text-lg font-bold text-text-main mb-3">Episodes </h3>
-                                    <div id="tv-episodes-grid" class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto custom-scroll pr-2"></div>
-                                </div>
+                            <div class="flex-1 pt-4 md:pt-16 min-w-0">
+                                <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
                                 
-                                <div id="tv-seasons-container" class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
-                                    <h4 class="text-lg font-bold text-text-main mb-3 border-b border-border-color">Other Seasons</h4>
-                                    <div id="tv-seasons-list" class="horizontal-scroll-container p-2"></div>
+                                    <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
+                                    <p class="text-gray-400 italic text-sm mb-5">${tagline}</p>
+                                    <div class="mb-6">
+                                        <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
+                                        <p class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto">${overview}</p>
+                                    </div>
+                                <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
+                                    <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                        <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Type</span><p class="text-text-main text-xs font-medium text-right md:text-left uppercase">${type}</p></div>
+                                        <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Status</span><p class="text-primary text-xs font-medium text-right md:text-left">${status}</p></div>
+                                        <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Released</span><p class="text-text-main text-xs font-medium text-right md:text-left">${relDate}</p></div>
+                                        <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Runtime</span><p class="text-text-main text-xs font-medium text-right md:text-left">${runtime}</p></div>
+                                        <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Production</span><p class="text-text-main text-xs font-medium text-right md:text-left">${details.production_companies?.[0]?.name || 'N/A'}</p></div>
+                                    </div>
+                                        <div class=" border-b border-border-color pb-2"><span class="text-text-muted text-xs">Genres</span><div class="flex flex-wrap gap-1 mt-1">${genresHtml}</div></div>
+                                    <div class="mb-0"><h3 class="text-lg font-bold text-text-main mb-3">Cast</h3><div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">${castHtml}</div></div>
                                 </div>
-                             ` : ''}
-
-
-                            <div id="tmdb-collection-container" class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color ${collectionData ? '' : 'hidden'}">
-                                <h4 class="text-lg font-bold text-text-main mb-3 border-b border-border-color">${collectionData ? collectionData.name : 'Relations'}</h4>
-                                <div id="tmdb-collection-list" class="horizontal-scroll-container p-2"></div>
                             </div>
-                            <div
-                            class="mt-3 bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
-                            <h3 id="tmdb-rec-title" class="text-lg font-bold text-text-main mb-3">Recommendations</h3><div id="tmdb-recommendations" class="horizontal-scroll-container p-2"></div></div>
                         </div>
+                    </div>
+                `;
+
+                updateWatchlistButtonState(id, 'tmdb-watchlist-btn');
+                document.getElementById('tmdb-watch-now-btn').onclick = () => openTMDBPlayer(id, type, resumeSeason, resumeEp);
+            } catch (error) {
+                console.error("Error in openTMDBDetails:", error);
+                document.getElementById('tmdb-details-content').innerHTML = '<p class="text-center text-red-500 mt-10">An error occurred while loading details.</p>';
+            } finally {
+                loader.hide();
+            }
+        }
+
+        // NEW: Open TMDB Player View
+        async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
+            try {
+                router('tmdb-player');
+                const container = document.getElementById('tmdb-player-content');
+                // Don't fully clear if we want to preserve state? No, better clear to avoid conflicts.
+                container.innerHTML = '';
+                loader.show();
+
+                const [details, recommendations] = await Promise.all([
+                    fetchTMDB(`/${type}/${id}`, {}, false),
+                    fetchTMDB(`/${type}/${id}/recommendations`, {}, false)
+                ]);
+
+                if (!details) { container.innerHTML = 'Error loading'; loader.hide(); return; }
+
+                // Check history for resume context
+                // Although currently openTMDBPlayer doesn't explicitly use history to SET initial state (it respects startSeason/startEp args),
+                // we might want to ensure consistency or use it if specific args aren't passed.
+                // But generally, the args passed to openTMDBPlayer ARE from history if applicable.
+
+                // Collection logic
+                let collectionData = null;
+                if (type === 'movie' && details.belongs_to_collection) {
+                    collectionData = await fetchTMDB(`/collection/${details.belongs_to_collection.id}`);
+                }
+
+                const title = details.title || details.name;
+
+                container.innerHTML = `
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+                     <button id="tmdb-player-back-btn" onclick="openTMDBDetails(${id}, '${type}')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back to Details</button>
+                     <h1 class="text-2xl md:text-3xl font-extrabold text-white mb-6">${title}</h1>
+
+                    <div class="rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8">
+                        <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-primary font-bold"><i class="fas fa-play-circle mr-2"></i> ${type === 'tv' ? `<span id="tv-player-info">S${startSeason} E${startEpisode}</span>` : ''}</span>
+                            </div>
+                            <div class="flex gap-2" id="server-buttons"></div>
+                        </div>
+                        <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
+                        ${type === 'tv' ? `
+                        <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 border-x border-b">
+                            <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
+                            <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- TV SHOW SEASONS & EPISODES CONTAINER -->
+                     ${type === 'tv' ? `
+                        <div class="mb-8">
+                            <h2 id="tv-season-title" class="text-lg hidden font-normal text-text-muted">Season ${startSeason}</h2>
+                            <h3 class="text-lg font-bold text-text-main mb-3">Episodes </h3>
+                            <div id="tv-episodes-grid" class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto custom-scroll pr-2"></div>
+                        </div>
+                        
+                        <div id="tv-seasons-container" class="text-sm space-y-3">
+                            <h4 class="text-lg font-bold text-text-main mb-3">Other Seasons</h4>
+                            <div id="tv-seasons-list" class="horizontal-scroll-container p-2"></div>
+                        </div>
+                     ` : ''}
+
+                    <div id="tmdb-collection-container" class="text-sm space-y-3 ${collectionData ? '' : 'hidden'}">
+                        <h4 class="text-lg font-bold text-text-main mb-3 ">${collectionData ? collectionData.name : 'Relations'}</h4>
+                        <div id="tmdb-collection-list" class="horizontal-scroll-container p-2"></div>
+                    </div>
+                    <div class="mt-3 text-sm space-y-3">
+                        <h3 id="tmdb-rec-title" class="text-lg font-bold text-text-main mb-3">Recommendations</h3>
+                        <div id="tmdb-recommendations" class="horizontal-scroll-container p-2"></div>
                     </div>
                 </div>
             `;
 
-            updateWatchlistButtonState(id, 'tmdb-watchlist-btn');
+                // Setup Player
+                const iframe = document.getElementById('tmdb-player');
+                const serverContainer = document.getElementById('server-buttons');
+                const SOURCES = type === 'movie' ? MOVIE_SOURCES : TV_SOURCES;
 
-            // --- TV Episode Navigation Logic ---
-            if (type === 'tv') {
-                const changeTvEpisode = (dir) => {
-                    const nextEp = ep + dir;
-                    const grid = document.getElementById('tv-episodes-grid');
-                    if (!grid) return;
-                    
-                    // Find the button corresponding to the next episode
-                    const buttons = grid.querySelectorAll('button');
-                    for (let btn of buttons) {
-                        if (parseInt(btn.innerText) === nextEp) {
-                            btn.click();
-                            // Optional: Scroll the button into view inside the grid
-                            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                            return;
+                let season = startSeason;
+                let ep = startEpisode;
+
+                const updatePlayerSource = (sourceObj, id, type, s, e, poster, title, backdrop) => {
+                    if (type === 'movie') {
+                        iframe.src = sourceObj.url(id);
+                        addToHistory(id, type, title, poster, backdrop);
+                    } else {
+                        iframe.src = sourceObj.url(id, s, e);
+                        addToHistory(id, type, title, poster, backdrop, s, e);
+                    }
+                };
+
+                const renderServerButtons = () => {
+                    serverContainer.innerHTML = '';
+                    SOURCES.forEach((src, idx) => {
+                        const btn = document.createElement('button');
+                        btn.innerHTML = `<i class="fas fa-server mr-1"></i> ${src.name}`;
+                        const isActive = (iframe.src.includes(src.url(id).split('/')[2]) || idx === 0 && iframe.src === ""); // Simple check
+                        btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === 0 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
+                        btn.onclick = () => {
+                            Array.from(serverContainer.children).forEach(b => {
+                                b.className = 'px-3 py-1 rounded text-xs font-bold bg-input-bg text-text-muted hover:text-white transition-colors';
+                            });
+                            btn.className = 'px-3 py-1 rounded-sm text-xs font-bold bg-primary text-black transition-colors';
+                            updatePlayerSource(src, id, type, season, ep, details.poster_path, title, details.backdrop_path);
                         }
-                    }
-                };
-
-                document.getElementById('btn-tv-prev').onclick = () => changeTvEpisode(-1);
-                document.getElementById('btn-tv-next').onclick = () => changeTvEpisode(1);
-            }
-            // -----------------------------------
-
-            const recContainer = document.getElementById('tmdb-recommendations');
-            const recTitle = document.getElementById('tmdb-rec-title');
-
-            if (recommendations && recommendations.results && recommendations.results.length > 0) {
-                renderTMDBGrid('tmdb-recommendations', recommendations.results, type, true);
-            } else {
-                // FALLBACK: Get by Genre
-                if (details.genres && details.genres.length > 0) {
-                    const genreIds = details.genres.slice(0, 2).map(g => g.id).join(',');
-                    if (recTitle) recTitle.innerText = "Recommendation based in Genre";
-                    const fbData = await fetchTMDB(`/discover/${type}`, { with_genres: genreIds });
-                    if (fbData && fbData.results) {
-                        renderTMDBGrid('tmdb-recommendations', fbData.results, type, true);
-                    } else {
-                        recContainer.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
-                    }
-                } else {
-                    recContainer.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
-                }
-            }
-
-            // Populate Collection if exists
-            if (collectionData && collectionData.parts && collectionData.parts.length > 0) {
-                const sortedParts = collectionData.parts.sort((a, b) => {
-                    return new Date(a.release_date || '9999-12-31') - new Date(b.release_date || '9999-12-31');
-                });
-                const colContainer = document.getElementById('tmdb-collection-list');
-                sortedParts.forEach(part => {
-                    const imgUrl = part.poster_path ? IMG_URL + part.poster_path : 'https://placehold.co/160x240?text=No+Img';
-                    const card = createCardHTML(
-                        part.id,
-                        'movie',
-                        part.title,
-                        imgUrl,
-                        part.vote_average,
-                        part.release_date ? part.release_date.split('-')[0] : '',
-                        '', // No specific status badge for collection items typically
-                        false, // Vertical
-                        part.overview
-                    );
-                    colContainer.appendChild(card);
-                });
-            }
-
-            let season = startSeason;
-            let ep = startEpisode;
-
-            const serverContainer = document.getElementById('server-buttons');
-            const SOURCES = type === 'movie' ? MOVIE_SOURCES : TV_SOURCES;
-
-            // Setup Server Buttons
-            const renderServerButtons = () => {
-                 serverContainer.innerHTML = '';
-                 SOURCES.forEach((src, idx) => {
-                    const btn = document.createElement('button');
-                    btn.innerHTML = `<i class="fas fa-server mr-1"></i> ${src.name}`;
-                    // Use a generic 'active' class check logic if needed, but simple toggle works
-                    // We default to idx 0 active on load
-                    const isActive = (iframe.src.includes(src.name) || idx === 0 && iframe.src === ""); 
-                    btn.className = `px-3 py-1 rounded-sm text-xs font-bold transition-colors ${idx === 0 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted hover:text-white'}`;
-                    
-                    btn.onclick = () => {
-                        Array.from(serverContainer.children).forEach(b => {
-                            b.className = 'px-3 py-1 rounded text-xs font-bold bg-input-bg text-text-muted hover:text-white transition-colors';
-                        });
-                        btn.className = 'px-3 py-1 rounded-sm text-xs font-bold bg-primary text-black transition-colors';
-                        updatePlayerSource(src, id, type, season, ep, details.poster_path, title, details.backdrop_path);
-                    }
-                    serverContainer.appendChild(btn);
-                });
-            }
-
-            const iframe = document.getElementById('tmdb-player');
-            renderServerButtons(); // Initial render
-
-            if (type === 'tv') {
-                // TV SHOW SPECIFIC LOGIC
-                
-                // 1. Fetch episodes for current season (startSeason)
-                const loadSeasonData = async (seasonNum) => {
-                    season = seasonNum;
-                    document.getElementById('tv-season-title').innerText = `Season ${seasonNum}`;
-                    if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`;
-
-                    // Update Seasons List (exclude current)
-                    renderSeasonsList(details.seasons, seasonNum);
-
-                    loader.show();
-                    const seasonData = await fetchTMDB(`/tv/${id}/season/${seasonNum}`);
-                    loader.hide();
-
-                    const epGrid = document.getElementById('tv-episodes-grid');
-                    epGrid.innerHTML = '';
-
-                    if (seasonData && seasonData.episodes && seasonData.episodes.length > 0) {
-                         const today = new Date();
-                         seasonData.episodes.forEach(e => {
-                            if (!e.air_date || new Date(e.air_date) > today) return; // Skip unaired
-
-                            const wrapper = document.createElement('div');
-                            wrapper.className = 'relative group';
-                            const btn = document.createElement('button');
-                            // Highlight if it's the current playing episode
-                            const isCurrent = (e.episode_number == ep);
-                            btn.className = `w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary ${isCurrent ? 'bg-primary text-black' : 'bg-input-bg text-text-muted'}`;
-                            btn.innerText = e.episode_number;
-                            btn.title = e.name;
-                            
-                            btn.onclick = () => {
-                                ep = e.episode_number;
-                                // Update player info text
-                                if(document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} - Episode ${ep}`;
-                                
-                                // Update button styles in grid
-                                Array.from(epGrid.children).forEach(child => {
-                                    const b = child.querySelector('button');
-                                    b.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-input-bg text-text-muted';
-                                });
-                                btn.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black';
-
-                                // Play
-                                updatePlayerSource(SOURCES[0], id, 'tv', season, ep, details.poster_path, title, details.backdrop_path);
-                                
-                                // Reset server buttons visual state to first one
-                                renderServerButtons();
-                            };
-                            wrapper.appendChild(btn);
-                            epGrid.appendChild(wrapper);
-                         });
-                    } else {
-                        epGrid.innerHTML = '<p class="text-gray-500 col-span-full">No episodes found.</p>';
-                    }
-                };
-
-                // 2. Render Seasons List
-                const renderSeasonsList = (seasons, currentSeasonNum) => {
-                    const seasonsContainer = document.getElementById('tv-seasons-list');
-                    seasonsContainer.innerHTML = '';
-                    const wrapper = document.getElementById('tv-seasons-container');
-
-                    const validSeasons = seasons.filter(s => s.season_number > 0 && s.season_number != currentSeasonNum);
-                    
-                    if (validSeasons.length === 0) {
-                        wrapper.classList.add('hidden');
-                        return;
-                    }
-                    wrapper.classList.remove('hidden');
-
-                    validSeasons.forEach(s => {
-                         const imgUrl = s.poster_path ? IMG_URL + s.poster_path : 'https://placehold.co/160x240?text=No+Img';
-                         const card = createCardHTML(
-                            id, // We keep the TV Show ID
-                            'season', // Special type for visuals
-                            s.name,
-                            imgUrl,
-                            s.vote_average ? s.vote_average.toFixed(1) : null, // No vote
-                            s.air_date ? s.air_date.split('-')[0] : '', // Year
-                            `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${s.episode_count} EPS</div>`,
-                            false,
-                            null
-                        );
-                        // Override click to load season
-                        card.onclick = () => {
-                            ep = 1; // Reset to ep 1 when changing seasons
-                            loadSeasonData(s.season_number);
-                            updatePlayerSource(SOURCES[0], id, 'tv', s.season_number, 1, details.poster_path, title, details.backdrop_path);
-                             renderServerButtons();
-                        };
-                        seasonsContainer.appendChild(card);
+                        serverContainer.appendChild(btn);
                     });
-                };
+                }
+                renderServerButtons();
 
-                // Initial Load for TV
-                await loadSeasonData(startSeason);
-                updatePlayerSource(SOURCES[0], id, 'tv', startSeason, startEpisode, details.poster_path, title, details.backdrop_path);
+                // TV Logic
+                if (type === 'tv') {
+                    const loadSeasonData = async (seasonNum) => {
+                        season = seasonNum;
+                        document.getElementById('tv-season-title').innerText = `Season ${seasonNum}`;
+                        if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`;
 
-            } else {
-                // MOVIE
-                updatePlayerSource(SOURCES[0], id, 'movie', 1, 1, details.poster_path, title, details.backdrop_path);
+                        renderSeasonsList(details.seasons, seasonNum);
+
+                        loader.show();
+                        const seasonData = await fetchTMDB(`/tv/${id}/season/${seasonNum}`);
+                        loader.hide();
+
+                        const epGrid = document.getElementById('tv-episodes-grid');
+                        epGrid.innerHTML = '';
+
+                        if (seasonData && seasonData.episodes && seasonData.episodes.length > 0) {
+                            const today = new Date();
+                            seasonData.episodes.forEach(e => {
+                                if (!e.air_date || new Date(e.air_date) > today) return;
+
+                                const wrapper = document.createElement('div');
+                                wrapper.className = 'relative group';
+                                const btn = document.createElement('button');
+                                const isCurrent = (e.episode_number == ep);
+                                btn.className = `w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary ${isCurrent ? 'bg-primary text-black' : 'bg-input-bg text-text-muted'}`;
+                                btn.innerText = e.episode_number;
+                                btn.title = e.name;
+                                btn.onclick = () => {
+                                    ep = e.episode_number;
+                                    if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} - Episode ${ep}`;
+                                    Array.from(epGrid.children).forEach(child => {
+                                        child.querySelector('button').className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-input-bg text-text-muted';
+                                    });
+                                    btn.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black';
+                                    updatePlayerSource(SOURCES[0], id, 'tv', season, ep, details.poster_path, title, details.backdrop_path);
+                                    renderServerButtons();
+                                };
+                                wrapper.appendChild(btn);
+                                epGrid.appendChild(wrapper);
+                            });
+                        } else epGrid.innerHTML = '<p class="text-gray-500 col-span-full">No episodes found.</p>';
+                    };
+
+                    const renderSeasonsList = (seasons, currentSeasonNum) => {
+                        const seasonsContainer = document.getElementById('tv-seasons-list');
+                        seasonsContainer.innerHTML = '';
+                        const wrapper = document.getElementById('tv-seasons-container');
+                        const validSeasons = seasons.filter(s => s.season_number > 0 && s.season_number != currentSeasonNum);
+
+                        if (validSeasons.length === 0) { wrapper.classList.add('hidden'); return; }
+                        wrapper.classList.remove('hidden');
+
+                        validSeasons.forEach(s => {
+                            const imgUrl = s.poster_path ? IMG_URL + s.poster_path : 'https://placehold.co/160x240?text=No+Img';
+                            const card = createCardHTML(id, 'season', s.name, imgUrl, s.vote_average ? s.vote_average.toFixed(1) : null, s.air_date ? s.air_date.split('-')[0] : '', `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${s.episode_count} EPS</div>`, false, null);
+                            card.onclick = () => {
+                                ep = 1;
+                                loadSeasonData(s.season_number);
+                                updatePlayerSource(SOURCES[0], id, 'tv', s.season_number, 1, details.poster_path, title, details.backdrop_path);
+                                renderServerButtons();
+                            }
+                            seasonsContainer.appendChild(card);
+                        });
+                    };
+
+                    const changeTvEpisode = (dir) => {
+                        const nextEp = ep + dir;
+                        const grid = document.getElementById('tv-episodes-grid');
+                        if (!grid) return;
+                        const buttons = grid.querySelectorAll('button');
+                        for (let btn of buttons) {
+                            if (parseInt(btn.innerText) === nextEp) {
+                                btn.click();
+                                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                                return;
+                            }
+                        }
+                    };
+                    document.getElementById('btn-tv-prev').onclick = () => changeTvEpisode(-1);
+                    document.getElementById('btn-tv-next').onclick = () => changeTvEpisode(1);
+
+                    await loadSeasonData(startSeason);
+                    updatePlayerSource(SOURCES[0], id, 'tv', startSeason, startEpisode, details.poster_path, title, details.backdrop_path);
+                } else {
+                    updatePlayerSource(SOURCES[0], id, 'movie', 1, 1, details.poster_path, title, details.backdrop_path);
+                }
+
+                // Recommendations
+                const recContainer = document.getElementById('tmdb-recommendations');
+                const recTitle = document.getElementById('tmdb-rec-title');
+                if (recommendations && recommendations.results && recommendations.results.length > 0) {
+                    renderTMDBGrid('tmdb-recommendations', recommendations.results, type, true);
+                } else {
+                    if (details.genres && details.genres.length > 0) {
+                        const genreIds = details.genres.slice(0, 2).map(g => g.id).join(',');
+                        if (recTitle) recTitle.innerText = "Recommendation based in Genre";
+                        const fbData = await fetchTMDB(`/discover/${type}`, { with_genres: genreIds });
+                        if (fbData && fbData.results) renderTMDBGrid('tmdb-recommendations', fbData.results, type, true);
+                        else recContainer.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
+                    } else recContainer.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
+                }
+
+                // Collection
+                if (collectionData && collectionData.parts && collectionData.parts.length > 0) {
+                    const sortedParts = collectionData.parts.sort((a, b) => new Date(a.release_date || '9999-12-31') - new Date(b.release_date || '9999-12-31'));
+                    const colContainer = document.getElementById('tmdb-collection-list');
+                    sortedParts.forEach(part => {
+                        const imgUrl = part.poster_path ? IMG_URL + part.poster_path : 'https://placehold.co/160x240?text=No+Img';
+                        const card = createCardHTML(part.id, 'movie', part.title, imgUrl, part.vote_average, part.release_date ? part.release_date.split('-')[0] : '', '', false, part.overview);
+                        colContainer.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                console.error("Error in openTMDBPlayer:", error);
+                document.getElementById('tmdb-player-content').innerHTML = '<p class="text-center text-red-500 mt-10">An error occurred while loading player.</p>';
+            } finally {
+                loader.hide();
             }
-            loader.hide();
         }
 
         async function openActorDetails(id) {
@@ -3159,4 +3223,3 @@
 </body>
 
 </html>
-
