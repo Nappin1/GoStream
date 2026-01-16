@@ -902,7 +902,7 @@
                     </div>
                 </div>
                 <div class="mt-3 text-sm space-y-3">
-                    <h3 class="text-lg font-bold text-text-main mb-3">Recommendations</h3>
+                    <h3 class="text-lg font-bold text-text-main mb-3">You may also like</h3>
                     <div id="anilist-recommendations-grid" class="horizontal-scroll-container p-2"></div>
                 </div>
             </div>
@@ -1236,7 +1236,8 @@
                 `;
 
                 card.onclick = () => {
-                    openDetailsWrapper(item.id, item.type, item.season, item.episode);
+                    if (item.type === 'movie') openTMDBPlayer(item.id, 'movie');
+                    else openDetailsWrapper(item.id, item.type, item.season, item.episode);
                 };
                 container.appendChild(card);
             });
@@ -1263,7 +1264,8 @@
                 sortSelect.innerHTML = `
                 <option value="TRENDING_DESC">Trending</option>
                 <option value="POPULARITY_DESC">Popular</option>
-                <option value="SCORE_DESC">Top Rated</option>`;
+                <option value="SCORE_DESC">Top Rated</option>
+                <option value="RECENTLY_UPDATED">Recently Updated</option>`;
             } else {
                 sortSelect.className = 'hidden';
             }
@@ -1692,36 +1694,79 @@
             const gridId = 'grid-anilist';
             const grid = document.getElementById(gridId);
 
-            const query = `
-            query ($page: Int, $sort: [MediaSort], $genre: String, $country: CountryCode, $status: MediaStatus, $year: Int) {
-                Page(page: $page, perPage: 24) {
-                    pageInfo { hasNextPage }
-                    media(sort: $sort, genre: $genre, countryOfOrigin: $country, status: $status, seasonYear: $year, type: ANIME, isAdult: false) {
-                        id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
+            if (state.filters.sort === 'RECENTLY_UPDATED') {
+                const query = `
+                query ($page: Int) {
+                    Page(page: $page, perPage: 24) {
+                        pageInfo { hasNextPage }
+                        airingSchedules(sort: TIME_DESC, notYetAired: false) {
+                            episode
+                            airingAt
+                            media {
+                                id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
+                            }
+                        }
                     }
+                }`;
+                const data = await fetchAnilist(query, { page: state.page });
+                if (data && data.Page.airingSchedules) {
+                    // Map AiringSchedules to shared media format
+                    // We can optionally use the 'episode' data to show "Ep X" badge if we want
+                    state.data = data.Page.airingSchedules.map(schedule => {
+                        const media = schedule.media;
+                        // Inject the specific recently aired episode number so mapAnilistToShared or renderer can use it?
+                        // Currently mapAnilistToShared doesn't look at it, but we can do a quick hack or just return media.
+                        // Let's attach it to the media object temporarily if we want to display it.
+                        // Actually, mapAnilistToShared is simple. Let's just pass media.
+                        return media;
+                    });
+                    // Remove duplicates if any (though usually rare for consecutive airing schedules of same show in one page unless short form)
+                    const uniqueData = [];
+                    const seen = new Set();
+                    state.data.forEach(m => {
+                        if (!seen.has(m.id)) {
+                            seen.add(m.id);
+                            uniqueData.push(m);
+                        }
+                    });
+
+                    const mappedData = uniqueData.map(mapAnilistToShared);
+                    renderAnilistGrid(gridId, mappedData);
+                    document.getElementById('anilist-page-num').innerText = state.page;
                 }
-            }`;
 
-            const vars = { page: state.page };
-
-            if (state.filters.upcoming) {
-                vars.status = 'NOT_YET_RELEASED';
-                vars.sort = state.filters.upcoming;
             } else {
-                vars.sort = state.filters.sort;
-            }
+                const query = `
+                query ($page: Int, $sort: [MediaSort], $genre: String, $country: CountryCode, $status: MediaStatus, $year: Int) {
+                    Page(page: $page, perPage: 24) {
+                        pageInfo { hasNextPage }
+                        media(sort: $sort, genre: $genre, countryOfOrigin: $country, status: $status, seasonYear: $year, type: ANIME, isAdult: false) {
+                            id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
+                        }
+                    }
+                }`;
 
-            if (state.filters.genre) vars.genre = state.filters.genre;
-            if (state.filters.country) vars.country = state.filters.country;
-            if (state.filters.year) vars.year = parseInt(state.filters.year);
+                const vars = { page: state.page };
 
-            const data = await fetchAnilist(query, vars);
-            if (data && data.Page.media) {
-                state.data = data.Page.media;
-                const mappedData = state.data.map(mapAnilistToShared);
+                if (state.filters.upcoming) {
+                    vars.status = 'NOT_YET_RELEASED';
+                    vars.sort = state.filters.upcoming;
+                } else {
+                    vars.sort = state.filters.sort;
+                }
 
-                renderAnilistGrid(gridId, mappedData);
-                document.getElementById('anilist-page-num').innerText = state.page;
+                if (state.filters.genre) vars.genre = state.filters.genre;
+                if (state.filters.country) vars.country = state.filters.country;
+                if (state.filters.year) vars.year = parseInt(state.filters.year);
+
+                const data = await fetchAnilist(query, vars);
+                if (data && data.Page.media) {
+                    state.data = data.Page.media;
+                    const mappedData = state.data.map(mapAnilistToShared);
+
+                    renderAnilistGrid(gridId, mappedData);
+                    document.getElementById('anilist-page-num').innerText = state.page;
+                }
             }
         }
 
@@ -2041,7 +2086,30 @@
             // For robustness, let's allow fetching if currentAnime is null or mismatch.
             if (!state.currentAnime || state.currentAnime.id !== id) {
                 loader.show();
-                const query = `query ($id: Int) { Media(id: $id) { id title { romaji english } coverImage { extraLarge } bannerImage episodes nextAiringEpisode { episode } status } }`;
+                const query = `query ($id: Int) { Media(id: $id) { 
+                    id 
+                    title { romaji english } 
+                    coverImage { extraLarge } 
+                    bannerImage 
+                    episodes 
+                    nextAiringEpisode { episode } 
+                    status 
+                    relations { edges { relationType node { id title { romaji } seasonYear averageScore format status coverImage { extraLarge } } } }
+                    recommendations(sort: RATING_DESC, perPage: 10) {
+                        nodes {
+                            mediaRecommendation {
+                                id
+                                title { romaji english }
+                                coverImage { extraLarge }
+                                bannerImage
+                                format
+                                averageScore
+                                status
+                                seasonYear
+                            }
+                        }
+                    }
+                } }`;
                 const data = await fetchAnilist(query, { id });
                 if (!data || !data.Media) { loader.hide(); return; }
                 state.currentAnime = data.Media;
@@ -2111,6 +2179,48 @@
                     wrapper.appendChild(badge);
                 }
                 epGrid.appendChild(wrapper);
+            }
+
+            // Relations
+            const relContainer = document.getElementById('anilist-info-Relations-Container');
+            const relList = document.getElementById('anilist-info-Relations');
+            relList.innerHTML = '';
+
+            if (anime.relations && anime.relations.edges && anime.relations.edges.length > 0) {
+                const validRelations = anime.relations.edges.filter(r => r.node.format !== 'MANGA' && r.node.format !== 'NOVEL' && r.node.format !== 'MUSIC' && r.node.format !== 'ONE_SHOT');
+
+                if (validRelations.length > 0) {
+                    relContainer.classList.remove('hidden');
+
+                    validRelations.forEach(edge => {
+                        const imgUrl = edge.node.coverImage?.extraLarge || 'https://placehold.co/160x240?text=No+Img';
+                        const relYear = edge.node.seasonYear || (edge.node.startDate ? edge.node.startDate.year : '');
+                        const relVote = edge.node.averageScore ? edge.node.averageScore / 10 : null;
+                        const card = createCardHTML(
+                            edge.node.id,
+                            'anime',
+                            edge.node.title.romaji,
+                            imgUrl,
+                            relVote,
+                            relYear,
+                            `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
+                            false,
+                            null
+                        );
+                        relList.appendChild(card);
+                    });
+                } else relContainer.classList.add('hidden');
+            } else relContainer.classList.add('hidden');
+
+            // Recommendations
+            const recsGrid = document.getElementById('anilist-recommendations-grid');
+            recsGrid.innerHTML = '';
+            if (anime.recommendations && anime.recommendations.nodes && anime.recommendations.nodes.length > 0) {
+                const recItems = anime.recommendations.nodes
+                    .map(n => n.mediaRecommendation).filter(m => m).map(mapAnilistToShared);
+                renderAnilistGrid('anilist-recommendations-grid', recItems, true);
+            } else {
+                recsGrid.innerHTML = '<p class="text-xs text-gray-500 pl-4">No recommendations found.</p>';
             }
             if (maxEps > 0) playAnilistEp(state.currentEp); // Play the requested episode
         }
@@ -2606,7 +2716,7 @@
                         <div id="tmdb-collection-list" class="horizontal-scroll-container p-2"></div>
                     </div>
                     <div class="mt-3 text-sm space-y-3">
-                        <h3 id="tmdb-rec-title" class="text-lg font-bold text-text-main mb-3">Recommendations</h3>
+                        <h3 id="tmdb-rec-title" class="text-lg font-bold text-text-main mb-3">You may also like</h3>
                         <div id="tmdb-recommendations" class="horizontal-scroll-container p-2"></div>
                     </div>
                 </div>
