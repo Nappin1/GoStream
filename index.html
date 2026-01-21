@@ -204,6 +204,36 @@
 
         .movie-card img {
             transition: opacity 0.2s ease-in-out;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Global Pop-out Hover Card */
+        #global-hover-card {
+            position: fixed;
+            z-index: 9999;
+            width: 320px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0.50rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            pointer-events: none;
+        }
+
+        #global-hover-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        #global-hover-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
         }
 
         .card-info {
@@ -782,7 +812,7 @@
         </section>
 
         <section id="view-anilist-details" class="view-section hidden w-full bg-dark-bg">
-            <div id="anilist-details-banner" class="w-full h-[400px] md:h-[500px] bg-cover bg-center relative">
+            <div id="anilist-details-banner" class="w-full h-[300px] md:h-[400px] bg-cover bg-top bg-center relative">
                 <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
             </div>
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
@@ -798,13 +828,13 @@
                         <!-- WATCH NOW BUTTON SECTION -->
                         <div class="mb-8 flex items-center gap-4">
                             <button id="anilist-details-watchlist-btn"
-                                class="bg-card-bg text-primary font-bold rounded transition-colors p-3 md:p-4 hover:bg-opacity-60">
+                                class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2">
                                 <i class="material-icons">bookmark_add</i> Watchlist
                             </button>
                         </div>
                         <button id="anilist-watch-now-btn"
-                            class="w-full bg-primary text-black font-extrabold text-lg py-3 px-3 rounded shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all flex items-center justify-center gap-2 flex-grow">
-                            <i class="fas fa-play"></i> WATCH NOW
+                            class="w-full bg-primary text-black font-extrabold text-lg py-3 px-3 rounded shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all flex items-center justify-center flex-grow">
+                            <i class="fas fa-play"></i> PLAY NOW
                         </button>
                     </div>
                     <div class="flex-1 pt-4 md:pt-16 min-w-0">
@@ -948,6 +978,7 @@
     </footer>
 
     <div id="toast-container" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+    <div id="global-hover-card"></div>
 
     <script>
         /**
@@ -1575,11 +1606,11 @@
                 contentDiv.innerHTML = `
                     <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white line-clamp-2">${title}</h1>
                     <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
-                    <div class="flex">
-                        <button class="bg-gray-600 md:hover:bg-opacity-60 text-white font-bold py-2 px-5 rounded-l-md transition-colors" onclick="openDetailsWrapper(${playParams})">
+                    <div class="flex gap-2">
+                        <button class="bg-gray-600 md:hover:bg-opacity-60 text-white font-bold py-2 px-5 rounded transition-colors" onclick="openDetailsWrapper(${playParams})">
                             <i class="fas fa-play mr-2"></i> ${btnText}
                         </button>
-                        <button id="banner-watchlist-btn-${item.id}" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded-r-md transition-colors" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}')">
+                        <button id="banner-watchlist-btn-${item.id}" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ')}')">
                             <i class="material-icons">bookmark_add</i>
                         </button>
                     </div>
@@ -1704,7 +1735,7 @@
                 poster_path: anime.coverImage.extraLarge,
                 vote_average: (anime.averageScore || 0) / 10,
                 media_type: 'anime',
-                release_date: anime.seasonYear ? String(anime.seasonYear) : 'N/A',
+                release_date: anime.seasonYear ? String(anime.seasonYear) : (anime.startDate && anime.startDate.year ? String(anime.startDate.year) : 'N/A'),
                 status: anime.status
             };
         }
@@ -1958,12 +1989,13 @@
                     startDate { year month day }
                     genres
                     description
-                    relations { edges { relationType node { id title { romaji } seasonYear averageScore format status coverImage { extraLarge } } } }
+                    relations { edges { relationType node { id title { romaji } description seasonYear averageScore format status coverImage { extraLarge } } } }
                     recommendations(sort: RATING_DESC, perPage: 10) {
                         nodes {
                             mediaRecommendation {
                                 id
                                 title { romaji english }
+                                description
                                 coverImage { extraLarge }
                                 bannerImage
                                 format
@@ -1999,8 +2031,18 @@
             document.getElementById('anilist-details-title').innerText = title;
             document.getElementById('anilist-details-img').src = anime.coverImage.extraLarge;
 
-            const score = (anime.averageScore || '??') + '% Score';
-            document.getElementById('anilist-details-score').innerText = score;
+            const averageScore = anime.averageScore; // Assuming anime.averageScore is a number like 85
+
+            // Check if averageScore is a valid number before calculation
+            let score;
+            if (typeof averageScore === 'number' && !isNaN(averageScore)) {
+                // Convert percentage (0-100) to a 0-10 scale and round to one decimal
+                score = (averageScore / 10).toFixed(1);
+            } else {
+                // Handle cases where it's '??' or not a number
+                score = '??';
+            }
+            document.getElementById('anilist-details-score').innerHTML = `<i class="fas fa-star mr-1"></i> ${score}`;
             document.getElementById('anilist-details-type').innerText = anime.format || 'TV';
             const yearStr = anime.seasonYear || (anime.startDate && anime.startDate.year ? anime.startDate.year : 'N/A');
             document.getElementById('anilist-details-year').innerText = yearStr;
@@ -2008,7 +2050,7 @@
             // Watchlist Button
             const safeTitle = title.replace(/'/g, "");
             const wlBtn = document.getElementById('anilist-details-watchlist-btn');
-            wlBtn.onclick = () => toggleWatchlist(anime.id, 'anime', safeTitle, anime.coverImage.extraLarge, 'anilist-details-watchlist-btn', (anime.averageScore || 0) / 10, yearStr);
+            wlBtn.onclick = () => toggleWatchlist(anime.id, 'anime', safeTitle, anime.coverImage.extraLarge, 'anilist-details-watchlist-btn', (anime.averageScore || 0) / 10, yearStr, anime.description);
             updateWatchlistButtonState(anime.id, 'anilist-details-watchlist-btn');
 
             // TRAILER LOGIC
@@ -2020,7 +2062,7 @@
 
             if (anime.trailer && (anime.trailer.site === 'youtube' || anime.trailer.site === 'YouTube')) {
                 trailerBtn.className = "bg-gray-700/50 text-white font-bold py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2 flex-grow";
-                trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Watch Trailer';
+                trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Open Trailer';
                 trailerBtn.onclick = () => openTrailerModal([{ key: anime.trailer.id, name: 'Main Trailer', site: 'YouTube' }]);
             } else {
                 trailerBtn.className = "bg-gray-800/50 text-gray-500 font-bold py-3 px-4 rounded cursor-not-allowed flex items-center justify-center gap-2 flex-grow";
@@ -2127,7 +2169,7 @@
                             relYear,
                             `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
                             false,
-                            null
+                            edge.node.description
                         );
                         relList.appendChild(card);
                     });
@@ -2149,14 +2191,14 @@
             // Check continue watching for resume context
             const resumeItem = appState.continueWatching.find(i => i.id === id && i.type === 'anime');
             let startEp = 1;
-            let btnText = "WATCH NOW";
+            let btnText = "PLAY NOW";
             if (resumeItem && resumeItem.episode) {
                 startEp = resumeItem.episode;
                 btnText = `RESUME EP ${startEp}`;
             }
 
             const watchBtn = document.getElementById('anilist-watch-now-btn');
-            watchBtn.innerHTML = `<i class="fas fa-play"></i> ${btnText}`;
+            watchBtn.innerHTML = `<i class="fas fa-play mr-2"></i> ${btnText}`;
             watchBtn.onclick = () => openAnilistPlayer(id, startEp);
         }
 
@@ -2178,12 +2220,13 @@
                     episodes 
                     nextAiringEpisode { episode } 
                     status 
-                    relations { edges { relationType node { id title { romaji } seasonYear averageScore format status coverImage { extraLarge } } } }
+                    relations { edges { relationType node { id title { romaji } description seasonYear averageScore format status coverImage { extraLarge } } } }
                     recommendations(sort: RATING_DESC, perPage: 10) {
                         nodes {
                             mediaRecommendation {
                                 id
                                 title { romaji english }
+                                description
                                 coverImage { extraLarge }
                                 bannerImage
                                 format
@@ -2289,7 +2332,7 @@
                             relYear,
                             `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
                             false,
-                            null
+                            edge.node.description
                         );
                         relList.appendChild(card);
                     });
@@ -2372,7 +2415,7 @@
             grid.innerHTML = '<p class="text-gray-400">Searching...</p>';
             document.getElementById('pag-search').innerHTML = ''; // Clear pagination
 
-            const anilistQuery = `query ($search: String, $page: Int) { Page(page: $page, perPage: 20) { pageInfo { lastPage } media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { extraLarge } format averageScore episodes } } }`;
+            const anilistQuery = `query ($search: String, $page: Int) { Page(page: $page, perPage: 20) { pageInfo { lastPage } media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { extraLarge } format averageScore episodes status startDate { year } seasonYear description } } }`;
             const anilistPromise = fetchAnilist(anilistQuery, { search: query, page: page });
             const tmdbPromise = fetchTMDB('/search/multi', { query, page: page });
 
@@ -2534,48 +2577,181 @@
 
             const aspectClass = isHorizontal ? 'aspect-video' : 'aspect-[2/3]';
 
-            // ✅ Normalize vote (handles numbers & numeric strings)
+            // Normalize vote
             const numericVote = vote !== null && vote !== undefined && !isNaN(vote) ? Number(vote) : null;
+            const voteDisplay = numericVote !== null && numericVote > 0 ? numericVote.toFixed(1) : 'NR';
 
-            // ✅ Display logic
-            const voteDisplay =
-                numericVote !== null && numericVote > 0 ? numericVote.toFixed(1) : 'NR';
+            // Safe strings
+            const safeTitle = (title || '').replace(/'/g, "");
+            const safeYear = year || '';
+            const safeOverview = overview ? overview.replace(/"/g, '&quot;') : 'No description available.';
+            const isWatchlisted = appState.watchlist.some(i => i.id == id);
+
+            // Generate a unique ID for the watchlist button in this specific card instance
+            const btnId = `wl-${id}-${Math.random().toString(36).substr(2, 6)}`;
 
             card.innerHTML = `
                 <div class="${aspectClass} overflow-hidden relative">
-                <img src="${posterUrl}" class="w-full h-full object-cover">
+                    <img src="${posterUrl}" class="w-full h-full object-cover">
+                    
+                    ${type !== 'actor' ? statusBadge || '' : ''}
 
-                ${statusBadge || ''}
-
-                ${type !== 'actor' ? ` <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10 flex items-center gap-1">
+                     ${type !== 'actor' ? ` <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10 flex items-center gap-1">
                     ${type === 'season' ? '' : ''} ${voteDisplay} </div> ` : `
-                <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10">
-                    <i class="fas fa-user"></i>
-                </div> ` }
+                    <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10">
+                        <i class="fas fa-user"></i>
+                    </div> ` }
 
-                <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
-                    <i class="mdi ${type === 'actor'
-                    ? 'mdi-account-search'
-                    : 'mdi-play-circle'
-                } text-primary text-5xl drop-shadow-lg"></i>
-                </div>
+                    <div class="absolute bottom-0 left-0 w-full p-3 card-info">
+                        <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors" title="${title}">
+                            ${title}
+                        </h3>
+                        <div class="flex justify-between items-center text-xs text-text-muted mt-1">
+                            <span>${safeYear}</span>
+                            <span class="uppercase border border-border-color px-1 rounded text-[10px] truncate max-w-[80px]">
+                            ${type}
+                            </span>
+                        </div>
+                    </div>
+                </div> `;
 
-                <div class="absolute bottom-0 left-0 w-full p-3 card-info">
-                    <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors" title="${title}">
-                        ${title}
-                    </h3>
-                    <div class="flex justify-between items-center text-xs text-text-muted mt-1">
-                        <span>${year || ''}</span>
-                        <span class="uppercase border border-border-color px-1 rounded text-[10px] truncate max-w-[80px]">
-                        ${type}
-                        </span>
+            // Main card click
+            card.onclick = () => openDetailsWrapper(id, type);
+
+            // HOVER EVENTS FOR GLOBAL CARD
+            if (type !== 'actor') {
+                const data = { id, type, title, posterUrl, vote: voteDisplay, year: safeYear, overview: safeOverview, numericVote };
+                card.onmouseenter = (e) => {
+                    // Clear any pending hide timer
+                    if (hoverTimer) clearTimeout(hoverTimer);
+                    // Delay opening to prevent flickering on fast scroll
+                    hoverTimer = setTimeout(() => showHoverCard(card, data), 400);
+                };
+                card.onmouseleave = () => {
+                    if (hoverTimer) clearTimeout(hoverTimer);
+                    hoverTimer = setTimeout(hideHoverCard, 100);
+                };
+            }
+
+            return card;
+        }
+
+        // GLOBAL HOVER CARD LOGIC
+        let hoverTimer = null;
+        let isHoveringCard = false;
+
+        // Initialize listeners for the global card once DOM is ready (or here if at end of body)
+        // Since this script is at end of body, element should exist now.
+        const ghCard = document.getElementById('global-hover-card');
+        if (ghCard) {
+            ghCard.onmouseenter = () => {
+                if (hoverTimer) clearTimeout(hoverTimer);
+                isHoveringCard = true;
+            };
+            ghCard.onmouseleave = () => {
+                isHoveringCard = false;
+                hoverTimer = setTimeout(hideHoverCard, 100);
+            };
+        }
+
+        function showHoverCard(targetElem, data) {
+            const card = document.getElementById('global-hover-card');
+            if (!card) return;
+
+            const rect = targetElem.getBoundingClientRect();
+            const cardWidth = 320;
+            const cardHeight = 350; // Approx height, will adjust naturally but used for calculation
+            const margin = 15;
+
+            // --- POSITIONAL LOGIC ---
+            // Preference: Right > Left > Top > Bottom
+            // Ensure it touches the side of the card if possible, acting like a tooltip
+
+            let top, left;
+            let transformOrigin = 'center';
+
+            const spaceRight = window.innerWidth - rect.right;
+            const spaceLeft = rect.left;
+            const spaceBottom = window.innerHeight - rect.bottom;
+            const spaceTop = rect.top;
+
+            // Vertical Center by default
+            let idealTop = rect.top + (rect.height / 2) - (cardHeight / 2);
+
+            // Clamp vertical to viewport
+            if (idealTop < margin) idealTop = margin;
+            if (idealTop + cardHeight > window.innerHeight - margin) idealTop = window.innerHeight - cardHeight - margin;
+
+            // 1. Try Right
+            if (spaceRight >= cardWidth + margin) {
+                left = rect.right + margin;
+                top = idealTop;
+                transformOrigin = 'left center';
+            }
+            // 2. Try Left
+            else if (spaceLeft >= cardWidth + margin) {
+                left = rect.left - cardWidth - margin;
+                top = idealTop;
+                transformOrigin = 'right center';
+            }
+            // 3. Fallback: Center over the card (Pop-out style) if no side space
+            // Or try Top/Bottom? Let's just center it on screen or over card if mobile/tight
+            else {
+                // If really tight, center horizontally on screen
+                left = (window.innerWidth / 2) - (cardWidth / 2);
+
+                // Try Top
+                if (spaceTop > cardHeight + margin) {
+                    top = rect.top - cardHeight - margin;
+                    transformOrigin = 'bottom center';
+                }
+                // Try Bottom
+                else {
+                    top = rect.bottom + margin;
+                    transformOrigin = 'top center';
+                }
+            }
+
+            // Final horizontal clamp just in case
+            if (left < margin) left = margin;
+            if (left + cardWidth > window.innerWidth - margin) left = window.innerWidth - cardWidth - margin;
+
+            // Apply
+            card.style.top = `${top}px`;
+            card.style.left = `${left}px`;
+            card.style.transformOrigin = transformOrigin;
+
+            // Populate Content
+            const isWatchlisted = appState.watchlist.some(i => i.id == data.id);
+            const wlIcon = isWatchlisted ? 'fas fa-bookmark' : 'far fa-bookmark';
+
+            card.innerHTML = `
+                <div class="relative">
+                    <img src="${data.posterUrl}" class="w-full h-44 object-cover object-top">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-transparent to-transparent"></div>
+                    <div class="absolute bottom-3 left-4 right-4 z-10">
+                        <h4 class="text-white font-extrabold text-lg leading-tight dropshadow-md line-clamp-2">${data.title}</h4>
+                        <div class="flex items-center gap-3 text-xs text-secondary mt-1 font-medium">
+                             <span class="text-primary flex items-center gap-1"><i class="fas fa-star text-[10px]"></i> ${data.vote}</span>
+                             <span class="text-white/80">${data.year}</span>
+                             <span class="uppercase border border-white/20 px-1.5 py-0.5 rounded text-[10px] bg-black/40">${data.type}</span>
+                        </div>
                     </div>
                 </div>
-            </div> `;
+                <div class="p-4 pt-1">
+                    <p class="text-xs text-text-muted line-clamp-4 leading-relaxed mb-4">${data.overview}</p>
+                    
+                </div>
+            `;
 
-            card.title = title;
-            card.onclick = () => openDetailsWrapper(id, type);
-            return card;
+            card.classList.add('visible');
+        }
+
+        function hideHoverCard() {
+            if (!isHoveringCard) {
+                const card = document.getElementById('global-hover-card');
+                card.classList.remove('visible');
+            }
         }
 
         function renderPagination(containerId, current, total, callback) {
@@ -2622,7 +2798,7 @@
                 const historyItem = appState.continueWatching.find(i => i.id === id && i.type === type);
                 let resumeSeason = 1;
                 let resumeEp = 1;
-                let btnText = "WATCH NOW";
+                let btnText = "PLAY NOW";
                 if (historyItem && historyItem.season) {
                     resumeSeason = historyItem.season;
                     resumeEp = historyItem.episode;
@@ -2672,7 +2848,7 @@
                 const safeTitle = title.replace(/['"]/g, "");
 
                 container.innerHTML = `
-                    <div class="w-full h-[300px] md:h-[400px] bg-cover bg-center relative" style="background-image: url('${backdrop}')">
+                    <div class="w-full h-[300px] md:h-[600px] bg-cover bg-top bg-center relative" style="background-image: url('${backdrop}')">
                         <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
                     </div>
                     <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
@@ -2684,7 +2860,7 @@
                                     
                                 <!-- WATCH NOW BUTTON -->
                                 <div class="mb-8 flex items-center gap-4">
-                                    <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${safeTitle}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}')" class="md:hover:bg-opacity-60 pt-4 py-2 px-3 bg-card-bg text-primary font-bold rounded transition-colors"><i class="material-icons">bookmark_add</i></button>
+                                    <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${safeTitle}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}', '${overview.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ')}')" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center"><i class="material-icons">bookmark_add</i></button>
                                 </div>
                                     <button id="tmdb-watch-now-btn" class="w-full bg-primary text-black font-extrabold text-lg py-3 px-3 rounded shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all flex items-center justify-center gap-2 flex-grow">
                                         <i class="fas fa-play"></i> ${btnText}
@@ -2733,7 +2909,7 @@
                 const trailerBtn = document.createElement('button');
                 if (trailers.length > 0) {
                     trailerBtn.className = "bg-gray-700/50 text-white font-bold py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2 flex-grow";
-                    trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Play Trailer';
+                    trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Open Trailer';
                     // Pass the array directly, map if necessary to ensure consistent structure if we use it elsewhere, 
                     // but TMDB result objects {key, name, site} work fine.
                     trailerBtn.onclick = () => openTrailerModal(trailers);
@@ -2983,7 +3159,7 @@
 
                         validSeasons.forEach(s => {
                             const imgUrl = s.poster_path ? IMG_URL + s.poster_path : 'https://placehold.co/160x240?text=No+Img';
-                            const card = createCardHTML(id, 'season', s.name, imgUrl, s.vote_average ? s.vote_average.toFixed(1) : null, s.air_date ? s.air_date.split('-')[0] : '', `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${s.episode_count} EPS</div>`, false, null);
+                            const card = createCardHTML(id, 'season', s.name, imgUrl, s.vote_average ? s.vote_average.toFixed(1) : null, s.air_date ? s.air_date.split('-')[0] : '', `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${s.episode_count} EPS</div>`, false, s.overview);
                             card.onclick = () => {
                                 ep = 1;
                                 loadSeasonData(s.season_number);
@@ -3311,14 +3487,14 @@
             }
         }
 
-        function toggleWatchlist(id, type, title, poster, btnId, vote = null, year = null) {
+        function toggleWatchlist(id, type, title, poster, btnId, vote = null, year = null, overview = null) {
             const exists = appState.watchlist.find(i => i.id === id);
             if (exists) {
                 appState.watchlist = appState.watchlist.filter(i => i.id !== id);
                 showToast('Removed from Library');
             } else {
                 // Store vote and year to match default card design
-                appState.watchlist.push({ id, type, title, poster_path: poster, vote_average: vote, release_date: year });
+                appState.watchlist.push({ id, type, title, poster_path: poster, vote_average: vote, release_date: year, overview: overview });
                 showToast('Added to Library');
             }
             localStorage.setItem('goStreamWatchlist', JSON.stringify(appState.watchlist));
@@ -3334,9 +3510,9 @@
             } else {
                 btn.innerHTML = '<i class="material-icons">bookmark_add</i>';
                 if (btnId.includes('banner')) {
-                    btn.className = "bg-card-bg md:hover:bg-opacity-60 text-primary font-bold pt-4 py-2 px-3 rounded-r-md transition-colors";
+                    btn.className = "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center";
                 } else {
-                    btn.className = "pt-4 py-2 px-3 bg-card-bg text-primary md:hover:bg-opacity-60 rounded font-bold transition-colors";
+                    btn.className = "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center";
                 }
             }
         }
@@ -3359,7 +3535,7 @@
                     item.release_date,   // year/date
                     '',   // Status unknown
                     false, // Vertical (grid) layout
-                    null // Overview not needed for card
+                    item.overview // Pass overview
                 );
 
                 // Cleaner Remove Button: Circular, top-right, semi-transparent black
