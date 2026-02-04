@@ -152,18 +152,28 @@
         }
 
         /* Nav Link Active State */
+        .nav-link {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            /* Reserve space for active border */
+        }
+
         .nav-link.active {
-            color: var(--color-primary);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--color-primary);
+            color: white;
             font-weight: 700;
         }
 
-        .nav-link {
-            cursor: pointer;
-            transition: color 0.2s;
+        .nav-link.active i {
+            color: var(--color-primary);
         }
 
-        .nav-link:hover {
-            color: var(--color-primary);
+        @media (min-width: 768px) {
+            .nav-link:hover {
+                color: white;
+                background-color: rgba(255, 255, 255, 0.02);
+            }
         }
 
         /* Movie Card & Utilities */
@@ -184,8 +194,8 @@
             border-radius: 0.5rem;
         }
 
-        /* Hover effects only for devices that support hover */
-        @media (hover: hover) {
+        /* Hover effects only for devices that support hover and larger screens */
+        @media (hover: hover) and (min-width: 768px) {
             .movie-card:hover {
                 transform: scale(1.03);
                 box-shadow: 0 10px 20px var(--shadow-color);
@@ -254,6 +264,12 @@
             scroll-behavior: smooth;
         }
 
+        /* Fade Mask for Horizontal Scroll */
+        .mask-linear-fade {
+            mask-image: linear-gradient(to right, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+        }
+
         .horizontal-scroll-container .movie-card {
             flex-shrink: 0;
             width: 160px;
@@ -267,28 +283,51 @@
 
         /* Filter Selects */
         .filter-select {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-size: 0.875rem;
-            /* Adjusted padding for better text alignment with arrow */
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 500;
             padding: 0.5rem 2rem 0.5rem 1rem;
-            border-radius: 0.375rem;
+            border-radius: 9999px;
+            /* Chip style */
             appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 0.5rem center;
-            background-size: 1.25em;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
             cursor: pointer;
             outline: none;
-            /* Responsive width handling */
-            width: 100%;
-            min-width: 0;
+            width: auto;
+            min-width: auto;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            transition: all 0.2s ease;
+        }
+
+        /* Focus only for global (keyboard nav) but Remove Hover for mobile */
+        .filter-select:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--color-primary);
+            color: white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23cae962'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        .filter-select option {
+            background-color: var(--bg-card);
+            color: white;
+        }
+
+        /* Scrollbar Hide Utility */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
         @media (min-width: 640px) {
@@ -299,8 +338,15 @@
             }
         }
 
-        .filter-select:hover {
-            border-color: var(--color-primary);
+        @media (min-width: 768px) {
+
+            /* Desktop Hover Effects */
+            .filter-select:hover {
+                border-color: var(--color-primary);
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23cae962'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            }
         }
 
         /* Bottom Nav Specifics */
@@ -310,16 +356,14 @@
         }
 
         .bottom-nav-item.active {
-            color: #ffffff;
+            color: var(--color-primary);
         }
 
         .bottom-nav-item.active i {
-            transform: scale(1.1);
+            text-shadow: 0 0 10px rgba(202, 233, 98, 0.3);
         }
 
-        .bottom-nav-item:active {
-            transform: scale(0.95);
-        }
+
 
         /* Utilities */
         .fade-in {
@@ -432,9 +476,11 @@
             transition: all 0.2s;
         }
 
-        .carousel-btn:hover {
-            background-color: var(--color-primary);
-            color: black;
+        @media (min-width: 768px) {
+            .carousel-btn:hover {
+                background-color: var(--color-primary);
+                color: black;
+            }
         }
     </style>
 </head>
@@ -447,72 +493,183 @@
         </div>
     </div>
 
-    <nav id="navbar"
-        class="fixed top-0 left-0 w-full z-50 bg-black border-b border-border-color transition-colors duration-300 pt-[env(safe-area-inset-top)]">
-        <div class="px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-            <a onclick="router('home')" class="cursor-pointer">
-                <h1 class="text-2xl outline-none tracking-tight font-extrabold text-text-main">Go<span
-                        class="text-primary">Stream</span></h1>
+
+
+
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside id="sidebar"
+        class="fixed top-0 left-0 z-50 h-screen w-64 bg-black border-r border-border-color hidden lg:flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
+        <div class="h-16 flex items-center justify-center px-6 border-b border-border-color flex-shrink-0 transition-all duration-300"
+            id="sidebar-header">
+            <a onclick="router('home')" class="cursor-pointer flex items-center gap-2 overflow-hidden">
+                <i class="fas fa-play-circle text-2xl text-primary visible-collapsed hidden"></i>
+                <h1 id="sidebar-logo-text"
+                    class="text-2xl font-extrabold text-white tracking-tight whitespace-nowrap transition-opacity duration-300">
+                    Go<span class="text-primary">Stream</span>
+                </h1>
             </a>
-            <div class="hidden nav-bp:flex space-x-6 items-center outline-none">
-                <a onclick="router('home')" class="nav-link text-text-main font-medium" data-target="home"><i
-                        class="fas fa-house mr-2"></i>HOME</a>
-                <a onclick="router('movies')" class="nav-link text-text-main font-medium" data-target="movies"><i
-                        class="fas fa-clapperboard mr-2"></i>MOVIES</a>
-                <a onclick="router('tv')" class="nav-link text-text-main font-medium" data-target="tv"><i
-                        class="fas fa-tv mr-2"></i>SERIES</a>
-                <a onclick="router('anime-anilist')" class="nav-link text-text-main font-medium"
-                    data-target="anime-anilist"><i class="fas fa-dragon mr-2"></i>ANIME</a>
-                <a onclick="router('watchlist')" class="nav-link text-text-main font-medium" data-target="watchlist"><i
-                        class="fas fa-lines-leaning mr-2"></i>LIBRARY</a>
-            </div>
-            <div class="flex items-center pl-3 space-x-4">
-                <button onclick="installApp()" id="nav-install-btn"
-                    class="hidden sm:flex items-center gap-2 text-text-muted hover:text-primary transition-colors text-sm font-bold">
-                    <i class="fas fa-download"></i> Install
+        </div>
+
+
+
+
+        <button onclick="toggleSidebar()"
+            class="absolute top-1/2 -right-4 -translate-y-1/2 z-50 bg-input-bg rounded p-2 shadow-md hover:text-white hover:bg-gray-700 transition-transform duration-300 transform"
+            id="sidebar-toggle-btn" title="Collapse Sidebar">
+            <i class="fas fa-chevron-left text-lg"></i>
+        </button>
+
+        <div class="flex-1 overflow-y-auto pt-2 px-3 space-y-1 custom-scroll overflow-x-hidden">
+            <a onclick="router('home')" data-target="home" title="Home"
+                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
+                <i
+                    class="fas fa-house w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0 mr-2"></i>
+                <span class="sidebar-label transition-opacity duration-300 uppercase">Home</span>
+            </a>
+            <a onclick="router('search')" data-target="search" title="Search"
+                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
+                <i
+                    class="fas fa-search w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0 mr-2"></i>
+                <span class="sidebar-label transition-opacity duration-300 uppercase">Search</span>
+            </a>
+            <div class="pt-1 mt-2 mb-2 mx-2 transition-all duration-300 uppercase text-text-muted text-xs"
+                id="sidebar-divider">
+                Media</div>
+            <a onclick="router('movies')" data-target="movies" title="Movies"
+                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
+                <i
+                    class="fas fa-clapperboard w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0 mr-2"></i>
+                <span class="sidebar-label transition-opacity duration-300 uppercase">Movies</span>
+            </a>
+            <a onclick="router('tv')" data-target="tv" title="TV Shows"
+                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
+                <i
+                    class="fas fa-tv w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0 mr-2"></i>
+                <span class="sidebar-label transition-opacity duration-300 uppercase">TV Shows</span>
+            </a>
+            <a onclick="router('anime-anilist')" data-target="anime-anilist" title="Anime"
+                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
+                <i
+                    class="fas fa-dragon w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0 mr-2"></i>
+                <span class="sidebar-label transition-opacity duration-300 uppercase">Anime</span>
+            </a>
+            <a onclick="router('watchlist')" data-target="watchlist" title="Library"
+                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
+                <i
+                    class="fas fa-lines-leaning w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0 mr-2"></i>
+                <span class="sidebar-label transition-opacity duration-300 uppercase">Library</span>
+            </a>
+            <a onclick="router('history')" data-target="history" title="History"
+                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
+                <i
+                    class="fas fa-history w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0 mr-2"></i>
+                <span class="sidebar-label transition-opacity duration-300 uppercase">History</span>
+            </a>
+        </div>
+
+        <div class="p-4 border-t border-border-color flex-shrink-0 flex flex-col items-center">
+            <button onclick="installApp()" id="install-btn-sidebar"
+                class="flex items-center justify-center w-full gap-2 bg-primary/10 hover:bg-primary text-primary hover:text-black py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap overflow-hidden">
+                <i class="fas fa-download text-lg"></i> <span
+                    class="sidebar-label transition-opacity duration-300">Install App</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <div id="bottom-nav"
+        class="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0a0a0a]/90 backdrop-blur-2xl border-t border-white/5 z-50 flex justify-around items-center h-[70px] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
+        <button onclick="router('home')" data-target="home" title="Home"
+            class="bottom-nav-item flex flex-col items-center justify-center gap-1.5 w-full h-full text-gray-400 hover:text-white transition-all group">
+            <i class="fas fa-house group-[.active]:text-primary transition-colors"></i>
+            <span
+                class="text-[10px] font-bold tracking-wide opacity-70 group-[.active]:opacity-100 group-[.active]:text-primary">Home</span>
+        </button>
+        <button onclick="router('search')" data-target="search" title="Search"
+            class="bottom-nav-item flex flex-col items-center justify-center gap-1.5 w-full h-full text-gray-400 hover:text-white transition-all group">
+            <i class="fas fa-search group-[.active]:text-primary transition-colors"></i>
+            <span
+                class="text-[10px] font-bold tracking-wide opacity-70 group-[.active]:opacity-100 group-[.active]:text-primary">Search</span>
+        </button>
+        <button onclick="toggleMoreMenu()" id="more-btn" title="More"
+            class="bottom-nav-item flex flex-col items-center justify-center gap-1.5 w-full h-full text-gray-400 hover:text-white transition-all group">
+            <i class="fas fa-bars transition-colors"></i>
+            <span class="text-[10px] font-bold tracking-wide opacity-70">More</span>
+        </button>
+    </div>
+
+    <!-- MORE MENU OVERLAY (Mobile) -->
+    <div id="more-menu-modal"
+        class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex flex-col justify-end transition-opacity duration-300"
+        onclick="toggleMoreMenu()">
+        <div class="mb-24 mx-4 bg-[#1e1e1e] border border-border-color rounded-2xl overflow-hidden shadow-2xl transform transition-transform duration-300 translate-y-full"
+            id="more-menu-content" onclick="event.stopPropagation()">
+            <div class="p-4 grid grid-cols-4 gap-4">
+                <button onclick="router('movies'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-clapperboard text-white group-hover:text-primary text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-300 group-hover:text-white">Movies</span>
                 </button>
-                <div class="relative block">
-                    <input id="global-search-input" type="text" placeholder="Search movies, people..."
-                        class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-1.5 pl-8 pr-3 w-full focus:outline-none focus:border-primary transition-colors">
-                    <i class="fas fa-search text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
-                </div>
+                <button onclick="router('tv'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-tv text-white group-hover:text-primary text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-300 group-hover:text-white">TV Shows</span>
+                </button>
+                <button onclick="router('anime-anilist'); toggleMoreMenu()"
+                    class="flex flex-col items-center gap-2 group">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-dragon text-white group-hover:text-primary text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-300 group-hover:text-white">Anime</span>
+                </button>
+
+                <button onclick="router('watchlist'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-lines-leaning text-white group-hover:text-primary text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-300 group-hover:text-white">Library</span>
+                </button>
+
+                <button onclick="router('history'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-history text-white group-hover:text-primary text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-300 group-hover:text-white">History</span>
+                </button>
+            </div>
+            <!-- Quick Actions -->
+            <div class="border-t border-white/5 p-2 bg-black/20 flex justify-between">
+                <button onclick="toggleFAQ(); toggleMoreMenu()"
+                    class="flex items-center gap-2 px-3 py-2 text-xs text-text-muted hover:text-white">
+                    <i class="fas fa-question-circle"></i> Help
+                </button>
+                <button onclick="installApp(); toggleMoreMenu()"
+                    class="flex items-center gap-2 px-3 py-2 text-xs text-primary font-bold">
+                    <i class="fas fa-download"></i> Install App
+                </button>
             </div>
         </div>
-    </nav>
-
-    <div id="bottom-nav"
-        class="nav-bp:hidden fixed bottom-4 left-4 right-4 bg-black/50 backdrop-blur-xl border-2 border-primary rounded-2xl z-50 flex justify-around items-center h-[60px] shadow-2xl">
-        <button onclick="router('home')"
-            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1" data-target="home"><i
-                class="fas fa-house"></i><span class="text-[10px] font-medium tracking-wide">Home</span></button>
-        <button onclick="router('movies')"
-            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1"
-            data-target="movies"><i class="fas fa-clapperboard"></i><span
-                class="text-[10px] font-medium tracking-wide">Movies</span></button>
-        <button onclick="router('tv')"
-            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1" data-target="tv"><i
-                class="fas fa-tv"></i><span class="text-[10px] font-medium tracking-wide">Series</span></button>
-        <button onclick="router('anime-anilist')"
-            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1"
-            data-target="anime-anilist"><i class="fas fa-dragon"></i><span
-                class="text-[10px] font-medium tracking-wide">Anime</span></button>
-        <button onclick="router('watchlist')"
-            class="bottom-nav-item flex flex-col items-center justify-center w-full h-full gap-1"
-            data-target="watchlist"><i class="fas fa-lines-leaning"></i><span
-                class="text-[10px] font-medium tracking-wide">Library</span></button>
     </div>
 
     <!-- Floating FAQ Button -->
     <div class="fixed bottom-24 right-5 z-[55]">
         <!-- First Button (FAQ - lower position) -->
         <button onclick="toggleFAQ()"
-            class="relative w-10 h-10 rounded-full bg-card-bg text-white flex border-2 border-primary items-center justify-center shadow-lg hover:scale-110 transition-transform mb-2">
+            class="relative w-10 h-10 hidden md:block rounded-full bg-card-bg text-white flex border-2 border-primary items-center justify-center shadow-lg md:hover:scale-110 transition-transform mb-2">
             <i class="fas fa-question text-sm"></i>
         </button>
 
         <!-- Second Button (Info - upper position) -->
         <button onclick="toggleFAQs()"
-            class="relative w-10 h-10 rounded-full bg-card-bg text-white flex border-2 border-primary items-center justify-center shadow-lg hover:scale-110 transition-transform">
+            class="relative w-10 h-10 hidden md:block rounded-full bg-card-bg text-white flex border-2 border-primary items-center justify-center shadow-lg md:hover:scale-110 transition-transform">
             <i class="fas fa-info text-sm"></i>
         </button>
     </div>
@@ -555,6 +712,7 @@
         </div>
     </div>
 
+    <!-- Additional FAQs Modal -->
     <div id="faqs-modal" class="modal-overlay">
         <div class="modal-content relative">
             <button onclick="toggleFAQs()" class="absolute top-4 right-4 text-text-muted hover:text-white"><i
@@ -648,7 +806,8 @@
         </div>
     </div>
 
-    <main id="main-content" class="pt-16 pb-20 min-h-screen">
+    <!-- Main Content: Added Padding for Sidebar -->
+    <main id="main-content" class="lg:pl-64 lg:pt-0 pb-24 min-h-screen flex flex-col transition-all duration-300">
         <section id="shared-banner"
             class="relative h-[45vh] md:h-[65vh] flex items-end p-0 bg-dark-bg transition-all duration-500 hidden overflow-hidden group">
             <!-- Banner Background Layers -->
@@ -680,6 +839,8 @@
                 <div id="banner-indicators" class="flex gap-2 mt-6"></div>
             </div>
         </section>
+
+
 
         <section id="view-home" class="view-section px-4 sm:px-6 lg:px-8 py-8 space-y-8 hidden">
             <div id="continue-watching-container" class="discovery-row hidden">
@@ -789,7 +950,37 @@
             <div id="grid-watchlist" class="results-grid"></div>
         </section>
 
+        <section id="view-history" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-xl md:text-3xl font-bold text-text-main flex items-center"><span
+                        class="vline"></span>History</h2>
+            </div>
+
+            <!-- TABS -->
+            <div class="flex items-center space-x-6 mb-8 border-b border-white/10 pb-1 overflow-x-auto scrollbar-hide">
+                <button onclick="switchHistoryTab('all')" id="hist-tab-all"
+                    class="text-sm md:text-lg font-bold text-primary border-b-2 border-primary pb-2 transition-colors whitespace-nowrap">All
+                    Content</button>
+                <button onclick="switchHistoryTab('movie')" id="hist-tab-movie"
+                    class="text-sm md:text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors whitespace-nowrap">Movies</button>
+                <button onclick="switchHistoryTab('tv')" id="hist-tab-tv"
+                    class="text-sm md:text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors whitespace-nowrap">TV
+                    Shows</button>
+                <button onclick="switchHistoryTab('anime')" id="hist-tab-anime"
+                    class="text-sm md:text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors whitespace-nowrap">Anime</button>
+            </div>
+
+            <div id="history-content" class="space-y-8 animate-fade-in"></div>
+        </section>
+
         <section id="view-search" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+            <!-- Mobile Search Input (visible on lg:hidden, or always if we want) -->
+
+            <div class="relative w-full mb-6">
+                <input id="mobile-search-input" type="text" placeholder="Search movies, tv, people..."
+                    class="w-full bg-input-bg border border-border-color text-white text-sm rounded-lg py-3 pl-10 pr-3 focus:outline-none focus:border-primary transition-all shadow-sm">
+                <i class="fas fa-search absolute left-3 top-3.5 text-text-muted text-sm"></i>
+            </div>
             <h2 id="search-header" class="text-2xl font-bold text-text-main mb-6">Search Results</h2>
             <div id="grid-search" class="results-grid"></div>
             <div id="pag-search" class="pagination-controls mt-8 flex justify-center gap-2"></div>
@@ -833,8 +1024,8 @@
                             </button>
                         </div>
                         <button id="anilist-watch-now-btn"
-                            class="w-full bg-primary text-black font-extrabold text-lg py-3 px-3 rounded shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all flex items-center justify-center flex-grow">
-                            <i class="fas fa-play"></i> PLAY NOW
+                            class="w-full bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center flex-grow">
+                            <i class="fas fa-play text-lg group-hover:scale-110 transition-transform"></i> PLAY NOW
                         </button>
                     </div>
                     <div class="flex-1 pt-4 md:pt-16 min-w-0">
@@ -919,7 +1110,7 @@
         </section>
 
         <section id="view-anilist-player" class="view-section hidden w-full bg-dark-bg">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
                 <button id="anilist-player-back-btn"
                     class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i
                         class="fas fa-angles-left mr-2"></i> Back to Details</button>
@@ -963,19 +1154,29 @@
                 </div>
             </div>
         </section>
+
     </main>
 
-    <footer class="bg-nav-bg py-6 hidden md:block border-t border-border-color mt-auto w-full">
-        <div class="container mx-auto px-4 text-center">
-            <div class="flex items-center justify-center gap-2 mb-4">
-                <h2 class="text-lg font-bold text-text-main">Go<span class="text-primary">Stream</span></h2>
-            </div>
-            <p class="text-xs text-text-muted">GoStream does not store any files on our server, we only linked to the
-                media which is hosted on 3rd party services.</p>
-            <p id="credits" class="block text-sm text-text-muted sm:text-center">© <span
-                    id="current-year-copyright">GoStream</span>. All rights reserved.</p>
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirmation-modal"
+        class="fixed inset-0 z-[70] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="hideConfirmation()">
         </div>
-    </footer>
+        <div
+            class="bg-card-bg border border-border-color p-6 rounded-xl shadow-2xl transform scale-95 transition-all duration-300 max-w-sm w-full mx-4 relative pointer-events-auto flex flex-col items-center text-center">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary">
+                <i class="fas fa-exclamation-triangle text-xl"></i>
+            </div>
+            <h3 id="confirm-title" class="text-xl font-bold text-white mb-2">Confirm Action</h3>
+            <p id="confirm-msg" class="text-text-muted mb-6 text-sm">Are you sure you want to proceed?</p>
+            <div class="flex gap-3 w-full">
+                <button id="confirm-cancel" onclick="hideConfirmation()"
+                    class="flex-1 px-4 py-2.5 rounded-lg text-sm font-bold text-text-muted hover:bg-white/5 hover:text-white transition-colors border border-transparent">Cancel</button>
+                <button id="confirm-yes"
+                    class="flex-1 px-4 py-2.5 rounded-lg text-sm font-bold bg-primary text-black hover:bg-white transition-colors shadow-lg shadow-primary/20">Confirm</button>
+            </div>
+        </div>
+    </div>
 
     <div id="toast-container" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
     <div id="global-hover-card"></div>
@@ -1055,12 +1256,15 @@
             'Psychological', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports', 'Supernatural', 'Thriller'
         ];
 
+
+
         // Global State
         const appState = {
             currentView: 'home',
             lastView: 'home',
-            watchlist: JSON.parse(localStorage.getItem('goStreamWatchlist')) || [],
-            continueWatching: JSON.parse(localStorage.getItem('goStreamContinueWatching')) || [],
+            historyTab: 'all',
+            watchlist: (function () { try { return JSON.parse(localStorage.getItem('goStreamWatchlist')) || []; } catch (e) { return []; } })(),
+            continueWatching: (function () { try { return JSON.parse(localStorage.getItem('goStreamContinueWatching')) || []; } catch (e) { return []; } })(),
             bannerInterval: null,
             bannerItems: [],
             bannerIndex: 0,
@@ -1133,7 +1337,7 @@
             stopBannerRotation();
 
             // List of top-level navigation pages
-            const mainViews = ['home', 'movies', 'tv', 'anime-anilist', 'watchlist'];
+            const mainViews = ['home', 'movies', 'tv', 'anime-anilist', 'watchlist', 'history', 'search'];
 
             // 1. Update History Strategy
             // If we are currently on a main view, and we are navigating AWAY to a sub-view (details/search/player)
@@ -1196,6 +1400,10 @@
                     document.getElementById('view-watchlist').classList.remove('hidden');
                     renderWatchlist();
                     break;
+                case 'history':
+                    document.getElementById('view-history').classList.remove('hidden');
+                    renderHistory();
+                    break;
                 case 'search':
                     document.getElementById('view-search').classList.remove('hidden');
                     break;
@@ -1217,21 +1425,22 @@
                 case 'actor':
                     document.getElementById('view-actor').classList.remove('hidden');
                     break;
+
             }
         }
 
         /**
          * FEATURE: Continue Watching
          */
-        function addToHistory(id, type, title, poster, backdrop, season = null, episode = null) {
+        function addToHistory(id, type, title, poster, backdrop, season = null, episode = null, overview = '', vote = 0, year = '') {
             // Remove if exists
             appState.continueWatching = appState.continueWatching.filter(i => i.id !== id);
             // Add to top
             appState.continueWatching.unshift({
-                id, type, title, poster, backdrop, season, episode, timestamp: new Date().getTime()
+                id, type, title, poster, backdrop, season, episode, overview, vote, year, timestamp: new Date().getTime()
             });
-            // Limit to 20
-            if (appState.continueWatching.length > 20) appState.continueWatching.pop();
+            // Limit to 100
+            if (appState.continueWatching.length > 100) appState.continueWatching.pop();
 
             localStorage.setItem('goStreamContinueWatching', JSON.stringify(appState.continueWatching));
         }
@@ -1255,7 +1464,7 @@
 
             wrapper.classList.remove('hidden');
 
-            appState.continueWatching.forEach(item => {
+            appState.continueWatching.slice(0, 20).forEach(item => {
                 // Use backdrop if available, otherwise poster
                 let imgUrl;
                 if (item.backdrop) {
@@ -1309,8 +1518,8 @@
             const container = document.getElementById(containerId);
             if (!container || container.innerHTML !== '') return;
 
-            // Apply responsive layout classes: Grid on mobile (2 cols), Flex on desktop
-            container.className = 'grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto items-center';
+            // Apply responsive layout classes: Horizontal scroll on mobile, Flex on desktop
+            container.className = 'flex overflow-x-auto pb-2 gap-3 w-full sm:w-auto items-center scrollbar-hide mask-linear-fade';
 
             const isAnilist = section === 'anilist';
             const stateRef = isAnilist ? appState.anilist.filters : appState.tmdb[section].filters;
@@ -1448,12 +1657,42 @@
             }
         }
 
+        async function fetchTMDBLogo(id, type) {
+            try {
+                // Determine correct endpoint based on type
+                // Anime from Anilist might strictly be 'anime' type in our appState, 
+                // but we need to know if we can find a TMDB equivalent or if wait, 
+                // Anilist doesn't track TMDB IDs easily unless we mapped them.
+                // For this implementation, we will primarily support Movies/TV from TMDB.
+                // If the item has a 'media_type' of 'anime', we might skip or try to search. 
+                // BUT, our bannerItems coming from mappedAnilist have type 'anime'.
+                // For now, let's focus on 'movie' and 'tv'. 
+
+                let tmdbType = type;
+                if (type === 'anime') return null; // Skip for now unless we have a mapping
+
+                const data = await fetchTMDB(`/${tmdbType}/${id}/images`, { include_image_language: 'en,null' }, false);
+                if (data && data.logos && data.logos.length > 0) {
+                    // Find the best logo: preferably English, highest vote or width
+                    const englishLogos = data.logos.filter(l => l.iso_639_1 === 'en');
+                    const bestLogo = englishLogos.length > 0 ? englishLogos[0] : data.logos[0];
+                    return bestLogo.file_path;
+                }
+            } catch (e) {
+                console.warn("Logo fetch failed", e);
+            }
+            return null;
+        }
+
         async function loadHomeData() {
             // Render Continue Watching first
             renderContinueWatching();
 
             const container = document.getElementById('row-trending');
-            if (container.innerHTML !== '') return;
+            if (container.innerHTML !== '') {
+                startBannerRotation();
+                return;
+            }
 
             // Fetch TMDB Trending
             const trendingTMDBPromise = fetchTMDB('/trending/all/day');
@@ -1479,22 +1718,27 @@
                 actionPromise
             ]);
 
-            // Combine for Banner: Top 5 TMDB + Top 5 Anilist
+            // Combine for Banner: Top 10 TMDB
             let bannerCandidates = [];
             if (trendingTMDB && trendingTMDB.results) {
                 renderTMDBGrid('row-trending', trendingTMDB.results, null, true);
-                bannerCandidates = [...bannerCandidates, ...trendingTMDB.results.slice(0, 6)];
-            }
-
-            if (anilistData && anilistData.Page && anilistData.Page.media) {
-                const mappedAnilist = anilistData.Page.media.map(mapAnilistToShared);
-                bannerCandidates = [...bannerCandidates, ...mappedAnilist];
+                bannerCandidates = [...bannerCandidates, ...trendingTMDB.results.slice(0, 10)];
             }
 
             // Shuffle once for randomness as requested, but then act as a carousel
             appState.bannerItems = bannerCandidates.sort(() => 0.5 - Math.random());
 
+            // FETCH LOGOS for banner items (Concurrent)
             if (appState.bannerItems.length > 0) {
+                // Fire off requests but don't block the initial render completely if possible?
+                // Actually, let's just fetch them. It's only ~10 items.
+                await Promise.all(appState.bannerItems.map(async (item) => {
+                    // Only fetch if TMDB type
+                    if (item.media_type === 'movie' || item.media_type === 'tv') {
+                        item.logo_path = await fetchTMDBLogo(item.id, item.media_type);
+                    }
+                }));
+
                 appState.bannerIndex = 0;
                 renderBannerIndicators();
                 updateSharedBanner();
@@ -1603,15 +1847,33 @@
             contentDiv.style.opacity = '0';
 
             setTimeout(() => {
+                // LOGO or TITLE Selection
+                // Adjusted for better mobile scaling
+                let titleHtml = `<h1 class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold mb-4 drop-shadow-xl text-white line-clamp-2 break-words max-w-full">${title}</h1>`;
+
+                if (item.logo_path) {
+                    const logoUrl = IMG_URL + item.logo_path;
+                    // Responsive logo constraints
+                    titleHtml = `<img src="${logoUrl}" alt="${title}" class="max-h-20 sm:max-h-28 md:max-h-44 max-w-[80%] sm:max-w-[60%] object-contain mb-6 drop-shadow-lg origin-left">`;
+                }
+
                 contentDiv.innerHTML = `
-                    <h1 class="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-xl text-white line-clamp-2">${title}</h1>
-                    <p class="text-gray-300 text-sm md:text-lg mb-6 drop-shadow-md line-clamp-3">${desc}</p>
-                    <div class="flex gap-2">
-                        <button class="bg-gray-600 md:hover:bg-opacity-60 text-white font-bold py-2 px-5 rounded transition-colors" onclick="openDetailsWrapper(${playParams})">
-                            <i class="fas fa-play mr-2"></i> ${btnText}
+                    ${titleHtml}
+                    <div class="flex items-center gap-3 text-sm font-bold text-white mb-4 drop-shadow-md">
+                        <span class="text-primary"><i class="fas fa-star text-xs"></i> ${vote.toFixed(1)}</span>
+                        <span class="w-1 h-4 bg-white/30 rounded-full"></span>
+                        <span>${year}</span>
+                        <span class="w-1 h-4 bg-white/30 rounded-full"></span>
+                        <span class="uppercase border border-white/40 px-2 py-0.5 rounded textxs">${type}</span>
+                    </div>
+                    <p class="text-gray-200 text-sm md:text-base mb-8 drop-shadow-md line-clamp-3 max-w-2xl text-shadow-sm font-medium leading-relaxed">${desc}</p>
+                    
+                    <div class="flex gap-4">
+                        <button class="bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center gap-2 group" onclick="openDetailsWrapper(${playParams})">
+                            <i class="fas fa-play text-lg group-hover:scale-110 transition-transform"></i> ${btnText}
                         </button>
-                        <button id="banner-watchlist-btn-${item.id}" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ')}')">
-                            <i class="material-icons">bookmark_add</i>
+                        <button id="banner-watchlist-btn-${item.id}" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center group" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ')}')">
+                           <i class="material-icons group-hover:text-primary transition-colors">bookmark_add</i>
                         </button>
                     </div>
                 `;
@@ -2062,7 +2324,7 @@
 
             if (anime.trailer && (anime.trailer.site === 'youtube' || anime.trailer.site === 'YouTube')) {
                 trailerBtn.className = "bg-gray-700/50 text-white font-bold py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2 flex-grow";
-                trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Open Trailer';
+                trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Trailer';
                 trailerBtn.onclick = () => openTrailerModal([{ key: anime.trailer.id, name: 'Main Trailer', site: 'YouTube' }]);
             } else {
                 trailerBtn.className = "bg-gray-800/50 text-gray-500 font-bold py-3 px-4 rounded cursor-not-allowed flex items-center justify-center gap-2 flex-grow";
@@ -2078,7 +2340,9 @@
             document.getElementById('anilist-info-desc').innerHTML = anime.description || 'No description available.';
             document.getElementById('anilist-info-Romaji').innerText = anime.title.romaji;
             document.getElementById('anilist-info-Type').innerText = anime.format;
-            document.getElementById('anilist-info-Status').innerText = anime.status ? anime.status.replace(/_/g, ' ') : 'Unknown';
+            let anilistStatus = anime.status ? anime.status.replace(/_/g, ' ') : 'Unknown';
+            if (anime.status === 'RELEASING') anilistStatus = 'Releasing';
+            document.getElementById('anilist-info-Status').innerText = anilistStatus;
 
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             document.getElementById('anilist-info-Date').innerText = anime.startDate && anime.startDate.year ? `${months[anime.startDate.month - 1]} ${anime.startDate.day} ${anime.startDate.year}` : '?';
@@ -2361,6 +2625,11 @@
             document.getElementById('anilist-iframe').src = url;
 
             // SAVE HISTORY
+            // Extract enrichment data
+            const overview = appState.anilist.currentAnime.description || '';
+            const vote = (appState.anilist.currentAnime.averageScore / 10).toFixed(1) || 0;
+            const year = appState.anilist.currentAnime.seasonYear || '';
+
             addToHistory(
                 appState.anilist.currentAnime.id,
                 'anime',
@@ -2368,7 +2637,8 @@
                 appState.anilist.currentAnime.coverImage.extraLarge,
                 appState.anilist.currentAnime.bannerImage, // backdrop
                 null,
-                ep
+                ep,
+                overview, vote, year
             );
 
             const wrappers = document.getElementById('anilist-episodes-grid').children;
@@ -2394,20 +2664,35 @@
         /**
          * SEARCH
          */
-        const searchInput = document.getElementById('global-search-input');
-        const handleSearch = (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const val = e.target.value.trim();
-                if (val.length > 0) {
-                    appState.search.query = val;
-                    appState.search.page = 1;
-                    performSearch(val, 1);
-                    // e.target.value = ''; // Keep the text
+        /**
+         * SEARCH
+         */
+        function setupSearchListener(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.target.value.trim();
+                    if (val.length > 0) {
+                        // Sync other inputs
+                        const otherId = id === 'sidebar-search-input' ? 'mobile-search-input' : 'sidebar-search-input';
+                        const otherEl = document.getElementById(otherId);
+                        if (otherEl) otherEl.value = val;
+
+                        appState.search.query = val;
+                        appState.search.page = 1;
+                        performSearch(val, 1);
+
+                        // Close keyboard on mobile
+                        el.blur();
+                    }
                 }
-            }
+            });
         }
-        searchInput.addEventListener('keypress', handleSearch);
+
+        setupSearchListener('sidebar-search-input');
+        setupSearchListener('mobile-search-input');
 
         async function performSearch(query, page = 1) {
             router('search');
@@ -2539,6 +2824,10 @@
                     displayStatus = releaseDate > now ? 'Upcoming' : 'Released';
                 }
 
+                // Custom Status Overrides
+                if (type === 'movie' && displayStatus === 'Released') displayStatus = 'Released';
+                if (type === 'tv' && displayStatus === 'Returning Series') displayStatus = 'Releasing';
+
                 const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
@@ -2564,7 +2853,9 @@
                     posterUrl = getPosterUrl(item.poster_path);
                 }
 
-                const statusBadge = item.status ? `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${item.status.replace(/_/g, ' ')}</div>` : '';
+                let aniStatus = item.status ? item.status.replace(/_/g, ' ') : '';
+                if (item.status === 'RELEASING') aniStatus = 'Releasing';
+                const statusBadge = aniStatus ? `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${aniStatus}</div>` : '';
                 const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
                 container.appendChild(card);
             });
@@ -2655,6 +2946,9 @@
         }
 
         function showHoverCard(targetElem, data) {
+            // Disable on small screens
+            if (window.innerWidth < 1024) return;
+
             const card = document.getElementById('global-hover-card');
             if (!card) return;
 
@@ -2723,13 +3017,26 @@
 
             // Populate Content
             const isWatchlisted = appState.watchlist.some(i => i.id == data.id);
-            const wlIcon = isWatchlisted ? 'fas fa-bookmark' : 'far fa-bookmark';
+            const btnId = `gh-wl-${data.id}`;
+
+            // Add click handler to the entire card
+            card.onclick = (e) => {
+                openDetailsWrapper(data.id, data.type);
+            };
 
             card.innerHTML = `
-                <div class="relative">
+                <div class="relative group cursor-pointer">
                     <img src="${data.posterUrl}" class="w-full h-44 object-cover object-top">
                     <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-transparent to-transparent"></div>
-                    <div class="absolute bottom-3 left-4 right-4 z-10">
+                    
+                    <!-- Play Icon Overlay -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="w-12 h-12 rounded-full bg-primary/90 text-black flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-play ml-1"></i>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-3 left-4 right-4 z-10 transition-transform duration-300 group-hover:-translate-y-1">
                         <h4 class="text-white font-extrabold text-lg leading-tight dropshadow-md line-clamp-2">${data.title}</h4>
                         <div class="flex items-center gap-3 text-xs text-secondary mt-1 font-medium">
                              <span class="text-primary flex items-center gap-1"><i class="fas fa-star text-[10px]"></i> ${data.vote}</span>
@@ -2738,9 +3045,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="p-4 pt-1">
-                    <p class="text-xs text-text-muted line-clamp-4 leading-relaxed mb-4">${data.overview}</p>
+                <div class="p-4 pt-1 flex flex-col h-full justify-between">
+                    <p class="text-xs text-text-muted line-clamp-3 leading-relaxed mb-4">${data.overview}</p>
                     
+                    <div class="flex gap-2 pb-2">
+                         <button onclick="event.stopPropagation(); openDetailsWrapper(${data.id}, '${data.type}', 1, 1)" class="flex-1 bg-white text-black py-2 rounded text-xs font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-play"></i> Watch
+                        </button>
+                        <button id="${btnId}" onclick="event.stopPropagation(); toggleWatchlist(${data.id}, '${data.type}', '${data.title.replace(/'/g, "")}', '${data.posterUrl}', '${btnId}', ${data.numericVote}, '${data.year}', '${data.overview ? data.overview.replace(/'/g, "") : ""}')" class="px-3 py-2 bg-input-bg border border-border-color text-white rounded hover:bg-white/10 transition-colors flex items-center justify-center" title="Add to Library">
+                            ${isWatchlisted ? '<i class="material-icons">bookmark_added</i>' : '<i class="material-icons">bookmark_add</i>'}
+                        </button>
+                    </div>
                 </div>
             `;
 
@@ -2838,7 +3153,9 @@
                     const dateObject = new Date(rawDateString);
                     relDate = dateObject.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 }
-                const status = details.status || 'N/A';
+                let status = details.status || 'N/A';
+                if (type === 'movie' && status === 'Released') status = 'Released';
+                if (type === 'tv' && status === 'Returning Series') status = 'Releasing';
                 let genresHtml = '';
                 if (details.genres) {
                     genresHtml = details.genres.map(g => `<span class="px-2 py-0.5 bg-input-bg border border-border-color rounded text-[10px] text-text-muted">${g.name}</span>`).join('');
@@ -2862,8 +3179,8 @@
                                 <div class="mb-8 flex items-center gap-4">
                                     <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${safeTitle}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}', '${overview.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ')}')" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center"><i class="material-icons">bookmark_add</i></button>
                                 </div>
-                                    <button id="tmdb-watch-now-btn" class="w-full bg-primary text-black font-extrabold text-lg py-3 px-3 rounded shadow-lg hover:shadow-primary/50 hover:scale-105 transition-all flex items-center justify-center gap-2 flex-grow">
-                                        <i class="fas fa-play"></i> ${btnText}
+                                    <button id="tmdb-watch-now-btn" class="w-full bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 flex-grow">
+                                        <i class="fas fa-play text-lg group-hover:scale-110 transition-transform"></i> ${btnText}
                                     </button>
                             </div>
                             <div class="flex-1 pt-4 md:pt-16 min-w-0">
@@ -2909,7 +3226,7 @@
                 const trailerBtn = document.createElement('button');
                 if (trailers.length > 0) {
                     trailerBtn.className = "bg-gray-700/50 text-white font-bold py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2 flex-grow";
-                    trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Open Trailer';
+                    trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Trailer';
                     // Pass the array directly, map if necessary to ensure consistent structure if we use it elsewhere, 
                     // but TMDB result objects {key, name, site} work fine.
                     trailerBtn.onclick = () => openTrailerModal(trailers);
@@ -3020,9 +3337,12 @@
                 }
 
                 const title = details.title || details.name;
+                const overview = details.overview || '';
+                const vote = details.vote_average ? Number(details.vote_average).toFixed(1) : 0;
+                const year = (details.release_date || details.first_air_date || '').split('-')[0];
 
                 container.innerHTML = `
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
                      <button id="tmdb-player-back-btn" onclick="openTMDBDetails(${id}, '${type}')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back to Details</button>
                      <h1 class="text-2xl md:text-3xl font-extrabold text-white mb-6">${title}</h1>
 
@@ -3078,10 +3398,10 @@
                 const updatePlayerSource = (sourceObj, id, type, s, e, poster, title, backdrop) => {
                     if (type === 'movie') {
                         iframe.src = sourceObj.url(id);
-                        addToHistory(id, type, title, poster, backdrop);
+                        addToHistory(id, type, title, poster, backdrop, null, null, overview, vote, year);
                     } else {
                         iframe.src = sourceObj.url(id, s, e);
-                        addToHistory(id, type, title, poster, backdrop, s, e);
+                        addToHistory(id, type, title, poster, backdrop, s, e, overview, vote, year);
                     }
                 };
 
@@ -3108,44 +3428,54 @@
                 if (type === 'tv') {
                     const loadSeasonData = async (seasonNum) => {
                         season = seasonNum;
-                        document.getElementById('tv-season-title').innerText = `Season ${seasonNum}`;
+                        // document.getElementById('tv-season-title').innerText = `Season ${seasonNum}`; // This is now handled inside the try block
                         if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`;
 
                         renderSeasonsList(details.seasons, seasonNum);
 
                         loader.show();
-                        const seasonData = await fetchTMDB(`/tv/${id}/season/${seasonNum}`);
-                        loader.hide();
-
                         const epGrid = document.getElementById('tv-episodes-grid');
-                        epGrid.innerHTML = '';
+                        try {
+                            const seasonData = await fetchTMDB(`/tv/${id}/season/${seasonNum}`);
+                            if (!seasonData) { epGrid.innerHTML = 'Error'; return; }
 
-                        if (seasonData && seasonData.episodes && seasonData.episodes.length > 0) {
-                            const today = new Date();
-                            seasonData.episodes.forEach(e => {
-                                if (!e.air_date || new Date(e.air_date) > today) return;
+                            if (document.getElementById('tv-season-title')) {
+                                document.getElementById('tv-season-title').innerText = seasonData.name;
+                                document.getElementById('tv-season-title').classList.remove('hidden');
+                            }
 
-                                const wrapper = document.createElement('div');
-                                wrapper.className = 'relative group';
-                                const btn = document.createElement('button');
-                                const isCurrent = (e.episode_number == ep);
-                                btn.className = `w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary ${isCurrent ? 'bg-primary text-black' : 'bg-input-bg text-text-muted'}`;
-                                btn.innerText = e.episode_number;
-                                btn.title = e.name;
-                                btn.onclick = () => {
-                                    ep = e.episode_number;
-                                    if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} - Episode ${ep}`;
-                                    Array.from(epGrid.children).forEach(child => {
-                                        child.querySelector('button').className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-input-bg text-text-muted';
-                                    });
-                                    btn.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black';
-                                    updatePlayerSource(SOURCES[0], id, 'tv', season, ep, details.poster_path, title, details.backdrop_path);
-                                    renderServerButtons();
-                                };
-                                wrapper.appendChild(btn);
-                                epGrid.appendChild(wrapper);
-                            });
-                        } else epGrid.innerHTML = '<p class="text-gray-500 col-span-full">No episodes found.</p>';
+                            if (seasonData.episodes && seasonData.episodes.length > 0) {
+                                epGrid.innerHTML = '';
+                                seasonData.episodes.forEach(e => {
+                                    const wrapper = document.createElement('div');
+                                    wrapper.className = 'relative group'; // Added back for consistency with original
+                                    const btn = document.createElement('button');
+                                    btn.innerText = e.episode_number;
+                                    btn.className = (seasonNum == startSeason && e.episode_number == startEpisode) // Use seasonNum here
+                                        ? 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black'
+                                        : 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-input-bg text-text-muted';
+
+                                    btn.title = e.name; // Added back for consistency with original
+                                    btn.onclick = () => {
+                                        ep = e.episode_number;
+                                        if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`; // Use seasonNum here
+                                        Array.from(epGrid.children).forEach(child => {
+                                            child.querySelector('button').className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-input-bg text-text-muted';
+                                        });
+                                        btn.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black';
+
+                                        // Update History on Episode Change
+                                        updateHistory(seasonNum, ep); // Use seasonNum here
+
+                                        updatePlayerSource(SOURCES[0], id, 'tv', seasonNum, ep, details.poster_path, title, details.backdrop_path); // Use seasonNum here
+                                        renderServerButtons();
+                                    };
+                                    wrapper.appendChild(btn);
+                                    epGrid.appendChild(wrapper);
+                                });
+                            } else epGrid.innerHTML = '<p class="text-gray-500 col-span-full">No episodes found.</p>';
+                        } catch (e) { console.error(e); epGrid.innerHTML = '<p class="text-gray-500 col-span-full">Error loading episodes.</p>'; } // Added error message
+                        finally { loader.hide(); }
                     };
 
                     const renderSeasonsList = (seasons, currentSeasonNum) => {
@@ -3368,6 +3698,7 @@
                         nodes {
                             id
                             title { romaji english }
+                            description
                             coverImage { extraLarge }
                             format
                             averageScore
@@ -3505,14 +3836,33 @@
             const btn = document.getElementById(btnId);
             if (!btn) return;
             const exists = appState.watchlist.find(i => i.id === id);
+
+            const isHoverCard = btnId.startsWith('gh-wl-');
+            const iconClass = isHoverCard ? "material-icons" : "material-icons";
+
             if (exists) {
-                btn.innerHTML = '<i class="material-icons">bookmark_added</i>';
+                btn.innerHTML = `<i class="${iconClass}">bookmark_added</i>`;
             } else {
-                btn.innerHTML = '<i class="material-icons">bookmark_add</i>';
+                btn.innerHTML = `<i class="${iconClass}">bookmark_add</i>`;
                 if (btnId.includes('banner')) {
                     btn.className = "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center";
                 } else {
-                    btn.className = "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center";
+                    // This else block seems redundant if the class is already set, but preserving logic
+                    // Actually, if it's NOT banner, it might be hover card or sidebar or details.
+                    // Hover card already has classes set in showHoverCard.
+                    // If we overwrite className here, we might break hover card layout if we are not careful.
+                    // But the original code was: 
+                    // else { btn.className = "bg-gray-700/50 ..."; }
+                    // This looks like it was setting the same class for everything else? 
+                    // Wait, lines 3845-3846 set the SAME class as banner? 
+                    // "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center"
+                    // That class has `p-4` (padding). The hover card button is `px-3 py-2`. 
+                    // If this runs, it will break the hover card button style!
+
+                    // Let's protect hover card styles from being overwritten
+                    if (!isHoverCard) {
+                        btn.className = "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center";
+                    }
                 }
             }
         }
@@ -3648,58 +3998,340 @@
             const faqModal = document.getElementById('faq-modal');
             const faqsModal = document.getElementById('faqs-modal');
             const installModal = document.getElementById('install-modal');
+            const moreMenuModal = document.getElementById('more-menu-modal'); // Mobile More Menu
+
             if (event.target === faqModal) toggleFAQ();
             if (event.target === faqsModal) toggleFAQs();
             if (event.target === installModal) toggleInstallModal();
+            if (event.target === moreMenuModal) toggleMoreMenu();
+        }
+
+        function toggleMoreMenu() {
+            const modal = document.getElementById('more-menu-modal');
+            const content = document.getElementById('more-menu-content');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                requestAnimationFrame(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('translate-y-full');
+                });
+            } else {
+                modal.classList.add('opacity-0');
+                content.classList.add('translate-y-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
         }
 
         /**
-         * ANTI-INSPECT DETECTION
-         * Attempts to detect devtools via key shortcuts and right-click.
-         * Redirects to blank page if detected.
+         * SIDEBAR COLLAPSE LOGIC
          */
-        function detectInspector() {
-            // Disable Right Click
-            document.addEventListener('contextmenu', event => event.preventDefault());
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const labels = document.querySelectorAll('.sidebar-label');
+            const logoText = document.getElementById('sidebar-logo-text');
+            const logoIcon = document.querySelector('.visible-collapsed');
+            const toggleBtn = document.getElementById('sidebar-toggle-btn');
+            const searchInput = document.getElementById('sidebar-search-input');
+            const navLinks = document.querySelectorAll('#sidebar .nav-link');
 
-            // Disable Shortcuts
-            document.addEventListener('keydown', function (e) {
-                // F12
-                if (e.keyCode == 123) {
-                    window.location.href = 'about:blank';
-                    return false;
+            // Current State (check if collapsed)
+            const isCollapsed = sidebar.classList.contains('w-20');
+
+            if (isCollapsed) {
+                // EXPAND
+                sidebar.classList.replace('w-20', 'w-64');
+                mainContent.classList.replace('lg:pl-20', 'lg:pl-64');
+
+                logoText.classList.remove('hidden'); // Remove hidden first
+                requestAnimationFrame(() => {
+                    logoText.classList.remove('opacity-0', 'w-0');
+                    labels.forEach(l => l.classList.remove('opacity-0', 'hidden'));
+                });
+
+                logoIcon.classList.add('hidden');
+                if (searchInput) searchInput.classList.remove('opacity-0', 'pointer-events-none');
+
+                toggleBtn.classList.remove('rotate-180');
+                document.body.classList.remove('sidebar-collapsed');
+                localStorage.setItem('sidebar-collapsed', 'false');
+
+                navLinks.forEach(l => l.classList.remove('justify-center'));
+            } else {
+                // COLLAPSE
+                sidebar.classList.replace('w-64', 'w-20');
+                mainContent.classList.replace('lg:pl-64', 'lg:pl-20');
+
+                labels.forEach(l => l.classList.add('opacity-0', 'hidden'));
+                logoText.classList.add('opacity-0', 'w-0', 'hidden');
+
+                logoIcon.classList.remove('hidden');
+                if (searchInput) searchInput.classList.add('opacity-0', 'pointer-events-none');
+
+                toggleBtn.classList.add('rotate-180');
+                document.body.classList.add('sidebar-collapsed');
+                localStorage.setItem('sidebar-collapsed', 'true');
+
+                navLinks.forEach(l => l.classList.add('justify-center'));
+            }
+        }
+
+        // Init Sidebar State
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (localStorage.getItem('sidebar-collapsed') === 'true') {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar) {
+                        // Disable transitions temporarily
+                        sidebar.classList.add('duration-0');
+                        const mainContent = document.getElementById('main-content');
+                        if (mainContent) mainContent.classList.add('duration-0');
+
+                        toggleSidebar();
+
+                        // Re-enable transitions
+                        requestAnimationFrame(() => {
+                            setTimeout(() => {
+                                sidebar.classList.remove('duration-0');
+                                if (mainContent) mainContent.classList.remove('duration-0');
+                            }, 100);
+                        });
+                    }
                 }
-                // Ctrl+Shift+I (Inspector)
-                if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
-                    window.location.href = 'about:blank';
-                    return false;
-                }
-                // Ctrl+Shift+C (Element Selector)
-                if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
-                    window.location.href = 'about:blank';
-                    return false;
-                }
-                // Ctrl+Shift+J (Console)
-                if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
-                    window.location.href = 'about:blank';
-                    return false;
-                }
-                // Ctrl+U (View Source)
-                if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
-                    window.location.href = 'about:blank';
-                    return false;
-                }
+            } catch (e) {
+                console.warn("Sidebar init warn:", e);
+            }
+
+            // Force router home call to be safe
+            setTimeout(() => {
+                router('home');
+            }, 50);
+        });
+
+
+
+        /**
+         * HISTORY SECTION
+         */
+        function switchHistoryTab(tab) {
+            appState.historyTab = tab;
+            renderHistory();
+        }
+
+        function getRelativeDate(ts) {
+            if (!ts) return 'Unknown Date';
+            const date = new Date(ts);
+            const now = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            const isToday = date.toDateString() === now.toDateString();
+            const isYesterday = date.toDateString() === yesterday.toDateString();
+
+            if (isToday) return 'Today';
+            if (isYesterday) return 'Yesterday';
+
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function showConfirmation(title, msg, onConfirm) {
+            const modal = document.getElementById('confirmation-modal');
+            const titleEl = document.getElementById('confirm-title');
+            const msgEl = document.getElementById('confirm-msg');
+            const yesBtn = document.getElementById('confirm-yes');
+
+            titleEl.innerText = title;
+            msgEl.innerText = msg;
+
+            yesBtn.onclick = () => {
+                onConfirm();
+                hideConfirmation();
+            };
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function hideConfirmation() {
+            const modal = document.getElementById('confirmation-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function removeFromHistory(id, event) {
+            if (event) event.stopPropagation();
+            showConfirmation('Remove Item', 'Remove this item from history?', () => {
+                appState.continueWatching = appState.continueWatching.filter(i => i.id !== id);
+                localStorage.setItem('goStreamContinueWatching', JSON.stringify(appState.continueWatching));
+                renderHistory();
+                showToast('Item removed from history');
             });
         }
 
-        detectInspector();
+        function clearHistory() {
+            if (appState.continueWatching.length === 0) return;
+            showConfirmation('Clear History', 'Are you sure you want to clear your entire history?', () => {
+                appState.continueWatching = [];
+                localStorage.setItem('goStreamContinueWatching', JSON.stringify([]));
+                renderHistory();
+                showToast('History cleared');
+            });
+        }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            router('home');
-        });
+        function renderHistory() {
+            const container = document.getElementById('history-content');
+            if (!container) return;
+            container.innerHTML = '';
 
-        const copyrightSpan = document.getElementById('current-year-copyright');
-        if (copyrightSpan) copyrightSpan.textContent = `${new Date().getFullYear()} GoStream`;
+            // Update Tab Styles
+            ['all', 'movie', 'tv', 'anime'].forEach(t => {
+                const btn = document.getElementById(`hist-tab-${t}`);
+                if (btn) {
+                    if (t === appState.historyTab) {
+                        btn.className = 'text-sm md:text-lg font-bold text-primary border-b-2 border-primary pb-2 transition-colors whitespace-nowrap';
+                    } else {
+                        btn.className = 'text-sm md:text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors whitespace-nowrap';
+                    }
+                }
+            });
+
+            // Add Header Controls (Clear History) if not present
+            // We need to inject this into the header area, but currently renderHistory only clears 'history-content'.
+            // The header is static in HTML. Let's add the button there dynamically or check if we should modify HTML.
+            // Modification: modifying HTML to include a container for the button or injecting it here.
+            // Let's inject a "Clear History" button at the top of the content if history !empty, or rely on static HTML modification?
+            // User asked for "Clear History button in History Header". The static HTML has a header. 
+            // Better to update the static HTML for the header to include the button spot, OR just prepend it here.
+            // Let's prepend a controls div here.
+
+            const filter = appState.historyTab;
+            // Filter and Sort (descending timestamp)
+            const history = appState.continueWatching.filter(item => {
+                if (filter === 'all') return true;
+                return item.type === filter;
+            }).sort((a, b) => b.timestamp - a.timestamp);
+
+            const controlsConfig = document.createElement('div');
+            controlsConfig.className = 'flex justify-end mb-4';
+            if (history.length > 0) {
+                const clearBtn = document.createElement('button');
+                clearBtn.className = 'flex items-center text-xs font-bold text-red-500 hover:text-red-400 border border-red-500 hover:border-red-400 rounded px-3 py-1.5 transition-colors';
+                clearBtn.innerHTML = '<i class="fas fa-trash-alt mr-2"></i> Clear History';
+                clearBtn.onclick = clearHistory;
+                controlsConfig.appendChild(clearBtn);
+                container.appendChild(controlsConfig);
+            }
+
+
+            if (history.length === 0) {
+                container.innerHTML += '<p class="text-gray-400">No history found.</p>';
+                return;
+            }
+
+            // Group by Date
+            const groups = {};
+            const dateKeys = [];
+
+            history.forEach(item => {
+                const dateKey = getRelativeDate(item.timestamp);
+                if (!groups[dateKey]) {
+                    groups[dateKey] = [];
+                    dateKeys.push(dateKey);
+                }
+                groups[dateKey].push(item);
+            });
+
+            // Render Groups
+            dateKeys.forEach(dateLabel => {
+                // Header
+                const header = document.createElement('h3');
+                header.className = 'text-lg font-bold text-text-main mb-4 mt-6 first:mt-0';
+                header.innerText = dateLabel;
+                container.appendChild(header);
+
+                // Grid
+                const grid = document.createElement('div');
+                grid.className = 'results-grid';
+
+                groups[dateLabel].forEach(item => {
+                    const isAnime = item.type === 'anime';
+                    const badgeText = isAnime ? `EP ${item.episode || '?'}` : (item.type === 'movie' ? '' : `S${item.season} E${item.episode}`);
+                    const badge = badgeText ? `<div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10">${badgeText}</div>` : '';
+
+                    const imgUrl = item.poster ? getPosterUrl(item.poster) : 'https://placehold.co/500x750?text=No+Img';
+
+                    const card = document.createElement('div');
+                    card.className = 'movie-card rounded cursor-pointer relative group aspect-[2/3] overflow-hidden'; // Match default card classes
+
+                    // PREPARE HOVER DATA
+                    // Use stored data or safe defaults
+                    const hoverData = {
+                        id: item.id,
+                        type: item.type,
+                        title: item.title,
+                        posterUrl: imgUrl,
+                        vote: item.vote ? Number(item.vote).toFixed(1) : 'NR',
+                        year: item.year || '',
+                        overview: item.overview || 'Resume watching...',
+                        numericVote: item.vote ? Number(item.vote) : null
+                    };
+
+                    card.onclick = () => {
+                        if (item.type === 'movie') openTMDBPlayer(item.id, 'movie');
+                        else if (item.type === 'anime') openAnilistPlayer(item.id, item.episode, item.description, item.averageScore, item.year); // Updated to pass more data
+                        else openDetailsWrapper(item.id, item.type, item.season, item.episode);
+                    };
+
+                    // HOVER EVENTS
+                    let hoverTimer;
+                    card.onmouseenter = (e) => {
+                        if (hoverTimer) clearTimeout(hoverTimer);
+                        hoverTimer = setTimeout(() => showHoverCard(card, hoverData), 400);
+                    };
+                    card.onmouseleave = () => {
+                        if (hoverTimer) clearTimeout(hoverTimer);
+                        hoverTimer = setTimeout(hideHoverCard, 100);
+                    };
+
+                    card.innerHTML = `
+                            <img src="${imgUrl}" class="w-full h-full object-cover">
+                            
+                            <!-- Episode/Season Badge (Left Top) -->
+                            ${badge}
+
+
+                            <!-- Remove Button (Always Visible) -->
+                            <button onclick="removeFromHistory(${item.id}, event)" class="absolute top-1.5 right-1.5 z-20 w-7 h-7 rounded-full bg-black/60 hover:bg-red-500 text-white flex items-center justify-center transition-colors shadow-md" title="Remove from History">
+                                <i class="fas fa-times text-[12px]"></i>
+                            </button>
+
+
+                            <!-- Info Overlay (Bottom) -->
+                            <div class="absolute bottom-0 left-0 w-full p-3 card-info">
+                                <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors">${item.title}</h3>
+                                <div class="flex justify-between items-center text-xs uppercase text-text-muted mt-1">
+                                    <span class="text-[10px]">Resume</span>
+                                    <span class="border border-border-color px-1 rounded text-[10px]">${item.type === 'anime' ? 'Anime' : (item.type === 'movie' ? 'Movie' : 'TV Show')}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Hover Play Overlay -->
+                            <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-10 pointer-events-none">
+                                <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg"></i>
+                            </div>
+                     `;
+                    grid.appendChild(card);
+                });
+                container.appendChild(grid);
+            });
+        }
+
+
+
+
+
+
     </script>
 </body>
 
