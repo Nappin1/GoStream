@@ -569,11 +569,12 @@
         </div>
 
         <div class="p-4 border-t border-border-color flex-shrink-0 flex flex-col items-center">
-            <button onclick="installApp()" id="install-btn-sidebar"
-                class="flex items-center justify-center w-full gap-2 bg-primary/10 hover:bg-primary text-primary hover:text-black py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap overflow-hidden">
-                <i class="fas fa-download text-lg"></i> <span
-                    class="sidebar-label transition-opacity duration-300">Install App</span>
-            </button>
+            <a onclick="router('legal')" data-target="legal" title="Legal/DMCA"
+                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
+                <i
+                    class="fas fa-scale-balanced w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0 mr-2"></i>
+                <span class="sidebar-label transition-opacity duration-300 uppercase">Legal/DMCA</span>
+            </a>
         </div>
     </aside>
 
@@ -644,144 +645,23 @@
                     </div>
                     <span class="text-xs text-gray-300 group-hover:text-white">History</span>
                 </button>
+
+                <button onclick="router('legal'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-scale-balanced text-white group-hover:text-primary text-xl"></i>
+                    </div>
+                    <span class="text-xs text-gray-300 group-hover:text-white">Legal</span>
+                </button>
             </div>
             <!-- Quick Actions -->
             <div class="border-t border-white/5 p-2 bg-black/20 flex justify-between">
-                <button onclick="toggleFAQ(); toggleMoreMenu()"
-                    class="flex items-center gap-2 px-3 py-2 text-xs text-text-muted hover:text-white">
-                    <i class="fas fa-question-circle"></i> Help
-                </button>
-                <button onclick="installApp(); toggleMoreMenu()"
-                    class="flex items-center gap-2 px-3 py-2 text-xs text-primary font-bold">
-                    <i class="fas fa-download"></i> Install App
-                </button>
+                <!-- Removed FAQ/Install buttons -->
             </div>
         </div>
     </div>
 
-    <!-- Floating FAQ Button -->
-    <div class="fixed bottom-24 right-5 z-[55]">
-        <!-- First Button (FAQ - lower position) -->
-        <button onclick="toggleFAQ()"
-            class="relative w-10 h-10 hidden md:block rounded-full bg-card-bg text-white flex border-2 border-primary items-center justify-center shadow-lg md:hover:scale-110 transition-transform mb-2">
-            <i class="fas fa-question text-sm"></i>
-        </button>
 
-        <!-- Second Button (Info - upper position) -->
-        <button onclick="toggleFAQs()"
-            class="relative w-10 h-10 hidden md:block rounded-full bg-card-bg text-white flex border-2 border-primary items-center justify-center shadow-lg md:hover:scale-110 transition-transform">
-            <i class="fas fa-info text-sm"></i>
-        </button>
-    </div>
-
-    <!-- FAQ Modal -->
-    <div id="faq-modal" class="modal-overlay">
-        <div class="modal-content relative">
-            <button onclick="toggleFAQ()" class="absolute top-4 right-4 text-text-muted hover:text-white"><i
-                    class="fas fa-times text-lg"></i></button>
-            <h2 class="text-xl font-bold text-text-main mb-4 border-b border-border-color pb-2">How to Use</h2>
-            <div class="space-y-4 text-sm text-text-muted max-h-[60vh] overflow-y-auto">
-                <div class="space-y-1">
-                    <h3 class="font-bold text-white"><i class="fas fa-search mr-2 text-primary"></i>1. Search</h3>
-                    <p>Use the search bar at the top to find movies, TV shows, anime, or people. You can also browse by
-                        category or use filters.</p>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="font-bold text-white"><i class="fas fa-play-circle mr-2 text-primary"></i>2. Watch</h3>
-                    <p>Click on a poster to view details. To watch, use the player at the top of the details page. If a
-                        server doesn't work, try switching servers using the buttons above the player.</p>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="font-bold text-white"><i class="fas fa-bookmark mr-2 text-primary"></i>3. Library</h3>
-                    <p>Click the bookmark icon to add content to your personal library. Your progress is also saved
-                        automatically in "Continue Watching".</p>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="font-bold text-white"><i class="fas fa-download mr-2 text-primary"></i>4. Install</h3>
-                    <p>For the best experience, install GoStream as an app.</p>
-                    <p>Tap the menu icon (three dots) in the top right, then select <span
-                            class="font-bold text-primary">Install App</span> or <span
-                            class="font-bold text-primary">Add to Home Screen</span> on mobile.</p>
-                </div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-border-color text-center">
-                <button onclick="toggleFAQ()"
-                    class="bg-primary text-black font-bold py-2 px-6 rounded hover:bg-opacity-80 transition-colors w-full sm:w-auto">Got
-                    it!</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Additional FAQs Modal -->
-    <div id="faqs-modal" class="modal-overlay">
-        <div class="modal-content relative">
-            <button onclick="toggleFAQs()" class="absolute top-4 right-4 text-text-muted hover:text-white"><i
-                    class="fas fa-times text-lg"></i></button>
-            <h2 class="text-xl font-bold text-text-main mb-4 border-b border-border-color pb-2">Third-Party Hosting &
-                Copyright Disclaimer</h2>
-            <div class="space-y-4 text-sm text-text-muted max-h-[60vh] overflow-y-auto">
-                <div class="space-y-1">
-                    <h3 class="font-bold text-white"><i class="fas fa-database mr-2 text-primary"></i>1. No Content
-                        Hosting</h3>
-                    <p><span class="font-bold text-primary">GoStream</span> acts strictly as a search index and
-                        information retrieval tool. The Website does not host, upload, manage, or store any video,
-                        audio, or media files on its own servers. All media content accessible through this Website is
-                        embedded from external, third-party services.</p>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="font-bold text-white"><i class="fas fa-network-wired mr-2 text-primary"></i>2.
-                        Third-Party Control</h3>
-                    <p>Since the Website does not control the underlying media files, we cannot guarantee the
-                        availability, accuracy, or permanence of any content. Issues such as:</p>
-                    <p>&bull; Broken or dead links (404 errors).</p>
-                    <p>&bull; Incorrect video titles or metadata.</p>
-                    <p>&bull; Content removal due to DMCA takedowns or inactivity.</p>
-                    <p>...are entirely outside the control of <span class="font-bold text-primary">GoStream</span>.
-                        These technical issues originate from the third-party file hosts (e.g., vidsrc).</p>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="font-bold text-white"><i class="fas fa-copyright mr-2 text-primary"></i>3. Copyright &
-                        Removal Requests</h3>
-                    <p>If you have legal concerns regarding copyright, please contact the original file host where the
-                        media is stored. <span class="font-bold text-primary">GoStream</span> does not possess the files
-                        and therefore cannot remove them from the internet.</p>
-                </div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-border-color text-center">
-                <button onclick="toggleFAQs()"
-                    class="bg-primary text-black font-bold py-2 px-6 rounded hover:bg-opacity-80 transition-colors w-full sm:w-auto">Got
-                    it!</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Install Modal (Fallback) -->
-    <div id="install-modal" class="modal-overlay">
-        <div class="modal-content relative">
-            <button onclick="toggleInstallModal()" class="absolute top-4 right-4 text-text-muted hover:text-white"><i
-                    class="fas fa-times text-lg"></i></button>
-            <h2 class="text-xl font-bold text-text-main mb-4 border-b border-border-color pb-2"><i
-                    class="fas fa-download mr-2 text-primary"></i>Install GoStream</h2>
-            <div class="space-y-4 text-sm text-text-muted">
-                <p>Install GoStream on your device for a fullscreen, app-like experience.</p>
-                <div class="bg-input-bg p-3 rounded border border-border-color">
-                    <h3 class="font-bold text-white mb-1"><i class="fab fa-apple mr-2"></i>iOS (Safari)</h3>
-                    <p>Tap the <span class="font-bold text-primary">Share</span> button in the toolbar, then scroll down
-                        and select <span class="font-bold text-primary">Add to Home Screen</span>.</p>
-                </div>
-                <div class="bg-input-bg p-3 rounded border border-border-color">
-                    <h3 class="font-bold text-white mb-1"><i class="fab fa-android mr-2"></i>Android (Chrome)</h3>
-                    <p>Tap the menu icon (three dots) in the top right, then select <span
-                            class="font-bold text-primary">Install App</span> or <span
-                            class="font-bold text-primary">Add to Home Screen</span>.</p>
-                </div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-border-color text-center">
-                <button onclick="toggleInstallModal()"
-                    class="bg-input-bg border border-border-color text-white font-bold py-2 px-6 rounded hover:bg-white/10 transition-colors">Close</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Trailer Modal -->
     <div id="trailer-modal" class="modal-overlay z-[1100] flex items-center justify-center p-4">
@@ -1155,28 +1035,87 @@
             </div>
         </section>
 
-    </main>
+        <section id="view-legal" class="view-section px-4 mt-8 mb-4 w-full sm:px-6 lg:px-8 hidden">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-extrabold text-white mb-2 flex items-center"><span class="vline"></span>Legal
+                    Stuff</h2>
+                <p class="text-text-muted mb-8 text-lg">Third-Party Hosting & Copyright Disclaimer</p>
 
-    <!-- CONFIRMATION MODAL -->
-    <div id="confirmation-modal"
-        class="fixed inset-0 z-[70] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="hideConfirmation()">
-        </div>
-        <div
-            class="bg-card-bg border border-border-color p-6 rounded-xl shadow-2xl transform scale-95 transition-all duration-300 max-w-sm w-full mx-4 relative pointer-events-auto flex flex-col items-center text-center">
-            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary">
-                <i class="fas fa-exclamation-triangle text-xl"></i>
+                <div class="grid gap-6">
+                    <div
+                        class="bg-card-bg p-6 rounded-xl border border-border-color shadow-lg hover:border-primary transition-colors duration-300">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-primary/10 p-3 rounded-full shrink-0">
+                                <i class="fas fa-database text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-2">No Content Hosting</h3>
+                                <p class="text-gray-400 leading-relaxed text-sm">
+                                    <span class="font-bold text-primary">GoStream</span> acts strictly as a search index
+                                    and information retrieval tool.
+                                    The Website does not host, upload, manage, or store any video, audio, or media files
+                                    on its own servers.
+                                    All media content accessible through this Website is embedded from external,
+                                    third-party services.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-card-bg p-6 rounded-xl border border-border-color shadow-lg hover:border-primary transition-colors duration-300">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-primary/10 p-3 rounded-full shrink-0">
+                                <i class="fas fa-network-wired text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-2">Third-Party Control</h3>
+                                <p class="text-gray-400 leading-relaxed text-sm mb-3">
+                                    Since the Website does not control the underlying media files, we cannot guarantee
+                                    the availability, accuracy, or permanence of any content. Issues such as:
+                                </p>
+                                <ul class="list-disc list-inside text-gray-400 text-sm space-y-1 ml-1">
+                                    <li>Broken or dead links (404 errors).</li>
+                                    <li>Incorrect video titles or metadata.</li>
+                                    <li>Content removal due to DMCA takedowns or inactivity.</li>
+                                </ul>
+                                <p class="text-gray-400 leading-relaxed text-sm mt-3">
+                                    ...are entirely outside the control of <span
+                                        class="font-bold text-primary">GoStream</span>. These technical issues originate
+                                    from the third-party file hosts (e.g., vidsrc).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-card-bg p-6 rounded-xl border border-border-color shadow-lg hover:border-primary transition-colors duration-300">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-primary/10 p-3 rounded-full shrink-0">
+                                <i class="fas fa-copyright text-primary text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white mb-2">Copyright & Removal Requests</h3>
+                                <p class="text-gray-400 leading-relaxed text-sm">
+                                    If you have legal concerns regarding copyright, please contact the original file
+                                    host where the media is stored.
+                                    <span class="font-bold text-primary">GoStream</span> does not possess the files and
+                                    therefore cannot remove them from the internet.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-center border-t border-border-color pt-8">
+                    <p class="text-text-muted text-sm">
+                        &copy; 2024 GoStream. All rights reserved. <br>
+                    </p>
+                </div>
             </div>
-            <h3 id="confirm-title" class="text-xl font-bold text-white mb-2">Confirm Action</h3>
-            <p id="confirm-msg" class="text-text-muted mb-6 text-sm">Are you sure you want to proceed?</p>
-            <div class="flex gap-3 w-full">
-                <button id="confirm-cancel" onclick="hideConfirmation()"
-                    class="flex-1 px-4 py-2.5 rounded-lg text-sm font-bold text-text-muted hover:bg-white/5 hover:text-white transition-colors border border-transparent">Cancel</button>
-                <button id="confirm-yes"
-                    class="flex-1 px-4 py-2.5 rounded-lg text-sm font-bold bg-primary text-black hover:bg-white transition-colors shadow-lg shadow-primary/20">Confirm</button>
-            </div>
-        </div>
-    </div>
+        </section>
+
+    </main>
 
     <div id="toast-container" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
     <div id="global-hover-card"></div>
@@ -1213,7 +1152,8 @@
         const ANIME_SOURCES = [
             { name: '1', url: (id, ep) => `https://vidsrc.cc/v2/embed/anime/ani${id}/${ep}/sub` },
             { name: '2', url: (id, ep) => `https://vidsrc.icu/embed/anime/${id}/${ep}/0` },
-            { name: '3', url: (id, ep) => `https://vidnest.fun/animepahe/${id}/${ep}/SUB` }
+            { name: '3', url: (id, ep) => `https://vidnest.fun/animepahe/${id}/${ep}/SUB` },
+            { name: '4', url: (id, ep) => `https://vidnest.fun/anime/${id}/${ep}/sub` }
         ];
 
         // Constants for Filters
@@ -1337,7 +1277,7 @@
             stopBannerRotation();
 
             // List of top-level navigation pages
-            const mainViews = ['home', 'movies', 'tv', 'anime-anilist', 'watchlist', 'history', 'search'];
+            const mainViews = ['home', 'movies', 'tv', 'anime-anilist', 'watchlist', 'history', 'search', 'legal'];
 
             // 1. Update History Strategy
             // If we are currently on a main view, and we are navigating AWAY to a sub-view (details/search/player)
@@ -1406,6 +1346,9 @@
                     break;
                 case 'search':
                     document.getElementById('view-search').classList.remove('hidden');
+                    break;
+                case 'legal':
+                    document.getElementById('view-legal').classList.remove('hidden');
                     break;
                 case 'details':
                     document.getElementById('view-details').classList.remove('hidden');
@@ -1702,7 +1645,7 @@
             query {
                 Page(page: 1, perPage: 6) {
                     media(sort: TRENDING_DESC, type: ANIME, isAdult: false) {
-                        id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
+                        id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear genres
                     }
                 }
             }`;
@@ -1998,7 +1941,8 @@
                 vote_average: (anime.averageScore || 0) / 10,
                 media_type: 'anime',
                 release_date: anime.seasonYear ? String(anime.seasonYear) : (anime.startDate && anime.startDate.year ? String(anime.startDate.year) : 'N/A'),
-                status: anime.status
+                status: anime.status,
+                genres: anime.genres || []
             };
         }
 
@@ -2058,7 +2002,7 @@
                             episode
                             airingAt
                             media {
-                                id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
+                                id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear genres
                             }
                         }
                     }
@@ -2096,7 +2040,7 @@
                     Page(page: $page, perPage: 24) {
                         pageInfo { hasNextPage }
                         media(sort: $sort, genre: $genre, countryOfOrigin: $country, status: $status, seasonYear: $year, type: ANIME, isAdult: false) {
-                            id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear
+                            id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear genres
                         }
                     }
                 }`;
@@ -2433,7 +2377,9 @@
                             relYear,
                             `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
                             false,
-                            edge.node.description
+                            edge.node.description,
+                            '',
+                            edge.node.status ? edge.node.status.replace(/_/g, ' ') : ''
                         );
                         relList.appendChild(card);
                     });
@@ -2596,7 +2542,9 @@
                             relYear,
                             `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
                             false,
-                            edge.node.description
+                            edge.node.description,
+                            '',
+                            edge.node.status ? edge.node.status.replace(/_/g, ' ') : ''
                         );
                         relList.appendChild(card);
                     });
@@ -2700,7 +2648,7 @@
             grid.innerHTML = '<p class="text-gray-400">Searching...</p>';
             document.getElementById('pag-search').innerHTML = ''; // Clear pagination
 
-            const anilistQuery = `query ($search: String, $page: Int) { Page(page: $page, perPage: 20) { pageInfo { lastPage } media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { extraLarge } format averageScore episodes status startDate { year } seasonYear description } } }`;
+            const anilistQuery = `query ($search: String, $page: Int) { Page(page: $page, perPage: 20) { pageInfo { lastPage } media(search: $search, type: ANIME, isAdult: false) { id title { romaji english } coverImage { extraLarge } format averageScore episodes status startDate { year } seasonYear description genres } } }`;
             const anilistPromise = fetchAnilist(anilistQuery, { search: query, page: page });
             const tmdbPromise = fetchTMDB('/search/multi', { query, page: page });
 
@@ -2829,7 +2777,12 @@
                 if (type === 'tv' && displayStatus === 'Returning Series') displayStatus = 'Releasing';
 
                 const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
-                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
+
+                // Genre Mapping
+                const genreList = type === 'tv' ? TV_GENRES : MOVIE_GENRES;
+                const genres = item.genre_ids ? item.genre_ids.map(id => genreList.find(g => g.id === id)?.name).filter(Boolean).slice(0, 3).join(', ') : '';
+
+                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, displayStatus);
                 container.appendChild(card);
             }
         }
@@ -2856,12 +2809,15 @@
                 let aniStatus = item.status ? item.status.replace(/_/g, ' ') : '';
                 if (item.status === 'RELEASING') aniStatus = 'Releasing';
                 const statusBadge = aniStatus ? `<div class="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${aniStatus}</div>` : '';
-                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview);
+
+                const genres = item.genres ? item.genres.slice(0, 3).join(', ') : '';
+
+                const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, aniStatus);
                 container.appendChild(card);
             });
         }
 
-        function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview) {
+        function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview, genres, statusText) {
             const card = document.createElement('div');
             const widthClass = isHorizontal ? 'landscape-card' : '';
             card.className = `movie-card rounded cursor-pointer relative group ${widthClass}`;
@@ -2887,8 +2843,14 @@
                     
                     ${type !== 'actor' ? statusBadge || '' : ''}
 
+                    <!-- HOVER PLAY ICON OVERLAY -->
+                    ${type !== 'actor' ? `
+                    <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
+                         <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300"></i>
+                    </div>` : ''}
+
                      ${type !== 'actor' ? ` <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10 flex items-center gap-1">
-                    ${type === 'season' ? '' : ''} ${voteDisplay} </div> ` : `
+                    ${type === 'season' ? '' : ''} <i class="fas fa-star text-[8px] text-primary"></i> ${voteDisplay} </div> ` : `
                     <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10">
                         <i class="fas fa-user"></i>
                     </div> ` }
@@ -2911,7 +2873,7 @@
 
             // HOVER EVENTS FOR GLOBAL CARD
             if (type !== 'actor') {
-                const data = { id, type, title, posterUrl, vote: voteDisplay, year: safeYear, overview: safeOverview, numericVote };
+                const data = { id, type, title, posterUrl, vote: voteDisplay, year: safeYear, overview: safeOverview, numericVote, genres: genres || 'N/A', status: statusText || 'N/A' };
                 card.onmouseenter = (e) => {
                     // Clear any pending hide timer
                     if (hoverTimer) clearTimeout(hoverTimer);
@@ -3015,7 +2977,7 @@
             card.style.left = `${left}px`;
             card.style.transformOrigin = transformOrigin;
 
-            // Populate Content
+            // Populate Content - NO IMAGE, TEXT ONLY LAYOUT
             const isWatchlisted = appState.watchlist.some(i => i.id == data.id);
             const btnId = `gh-wl-${data.id}`;
 
@@ -3025,35 +2987,31 @@
             };
 
             card.innerHTML = `
-                <div class="relative group cursor-pointer">
-                    <img src="${data.posterUrl}" class="w-full h-44 object-cover object-top">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-transparent to-transparent"></div>
+                <div class="p-5 flex flex-col h-full bg-[#2a2c31] border border-[#444] rounded-lg shadow-2xl relative overflow-hidden">
+                    <!-- Background accent (optional) -->
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+                    <h4 class="text-white font-extrabold text-lg leading-tight mb-2 line-clamp-2 z-10">${data.title}</h4>
                     
-                    <!-- Play Icon Overlay -->
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div class="w-12 h-12 rounded-full bg-primary/90 text-black flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-play ml-1"></i>
-                        </div>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-gray-300 mb-3 z-10">
+                        <span class="text-primary flex items-center gap-1"><i class="fas fa-star text-[10px]"></i> ${data.vote}</span>
+                        <span class="bg-white/10 px-1.5 py-0.5 rounded text-[10px]">${data.year}</span>
+                        <span class="uppercase border border-white/20 px-1.5 py-0.5 rounded text-[10px]">${data.type}</span>
+                        <span class="text-gray-400 capitalize">${data.status.toLowerCase().replace(/_/g, ' ')}</span>
                     </div>
 
-                    <div class="absolute bottom-3 left-4 right-4 z-10 transition-transform duration-300 group-hover:-translate-y-1">
-                        <h4 class="text-white font-extrabold text-lg leading-tight dropshadow-md line-clamp-2">${data.title}</h4>
-                        <div class="flex items-center gap-3 text-xs text-secondary mt-1 font-medium">
-                             <span class="text-primary flex items-center gap-1"><i class="fas fa-star text-[10px]"></i> ${data.vote}</span>
-                             <span class="text-white/80">${data.year}</span>
-                             <span class="uppercase border border-white/20 px-1.5 py-0.5 rounded text-[10px] bg-black/40">${data.type}</span>
-                        </div>
+                     <div class="text-xs text-text-muted mb-4 z-10">
+                        <span class="font-bold text-gray-400">Genre:</span> <span class="text-gray-300">${data.genres}</span>
                     </div>
-                </div>
-                <div class="p-4 pt-1 flex flex-col h-full justify-between">
-                    <p class="text-xs text-text-muted line-clamp-3 leading-relaxed mb-4">${data.overview}</p>
+
+                    <p class="text-xs text-gray-400 line-clamp-4 leading-relaxed flex-grow z-10 border-t border-white/5 pt-2">${data.overview}</p>
                     
-                    <div class="flex gap-2 pb-2">
-                         <button onclick="event.stopPropagation(); openDetailsWrapper(${data.id}, '${data.type}', 1, 1)" class="flex-1 bg-white text-black py-2 rounded text-xs font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                    <div class="flex gap-2 pt-3 mt-auto z-10">
+                         <button onclick="event.stopPropagation(); openDetailsWrapper(${data.id}, '${data.type}', 1, 1)" class="flex-1 bg-white text-black py-2 rounded text-xs font-bold hover:bg-primary hover:text-black transition-colors flex items-center justify-center gap-2 shadow-sm">
                             <i class="fas fa-play"></i> Watch
                         </button>
-                        <button id="${btnId}" onclick="event.stopPropagation(); toggleWatchlist(${data.id}, '${data.type}', '${data.title.replace(/'/g, "")}', '${data.posterUrl}', '${btnId}', ${data.numericVote}, '${data.year}', '${data.overview ? data.overview.replace(/'/g, "") : ""}')" class="px-3 py-2 bg-input-bg border border-border-color text-white rounded hover:bg-white/10 transition-colors flex items-center justify-center" title="Add to Library">
-                            ${isWatchlisted ? '<i class="material-icons">bookmark_added</i>' : '<i class="material-icons">bookmark_add</i>'}
+                        <button id="${btnId}" onclick="event.stopPropagation(); toggleWatchlist(${data.id}, '${data.type}', '${data.title.replace(/'/g, "")}', '${data.posterUrl}', '${btnId}', ${data.numericVote}, '${data.year}', '${data.overview ? data.overview.replace(/'/g, "") : ""}')" class="px-3 py-2 bg-black/40 border border-white/10 text-white rounded hover:bg-white/10 transition-colors flex items-center justify-center" title="Add to Library">
+                            ${isWatchlisted ? '<i class="material-icons text-primary">bookmark_added</i>' : '<i class="material-icons">bookmark_add</i>'}
                         </button>
                     </div>
                 </div>
@@ -3465,7 +3423,7 @@
                                         btn.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black';
 
                                         // Update History on Episode Change
-                                        updateHistory(seasonNum, ep); // Use seasonNum here
+
 
                                         updatePlayerSource(SOURCES[0], id, 'tv', seasonNum, ep, details.poster_path, title, details.backdrop_path); // Use seasonNum here
                                         renderServerButtons();
@@ -3943,66 +3901,9 @@
         }
         document.addEventListener('deviceready', onDeviceReady, false);
 
-        /**
-         * INSTALL & FAQ LOGIC
-         */
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
-            e.preventDefault();
-            // Stash the event so it can be triggered later.
-            deferredPrompt = e;
-            // Update UI to notify the user they can add to home screen
-            showInstallButton();
-        });
-
-        function showInstallButton() {
-            const btn = document.getElementById('nav-install-btn');
-            if (btn) btn.classList.remove('hidden');
-        }
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the A2HS prompt');
-                    } else {
-                        console.log('User dismissed the A2HS prompt');
-                    }
-                    deferredPrompt = null;
-                });
-            } else {
-                // If no prompt available (iOS or already installed or desktop), show instructions
-                toggleInstallModal();
-            }
-        }
-
-        function toggleInstallModal() {
-            const modal = document.getElementById('install-modal');
-            modal.classList.toggle('open');
-        }
-
-        function toggleFAQ() {
-            const modal = document.getElementById('faq-modal');
-            modal.classList.toggle('open');
-        }
-
-        function toggleFAQs() {
-            const modal = document.getElementById('faqs-modal');
-            modal.classList.toggle('open');
-        }
-
         // Close Modals on Outside Click
         window.onclick = function (event) {
-            const faqModal = document.getElementById('faq-modal');
-            const faqsModal = document.getElementById('faqs-modal');
-            const installModal = document.getElementById('install-modal');
             const moreMenuModal = document.getElementById('more-menu-modal'); // Mobile More Menu
-
-            if (event.target === faqModal) toggleFAQ();
-            if (event.target === faqsModal) toggleFAQs();
-            if (event.target === installModal) toggleInstallModal();
             if (event.target === moreMenuModal) toggleMoreMenu();
         }
 
@@ -4161,12 +4062,10 @@
 
         function removeFromHistory(id, event) {
             if (event) event.stopPropagation();
-            showConfirmation('Remove Item', 'Remove this item from history?', () => {
-                appState.continueWatching = appState.continueWatching.filter(i => i.id !== id);
-                localStorage.setItem('goStreamContinueWatching', JSON.stringify(appState.continueWatching));
-                renderHistory();
-                showToast('Item removed from history');
-            });
+            appState.continueWatching = appState.continueWatching.filter(i => i.id !== id);
+            localStorage.setItem('goStreamContinueWatching', JSON.stringify(appState.continueWatching));
+            renderHistory();
+            showToast('Item removed from history');
         }
 
         function clearHistory() {
