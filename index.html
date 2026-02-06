@@ -689,7 +689,7 @@
     <!-- Main Content: Added Padding for Sidebar -->
     <main id="main-content" class="lg:pl-64 lg:pt-0 pb-24 min-h-screen flex flex-col transition-all duration-300">
         <section id="shared-banner"
-            class="relative h-[45vh] md:h-[65vh] flex items-end p-0 bg-dark-bg transition-all duration-500 hidden overflow-hidden group">
+            class="relative h-[50vh] md:h-[65vh] flex items-end p-0 bg-dark-bg transition-all duration-500 hidden overflow-hidden group">
             <!-- Banner Background Layers -->
             <div id="banner-bg-container" class="absolute inset-0">
                 <!-- JS will inject .banner-bg-wrapper divs here -->
@@ -892,8 +892,8 @@
                         <img id="anilist-details-img" src=""
                             class="w-[180px] hidden md:block md:w-full mx-auto md:mx-0 rounded shadow-2xl">
                         <button onclick="router('anime-anilist')"
-                            class="mb-4 text-gray-300 hover:text-white block md:hidden flex items-center gap-2 text-sm font-medium"><i
-                                class="fas fa-angles-left mr-2"></i> Back
+                            class="mb-4 text-gray-300 hover:text-white block md:hidden flex items-center gap-2 text-lg font-medium"><i
+                                class="fas fa-angles-left text-lg mr-2"></i> Back
                         </button>
 
                         <!-- WATCH NOW BUTTON SECTION -->
@@ -910,8 +910,8 @@
                     </div>
                     <div class="flex-1 pt-4 md:pt-16 min-w-0">
                         <button onclick="router('anime-anilist')"
-                            class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-sm font-medium"><i
-                                class="fas fa-angles-left mr-2"></i> Back
+                            class="mb-4 text-gray-300 hover:text-white hidden md:block flex items-center gap-2 text-lg font-medium"><i
+                                class="fas fa-angles-left text-lg mr-2"></i> Back
                         </button>
                         <div>
                             <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-3">
@@ -973,9 +973,11 @@
                                         class="text-text-main text-xs font-medium text-right md:text-left line-clamp-2">
                                     </p>
                                 </div>
-                            </div>
-                            <div><span class="text-text-muted text-xs">Genres</span>
-                                <div id="anilist-info-Genres" class="flex flex-wrap gap-1 mt-1"></div>
+                                <div class="flex justify-between md:block"><span
+                                        class="text-text-muted text-xs">Genres</span>
+                                    <p id="anilist-info-Genres"
+                                        class="text-text-main text-xs font-medium text-right md:text-left"></p>
+                                </div>
                             </div>
                             <div class="mb-8 border-t border-border-color pt-2">
                                 <h3 class="text-lg font-bold text-text-main mb-3">Cast & Voice Actors</h3>
@@ -992,39 +994,54 @@
         <section id="view-anilist-player" class="view-section hidden w-full bg-dark-bg">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
                 <button id="anilist-player-back-btn"
-                    class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i
-                        class="fas fa-angles-left mr-2"></i> Back to Details</button>
-                <h1 id="anilist-player-title" class="text-2xl md:text-3xl font-extrabold text-white mb-6"></h1>
+                    class="flex items-center gap-3 text-gray-300 mb-4 hover:text-white transition-colors duration-200">
 
-                <div class="rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8">
+                    <i class="fas fa-angles-left text-lg"></i>
+
+                    <span id="anilist-player-title" class="text-xl md:text-2xl font-extrabold text-white leading-none">
+                        /* Title Text Appears Here */
+                    </span>
+
+                </button>
+
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <!-- Player Container -->
                     <div
-                        class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
-                        <div class="flex items-center gap-2 text-primary font-bold"><i class="fas fa-play-circle"></i>
-                            <span id="anilist-player-ep">Episode 1</span>
+                        class="w-full lg:w-3/4 rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8 lg:mb-0">
+                        <div
+                            class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
+                            <div class="flex items-center gap-2 text-primary font-bold"><i
+                                    class="fas fa-play-circle"></i>
+                                <span id="anilist-player-ep">Episode 1</span>
+                            </div>
+                            <div id="anime-server-buttons" class="flex flex-wrap gap-2"></div>
                         </div>
-                        <div id="anime-server-buttons" class="flex flex-wrap gap-2"></div>
+                        <div class="aspect-video relative bg-black"><iframe id="anilist-iframe" class="w-full h-full"
+                                src="" frameborder="0" allowfullscreen></iframe></div>
+                        <div
+                            class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
+                            <button onclick="changeAnilistEp(-1)"
+                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">
+                                <i class="fas fa-backward mr-1"></i> Prev</button>
+                            <button onclick="changeAnilistEp(1)"
+                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next
+                                <i class="fas fa-forward ml-1"></i></button>
+                        </div>
                     </div>
-                    <div class="aspect-video relative bg-black"><iframe id="anilist-iframe" class="w-full h-full" src=""
-                            frameborder="0" allowfullscreen></iframe></div>
-                    <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
-                        <button onclick="changeAnilistEp(-1)"
-                            class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">
-                            <i class="fas fa-backward mr-1"></i> Prev</button>
-                        <button onclick="changeAnilistEp(1)"
-                            class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next
-                            <i class="fas fa-forward ml-1"></i></button>
-                    </div>
-                </div>
 
-                <div class="mb-8">
-                    <h3 class="text-lg font-bold text-text-main mb-3">Episodes</h3>
-                    <div id="anilist-episodes-grid"
-                        class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto custom-scroll pr-2">
+                    <!-- Episodes List Container -->
+                    <div
+                        class="w-full lg:w-1/4 flex flex-col h-full bg-card-bg border border-border-color rounded-lg overflow-hidden lg:h-[calc(100vh-200px)] lg:max-h-[600px]">
+                        <div class="p-3 border-b border-border-color bg-input-bg">
+                            <h3 class="text-base font-bold text-text-main">Episodes</h3>
+                        </div>
+                        <div id="anilist-episodes-grid"
+                            class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start">
+                        </div>
                     </div>
                 </div>
-                <div id="anilist-info-Relations-Container" class="text-sm space-y-3 hidden">
-                    <h4 class="text-lg font-bold text-text-main mb-3">Relations
-                    </h4>
+                <div id="anilist-info-Relations-Container" class="text-sm pt-4 space-y-3 hidden">
+                    <h4 class="text-lg font-bold text-text-main mb-3">Relations</h4>
                     <div id="anilist-info-Relations" class="horizontal-scroll-container p-2">
                     </div>
                 </div>
@@ -1797,7 +1814,7 @@
                 if (item.logo_path) {
                     const logoUrl = IMG_URL + item.logo_path;
                     // Responsive logo constraints
-                    titleHtml = `<img src="${logoUrl}" alt="${title}" class="max-h-20 sm:max-h-28 md:max-h-44 max-w-[90%] sm:max-w-[60%] mt-4 md:mt-10 object-contain mb-6 drop-shadow-lg origin-left">`;
+                    titleHtml = `<img src="${logoUrl}" alt="${title}" class="max-h-20 sm:max-h-20 md:max-h-44 max-w-[90%] sm:max-w-[60%] mt-6 md:mt-10 object-contain mb-6 drop-shadow-lg origin-left">`;
                 }
 
                 contentDiv.innerHTML = `
@@ -1840,7 +1857,6 @@
             loader.show();
 
             const params = {
-                page: stateRef.page,
                 language: 'en-US',
                 'vote_count.gte': 0,
                 ...extraParams
@@ -1888,17 +1904,32 @@
                 else params.first_air_date_year = stateRef.filters.year;
             }
 
-            const data = await fetchTMDB(finalEndpoint, params, false);
+            // DOUBLE FETCH LOGIC
+            const tmdbPage1 = (stateRef.page - 1) * 2 + 1;
+            const tmdbPage2 = tmdbPage1 + 1;
+
+            const p1 = { ...params, page: tmdbPage1 };
+            const p2 = { ...params, page: tmdbPage2 };
+
+            const [d1, d2] = await Promise.all([
+                fetchTMDB(finalEndpoint, p1, false),
+                fetchTMDB(finalEndpoint, p2, false)
+            ]);
+
+            const results = [];
+            if (d1 && d1.results) results.push(...d1.results);
+            if (d2 && d2.results) results.push(...d2.results);
+
+            const totalPagesRef = d1 ? d1.total_pages : (d2 ? d2.total_pages : 0);
+            const totalUIPages = Math.ceil(totalPagesRef / 2);
 
             grid.innerHTML = '';
-            if (data && data.results && data.results.length > 0) {
+            if (results.length > 0) {
                 // Banner is now handled separately in loadHomeData for the Home view.
-                // For sub-pages (Movies/TV), we usually don't have a banner, but if we did, we'd update it here.
-                // Since shared-banner is hidden in sub-views per router logic, we skip banner update here.
 
-                await renderTMDBGrid(gridId, data.results, key === 'movies' ? 'movie' : 'tv');
+                await renderTMDBGrid(gridId, results, key === 'movies' ? 'movie' : 'tv');
 
-                renderPagination(`pag-${key}`, stateRef.page, data.total_pages, (p) => {
+                renderPagination(`pag-${key}`, stateRef.page, totalUIPages, (p) => {
                     stateRef.page = p;
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     loadTMDBSection(key, endpoint, extraParams);
@@ -2002,7 +2033,7 @@
                             episode
                             airingAt
                             media {
-                                id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear genres
+                                id title { romaji english } coverImage { extraLarge } bannerImage description averageScore status episodes seasonYear genres isAdult
                             }
                         }
                     }
@@ -2011,7 +2042,7 @@
                 if (data && data.Page.airingSchedules) {
                     // Map AiringSchedules to shared media format
                     // We can optionally use the 'episode' data to show "Ep X" badge if we want
-                    state.data = data.Page.airingSchedules.map(schedule => {
+                    state.data = data.Page.airingSchedules.filter(s => !s.media.isAdult).map(schedule => {
                         const media = schedule.media;
                         // Inject the specific recently aired episode number so mapAnilistToShared or renderer can use it?
                         // Currently mapAnilistToShared doesn't look at it, but we can do a quick hack or just return media.
@@ -2311,15 +2342,7 @@
 
             // Genres
             const genreContainer = document.getElementById('anilist-info-Genres');
-            genreContainer.innerHTML = '';
-            if (anime.genres) {
-                anime.genres.forEach(g => {
-                    const span = document.createElement('span');
-                    span.className = "px-2 py-0.5 bg-input-bg border border-border-color rounded text-[10px] text-text-muted";
-                    span.innerText = g;
-                    genreContainer.appendChild(span);
-                });
-            }
+            genreContainer.innerText = anime.genres ? anime.genres.join(', ') : 'N/A';
 
             // Cast
             const castGrid = document.getElementById('anilist-cast-grid');
@@ -2412,15 +2435,90 @@
             watchBtn.onclick = () => openAnilistPlayer(id, startEp);
         }
 
+        // EPISODE LIST HELPERS
+        function toggleEpisodeSort() {
+            appState.episodeSort = appState.episodeSort === 'asc' ? 'desc' : 'asc';
+            const btn = document.getElementById('ep-sort-btn');
+            if (btn) btn.innerHTML = `<i class="fas fa-sort mr-1"></i> ${appState.episodeSort === 'asc' ? 'Oldest' : 'Newest'}`;
+            // Re-render handled by caller or we can trigger event.
+            // For simplicity, we'll just check which player is open and re-render.
+            if (!document.getElementById('view-anilist-player').classList.contains('hidden')) {
+                if (appState.anilist.currentAnime) openAnilistPlayer(appState.anilist.currentAnime.id, appState.anilist.currentEp);
+            } else if (!document.getElementById('tmdb-player-content').innerHTML === "") {
+                if (window.renderCurrentTMDBEpisodes) window.renderCurrentTMDBEpisodes();
+            }
+        }
+
+
+        function renderEpisodeList(containerId, episodes, type, currentEp, onPlayClick) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Normalize episodes to array of objects { number: 1, title: '...', id: ... }
+            let data = [];
+            if (type === 'anilist') {
+                const count = typeof episodes === 'number' ? episodes : 0;
+                for (let i = 1; i <= count; i++) {
+                    data.push({ number: i, title: `Episode ${i}`, id: i });
+                }
+            } else {
+                // TMDB: episodes is array of objects
+                data = episodes.map(e => ({
+                    number: e.episode_number,
+                    title: e.name,
+                    id: e.id,
+                    still: e.still_path,
+                    overview: e.overview,
+                    air_date: e.air_date
+                }));
+            }
+
+            // SORT
+            if (appState.episodeSort === 'desc') {
+                data.reverse();
+            }
+
+            // Enforce Grid View always
+            container.className = 'grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full';
+
+            data.forEach(ep => {
+                const isCurrent = ep.number == currentEp;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'relative group w-full';
+
+                // GRID VIEW ONLY
+                const btn = document.createElement('button');
+                btn.onclick = () => onPlayClick(ep.number);
+                btn.className = `w-full p-2 rounded border border-border-color text-xs transition-colors truncate ${isCurrent ? 'bg-primary text-black font-bold border-primary' : 'bg-input-bg text-text-muted hover:border-primary hover:text-primary'}`;
+                btn.innerText = ep.number;
+                btn.title = ep.title;
+                wrapper.appendChild(btn);
+
+                if (type === 'anilist' && appState.anilist.currentAnime && appState.anilist.currentAnime.status === 'RELEASING' && ep.number === data.length) { // Simplified NEW badge
+                    // Note: 'data.length' logic only works if sorted ASC
+                }
+                container.appendChild(wrapper);
+            });
+        }
+
         // Updated for separated view
         async function openAnilistPlayer(id, startEpisode = 1) {
             router('anilist-player');
             const state = appState.anilist;
+            const targetId = parseInt(id); // Ensure int
+
+            // Clear sensitive UI elements immediately to prevent stale data
+            document.getElementById('anilist-player-title').innerText = 'Loading...';
+            document.getElementById('anilist-info-Relations').innerHTML = '';
+            document.getElementById('anilist-info-Relations-Container').classList.add('hidden');
+            document.getElementById('anilist-episodes-grid').innerHTML = '';
 
             // If we already have the data in state (from Details view), reuse it (unless ID changed)
             // But to be safe, we can re-fetch or check availability. 
             // For robustness, let's allow fetching if currentAnime is null or mismatch.
-            if (!state.currentAnime || state.currentAnime.id !== id) {
+            // FIXED: Also check if relations exist, otherwise re-fetch (Continue Watching might have stale/partial state if not coming from details)
+            if (!state.currentAnime || state.currentAnime.id !== targetId || !state.currentAnime.relations) {
                 loader.show();
                 const query = `query ($id: Int) { Media(id: $id) { 
                     id 
@@ -2500,23 +2598,13 @@
 
             if (maxEps === 0) epGrid.innerHTML = '<p class="text-xs text-gray-500">No aired episodes yet.</p>';
 
-            for (let i = 1; i <= maxEps; i++) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'relative group';
-                const btn = document.createElement('button');
-                btn.className = `w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary ${i === 1 ? 'bg-primary text-black' : 'bg-input-bg text-text-muted'}`;
-                btn.innerText = i;
-                btn.onclick = () => playAnilistEp(i);
-                wrapper.appendChild(btn);
+            // Use Helper
+            // Pass cover image for list view preview
+            const coverForList = anime.coverImage ? anime.coverImage.extraLarge : null;
+            renderEpisodeList('anilist-episodes-grid', maxEps, 'anilist', state.currentEp, (epNum) => {
+                playAnilistEp(epNum);
+            }, coverForList);
 
-                if (anime.status === 'RELEASING' && i === maxEps) {
-                    const badge = document.createElement('sup');
-                    badge.className = "absolute -top-0.5 -right-0.5 text-[9px] text-primary font-bold bg-black rounded z-10 shadow-sm";
-                    badge.innerText = "NEW";
-                    wrapper.appendChild(badge);
-                }
-                epGrid.appendChild(wrapper);
-            }
 
             // Relations
             const relContainer = document.getElementById('anilist-info-Relations-Container');
@@ -2528,6 +2616,8 @@
 
                 if (validRelations.length > 0) {
                     relContainer.classList.remove('hidden');
+                    const relHeader = relContainer.querySelector('h4');
+                    if (relHeader) relHeader.innerText = `${anime.title.english || anime.title.romaji} Relations`;
 
                     validRelations.forEach(edge => {
                         const imgUrl = edge.node.coverImage?.extraLarge || 'https://placehold.co/160x240?text=No+Img';
@@ -2542,9 +2632,9 @@
                             relYear,
                             `<div class="absolute top-2 right-2 bg-card-bg text-white text-[10px] font-bold px-2 py-0.5 rounded border border-primary uppercase shadow-md z-10">${edge.relationType.replace(/_/g, ' ')}</div>`,
                             false,
-                            edge.node.description,
-                            '',
-                            edge.node.status ? edge.node.status.replace(/_/g, ' ') : ''
+                            edge.node.description, // Added overview
+                            '', // Badge bottom
+                            edge.node.status ? edge.node.status.replace(/_/g, ' ') : '' // Status for hover
                         );
                         relList.appendChild(card);
                     });
@@ -2595,11 +2685,13 @@
                 if (!b) return;
                 const btnEpNum = parseInt(b.innerText);
                 if (btnEpNum === ep) {
-                    b.classList.remove('bg-input-bg', 'text-text-muted');
-                    b.classList.add('bg-primary', 'text-black');
+                    // ACTIVE
+                    b.classList.remove('bg-input-bg', 'text-text-muted', 'hover:border-primary', 'hover:text-primary');
+                    b.classList.add('bg-primary', 'text-black', 'font-bold', 'border-primary');
                 } else {
-                    b.classList.add('bg-input-bg', 'text-text-muted');
-                    b.classList.remove('bg-primary', 'text-black');
+                    // INACTIVE
+                    b.classList.add('bg-input-bg', 'text-text-muted', 'hover:border-primary', 'hover:text-primary');
+                    b.classList.remove('bg-primary', 'text-black', 'font-bold', 'border-primary');
                 }
             });
         }
@@ -2826,7 +2918,7 @@
 
             // Normalize vote
             const numericVote = vote !== null && vote !== undefined && !isNaN(vote) ? Number(vote) : null;
-            const voteDisplay = numericVote !== null && numericVote > 0 ? numericVote.toFixed(1) : 'NR';
+            const voteDisplay = numericVote !== null && numericVote > 0 ? numericVote.toFixed(1) : '0';
 
             // Safe strings
             const safeTitle = (title || '').replace(/'/g, "");
@@ -2980,6 +3072,7 @@
             // Populate Content - NO IMAGE, TEXT ONLY LAYOUT
             const isWatchlisted = appState.watchlist.some(i => i.id == data.id);
             const btnId = `gh-wl-${data.id}`;
+            const titleId = `gh-title-${data.id}`;
 
             // Add click handler to the entire card
             card.onclick = (e) => {
@@ -2991,7 +3084,9 @@
                     <!-- Background accent (optional) -->
                     <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
-                    <h4 class="text-white font-extrabold text-lg leading-tight mb-2 line-clamp-2 z-10">${data.title}</h4>
+                    <div id="${titleId}" class="mb-2 z-10 min-h-[40px] flex items-center">
+                         <h4 class="text-white font-extrabold text-lg leading-tight line-clamp-2">${data.title}</h4>
+                    </div>
                     
                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-gray-300 mb-3 z-10">
                         <span class="text-primary flex items-center gap-1"><i class="fas fa-star text-[10px]"></i> ${data.vote}</span>
@@ -3114,10 +3209,7 @@
                 let status = details.status || 'N/A';
                 if (type === 'movie' && status === 'Released') status = 'Released';
                 if (type === 'tv' && status === 'Returning Series') status = 'Releasing';
-                let genresHtml = '';
-                if (details.genres) {
-                    genresHtml = details.genres.map(g => `<span class="px-2 py-0.5 bg-input-bg border border-border-color rounded text-[10px] text-text-muted">${g.name}</span>`).join('');
-                }
+                let genresHtml = details.genres ? details.genres.map(g => g.name).join(', ') : 'N/A';
                 const tagline = details.tagline ? `"${details.tagline.replace(/"/g, '&quot;')}"` : '';
                 const overview = details.overview ? details.overview.replace(/</g, "&lt;") : 'No overview available.';
                 const safeTitle = title.replace(/['"]/g, "");
@@ -3129,7 +3221,7 @@
                     <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
                         <div class="flex flex-col md:flex-row gap-8">
                             <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
-                                <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
+                                <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-angles-left text-lg mr-2"></i> Back</button>
                                 <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded shadow-2xl">
                                 
                                     
@@ -3142,7 +3234,7 @@
                                     </button>
                             </div>
                             <div class="flex-1 pt-4 md:pt-16 min-w-0">
-                                <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
+                                <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-angles-left text-lg mr-2"></i> Back</button>
                                     <div class="flex flex-wrap items-center gap-4 text-sm font-medium text-text-muted mb-4">
                                         <span class="text-primary font-bold"><i class="fas fa-star mr-1"></i> ${details.vote_average.toFixed(1)}</span>
                                         <span class="px-2 py-0.5 border border-border-color rounded">${releaseDate.split('-')[0]}</span>
@@ -3162,8 +3254,8 @@
                                         <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Released</span><p class="text-text-main text-xs font-medium text-right md:text-left">${relDate}</p></div>
                                         <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Runtime</span><p class="text-text-main text-xs font-medium text-right md:text-left">${runtime}</p></div>
                                         <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Production</span><p class="text-text-main text-xs font-medium text-right md:text-left">${details.production_companies?.[0]?.name || 'N/A'}</p></div>
+                                        <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Genres</span><p class="text-text-main text-xs font-medium text-right md:text-left">${genresHtml}</p></div>
                                     </div>
-                                        <div class=" border-b border-border-color pb-2"><span class="text-text-muted text-xs">Genres</span><div class="flex flex-wrap gap-1 mt-1">${genresHtml}</div></div>
                                     <div class="mb-0"><h3 class="text-lg font-bold text-text-main mb-3">Cast</h3><div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">${castHtml}</div></div>
                                 </div>
                             </div>
@@ -3301,34 +3393,48 @@
 
                 container.innerHTML = `
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
-                     <button id="tmdb-player-back-btn" onclick="openTMDBDetails(${id}, '${type}')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back to Details</button>
-                     <h1 class="text-2xl md:text-3xl font-extrabold text-white mb-6">${title}</h1>
+                     <button id="tmdb-player-back-btn" onclick="openTMDBDetails(${id}, '${type}')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium">
+    <i class="fas fa-angles-left text-lg mr-2"></i>
+    <span class="text-xl md:text-2xl font-extrabold text-white whitespace-nowrap">${title}</span>
+</button>
 
-                    <div class="rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8">
-                        <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="text-primary font-bold"><i class="fas fa-play-circle mr-2"></i> ${type === 'tv' ? `<span id="tv-player-info">S${startSeason} E${startEpisode}</span>` : ''}</span>
+                    <div class="flex flex-col lg:flex-row gap-6">
+                        <!-- Player Container -->
+                        <div class="${type === 'tv' ? 'w-full lg:w-3/4' : 'w-full'} rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8 lg:mb-0">
+                            <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-primary font-bold"><i class="fas fa-play-circle mr-2"></i> ${type === 'tv' ? `<span id="tv-player-info">S${startSeason} E${startEpisode}</span>` : ''}</span>
+                                </div>
+                                <div class="flex gap-2" id="server-buttons"></div>
                             </div>
-                            <div class="flex gap-2" id="server-buttons"></div>
+                            <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
+                            ${type === 'tv' ? `
+                            <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 border-x border-b">
+                                <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
+                                <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
+                            </div>
+                            ` : ''}
                         </div>
-                        <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
-                        ${type === 'tv' ? `
-                        <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 border-x border-b">
-                            <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
-                            <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
+
+                        <!-- TV SHOW EPISODES SIDEBAR -->
+                         ${type === 'tv' ? `
+                         <div class="w-full lg:w-1/4 flex flex-col h-full bg-card-bg border border-border-color rounded-lg overflow-hidden lg:h-[calc(100vh-200px)] lg:max-h-[600px]">
+                            <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center">
+                                 <div class="flex items-center gap-2">
+                                     <h3 class="text-base font-bold text-text-main">Episodes</h3>
+                                 </div>
+                                 <div class="flex gap-1">
+                                 </div>
+                                 <h2 id="tv-season-title" class="text-xs font-normal text-text-muted hidden"></h2>
+                            </div>
+                            <div id="tv-episodes-grid" class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full"></div>
                         </div>
-                        ` : ''}
+                         ` : ''}
                     </div>
 
                     <!-- TV SHOW SEASONS & EPISODES CONTAINER -->
                      ${type === 'tv' ? `
-                        <div class="mb-8">
-                            <h2 id="tv-season-title" class="text-lg hidden font-normal text-text-muted">Season ${startSeason}</h2>
-                            <h3 class="text-lg font-bold text-text-main mb-3">Episodes </h3>
-                            <div id="tv-episodes-grid" class="grid grid-cols-5 pt-4 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto custom-scroll pr-2"></div>
-                        </div>
-                        
-                        <div id="tv-seasons-container" class="text-sm space-y-3">
+                        <div id="tv-seasons-container" class="text-sm space-y-3 mt-8">
                             <h4 class="text-lg font-bold text-text-main mb-3">Other Seasons</h4>
                             <div id="tv-seasons-list" class="horizontal-scroll-container p-2"></div>
                         </div>
@@ -3386,7 +3492,6 @@
                 if (type === 'tv') {
                     const loadSeasonData = async (seasonNum) => {
                         season = seasonNum;
-                        // document.getElementById('tv-season-title').innerText = `Season ${seasonNum}`; // This is now handled inside the try block
                         if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`;
 
                         renderSeasonsList(details.seasons, seasonNum);
@@ -3399,40 +3504,32 @@
 
                             if (document.getElementById('tv-season-title')) {
                                 document.getElementById('tv-season-title').innerText = seasonData.name;
-                                document.getElementById('tv-season-title').classList.remove('hidden');
+                                // document.getElementById('tv-season-title').classList.remove('hidden'); // Removed to keep header clean
                             }
 
                             if (seasonData.episodes && seasonData.episodes.length > 0) {
-                                epGrid.innerHTML = '';
-                                seasonData.episodes.forEach(e => {
-                                    const wrapper = document.createElement('div');
-                                    wrapper.className = 'relative group'; // Added back for consistency with original
-                                    const btn = document.createElement('button');
-                                    btn.innerText = e.episode_number;
-                                    btn.className = (seasonNum == startSeason && e.episode_number == startEpisode) // Use seasonNum here
-                                        ? 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black'
-                                        : 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-input-bg text-text-muted';
+                                // STORE CURRENT EPISODES FOR RE-RENDER
+                                window.currentTMDBEpisodes = seasonData.episodes;
+                                window.renderCurrentTMDBEpisodes = () => {
+                                    renderEpisodeList('tv-episodes-grid', window.currentTMDBEpisodes, 'tmdb', ep, (newEp) => {
+                                        // On Click Logic
+                                        ep = newEp;
+                                        if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`;
 
-                                    btn.title = e.name; // Added back for consistency with original
-                                    btn.onclick = () => {
-                                        ep = e.episode_number;
-                                        if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${seasonNum} - Episode ${ep}`; // Use seasonNum here
-                                        Array.from(epGrid.children).forEach(child => {
-                                            child.querySelector('button').className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-input-bg text-text-muted';
-                                        });
-                                        btn.className = 'w-full p-2 rounded border border-border-color text-xs md:hover:border-primary md:hover:text-primary bg-primary text-black';
-
-                                        // Update History on Episode Change
-
-
-                                        updatePlayerSource(SOURCES[0], id, 'tv', seasonNum, ep, details.poster_path, title, details.backdrop_path); // Use seasonNum here
+                                        // Update Start Season/Episode in History to resume correctly
+                                        updatePlayerSource(SOURCES[0], id, 'tv', seasonNum, ep, details.poster_path, title, details.backdrop_path);
                                         renderServerButtons();
-                                    };
-                                    wrapper.appendChild(btn);
-                                    epGrid.appendChild(wrapper);
-                                });
+
+                                        // Re-render list to update active state
+                                        window.renderCurrentTMDBEpisodes();
+                                    });
+
+                                };
+
+                                window.renderCurrentTMDBEpisodes();
+
                             } else epGrid.innerHTML = '<p class="text-gray-500 col-span-full">No episodes found.</p>';
-                        } catch (e) { console.error(e); epGrid.innerHTML = '<p class="text-gray-500 col-span-full">Error loading episodes.</p>'; } // Added error message
+                        } catch (e) { console.error(e); epGrid.innerHTML = '<p class="text-gray-500 col-span-full">Error loading episodes.</p>'; }
                         finally { loader.hide(); }
                     };
 
@@ -3460,14 +3557,17 @@
 
                     const changeTvEpisode = (dir) => {
                         const nextEp = ep + dir;
-                        const grid = document.getElementById('tv-episodes-grid');
-                        if (!grid) return;
-                        const buttons = grid.querySelectorAll('button');
-                        for (let btn of buttons) {
-                            if (parseInt(btn.innerText) === nextEp) {
-                                btn.click();
-                                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                                return;
+                        // Logic simplified to just check bounds if possible, or try to click button?
+                        // Better: check currentTMDBEpisodes
+                        if (window.currentTMDBEpisodes) {
+                            const exists = window.currentTMDBEpisodes.find(e => e.episode_number === nextEp);
+                            if (exists) {
+                                // Trigger play via helper
+                                ep = nextEp;
+                                if (document.getElementById('tv-player-info')) document.getElementById('tv-player-info').innerText = `S${season} - Episode ${ep}`;
+                                updatePlayerSource(SOURCES[0], id, 'tv', season, ep, details.poster_path, title, details.backdrop_path);
+                                renderServerButtons();
+                                window.renderCurrentTMDBEpisodes();
                             }
                         }
                     };
@@ -3591,7 +3691,7 @@
 
             container.innerHTML = `
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
+                    <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-angles-left text-lg mr-2"></i> Back</button>
                     
                     <div class="flex flex-col md:flex-row gap-8">
                         <div class="w-full md:w-[300px] flex-shrink-0">
@@ -3721,7 +3821,7 @@
 
             container.innerHTML = `
                 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-sm font-medium"><i class="fas fa-angles-left mr-2"></i> Back</button>
+                    <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-angles-left text-lg mr-2"></i> Back</button>
                     
                     <div class="flex flex-col md:flex-row gap-8">
                         <div class="w-full md:w-[300px] flex-shrink-0">
@@ -4225,11 +4325,6 @@
                 container.appendChild(grid);
             });
         }
-
-
-
-
-
 
     </script>
 </body>
