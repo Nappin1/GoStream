@@ -32,6 +32,9 @@
 
     <script>
         tailwind.config = {
+            future: {
+                hoverOnlyWhenSupported: true,
+            },
             theme: {
                 extend: {
                     screens: { 'nav-bp': '1025px' },
@@ -205,7 +208,7 @@
             color: var(--color-primary);
         }
 
-        @media (min-width: 768px) {
+        @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
             .nav-link:hover {
                 color: white;
                 background-color: rgba(255, 255, 255, 0.02);
@@ -234,7 +237,7 @@
         }
 
         /* Hover effects only for devices that support hover and larger screens */
-        @media (hover: hover) and (min-width: 1024px) {
+        @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
             .movie-card:hover {
                 transform: scale(1.03);
                 box-shadow: 0 10px 20px var(--shadow-color);
@@ -326,6 +329,15 @@
             max-width: 280px;
         }
 
+        /* iPad Landscape Anilist Grid Override */
+        /* Due to dual sidebars, 1024px viewports squash the main content to <500px, resulting in 2 cards.
+           This forces 3 columns specifically for tablets in landscape mode. */
+        @media (min-width: 1024px) and (max-width: 1279px) {
+            #grid-anilist {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            }
+        }
+
         /* Filter Selects */
         .filter-select {
             background-color: var(--glass-bg);
@@ -384,7 +396,7 @@
             }
         }
 
-        @media (min-width: 768px) {
+        @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
 
             /* Desktop Hover Effects */
             .filter-select:hover {
