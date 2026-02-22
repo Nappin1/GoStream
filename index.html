@@ -113,6 +113,11 @@
             user-select: none;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
+            overscroll-behavior-y: none;
+            /* Prevents whole-page pull-to-refresh */
+            overscroll-behavior-x: none;
+            /* Prevents browser swipe-to-go-back */
+            -webkit-overflow-scrolling: touch;
         }
 
         button {
@@ -127,6 +132,14 @@
         }
 
         /* Custom Scrollbar */
+        .custom-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #444 var(--bg-input);
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+            /* Prevents bounce/pull-to-refresh on mobile */
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -252,6 +265,11 @@
             button:hover {
                 opacity: 0.9;
             }
+
+            .scroll-btn:hover {
+                background-color: var(--color-primary);
+                color: #000;
+            }
         }
 
         .movie-card img {
@@ -310,6 +328,19 @@
             gap: 1rem;
             padding-bottom: 1rem;
             scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            /* Momentum scrolling */
+            touch-action: pan-x;
+            /* Explicitly prioritize horizontal swiping */
+            overscroll-behavior-x: contain;
+            /* Prevents browser forward/back swipes */
+            scrollbar-width: none;
+            /* Hide scrollbar in modern browsers natively */
+        }
+
+        /* Hide the legacy scrollbar for horizontal containers explicitly */
+        .horizontal-scroll-container::-webkit-scrollbar {
+            display: none;
         }
 
         /* Fade Mask for Horizontal Scroll */
@@ -807,10 +838,10 @@
                     </h2>
                     <div class="flex items-center gap-2 hidden md:flex">
                         <button onclick="scrollRow(this, -1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                 class="fas fa-chevron-left text-sm"></i></button>
                         <button onclick="scrollRow(this, 1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                 class="fas fa-chevron-right text-sm"></i></button>
                     </div>
                 </div>
@@ -823,10 +854,10 @@
                             class="vline"></span>Trending Now</h2>
                     <div class="flex items-center gap-2 hidden md:flex">
                         <button onclick="scrollRow(this, -1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                 class="fas fa-chevron-left text-sm"></i></button>
                         <button onclick="scrollRow(this, 1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                 class="fas fa-chevron-right text-sm"></i></button>
                     </div>
                 </div>
@@ -838,10 +869,10 @@
                             class="vline"></span>Top Rated Movies</h2>
                     <div class="flex items-center gap-2 hidden md:flex">
                         <button onclick="scrollRow(this, -1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                 class="fas fa-chevron-left text-sm"></i></button>
                         <button onclick="scrollRow(this, 1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                 class="fas fa-chevron-right text-sm"></i></button>
                     </div>
                 </div>
@@ -853,10 +884,10 @@
                             class="vline"></span>Popular Action Movies</h2>
                     <div class="flex items-center gap-2 hidden md:flex">
                         <button onclick="scrollRow(this, -1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                 class="fas fa-chevron-left text-sm"></i></button>
                         <button onclick="scrollRow(this, 1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                 class="fas fa-chevron-right text-sm"></i></button>
                     </div>
                 </div>
@@ -920,11 +951,11 @@
                     <div id="grid-anilist" class="results-grid"></div>
                     <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
                         <button onclick="changeAnilistPage(-1)"
-                            class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                            class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded scroll-btn font-bold"><i
                                 class="fas fa-chevron-left"></i></button>
                         <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
                         <button onclick="changeAnilistPage(1)"
-                            class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                            class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded scroll-btn font-bold"><i
                                 class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
@@ -958,11 +989,11 @@
                 <div id="grid-anilist-va" class="results-grid"></div>
                 <div id="pag-anilist-va" class="pagination-controls mt-8 flex justify-center gap-2">
                     <button onclick="changeAnilistVAPage(-1)"
-                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded scroll-btn font-bold"><i
                             class="fas fa-chevron-left"></i></button>
                     <span id="anilist-va-page-num" class="px-3 py-1 text-primary font-bold">1</span>
                     <button onclick="changeAnilistVAPage(1)"
-                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded scroll-btn font-bold"><i
                             class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
@@ -1131,10 +1162,10 @@
                                     <h3 class="text-lg font-bold text-text-main mb-0">Cast & Voice Actors</h3>
                                     <div class="flex items-center gap-2 hidden md:flex">
                                         <button onclick="scrollRow(this, -1)"
-                                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                                 class="fas fa-chevron-left text-sm"></i></button>
                                         <button onclick="scrollRow(this, 1)"
-                                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                                 class="fas fa-chevron-right text-sm"></i></button>
                                     </div>
                                 </div>
@@ -1178,10 +1209,10 @@
                         <div
                             class="bg-white/5 backdrop-blur-md px-4 py-3 flex justify-between items-center border-t border-white/10">
                             <button onclick="changeAnilistEp(-1)"
-                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">
+                                class="px-4 py-1.5 bg-input-bg scroll-btn border border-border-color rounded text-sm transition font-medium">
                                 <i class="fas fa-backward mr-1"></i> Prev</button>
                             <button onclick="changeAnilistEp(1)"
-                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next
+                                class="px-4 py-1.5 bg-input-bg scroll-btn border border-border-color rounded text-sm transition font-medium">Next
                                 <i class="fas fa-forward ml-1"></i></button>
                         </div>
                     </div>
@@ -1204,10 +1235,10 @@
                                     <h3 class="text-base font-bold text-text-main mb-0">Relations</h3>
                                     <div class="flex items-center gap-2 hidden md:flex">
                                         <button onclick="scrollRow(this, -1)"
-                                            class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-white/10"><i
+                                            class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center scroll-btn transition-colors border border-white/10"><i
                                                 class="fas fa-chevron-left text-xs"></i></button>
                                         <button onclick="scrollRow(this, 1)"
-                                            class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-white/10"><i
+                                            class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center scroll-btn transition-colors border border-white/10"><i
                                                 class="fas fa-chevron-right text-xs"></i></button>
                                     </div>
                                 </div>
@@ -1223,10 +1254,10 @@
                         <h3 class="text-lg font-bold text-text-main mb-0">You may also like</h3>
                         <div class="flex items-center gap-2 hidden md:flex">
                             <button onclick="scrollRow(this, -1)"
-                                class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                                class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                     class="fas fa-chevron-left text-sm"></i></button>
                             <button onclick="scrollRow(this, 1)"
-                                class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i
+                                class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
                                     class="fas fa-chevron-right text-sm"></i></button>
                         </div>
                     </div>
@@ -3433,7 +3464,7 @@
                     <p class="text-xs text-gray-400 line-clamp-4 leading-relaxed flex-grow z-10 border-t border-white/5 pt-2">${data.overview}</p>
                     
                     <div class="flex gap-2 pt-3 mt-auto z-10">
-                         <button onclick="event.stopPropagation(); openDetailsWrapper(${data.id}, '${data.type}', 1, 1)" class="flex-1 bg-white text-black py-2 rounded text-xs font-bold hover:bg-primary hover:text-black transition-colors flex items-center justify-center gap-2 shadow-sm">
+                         <button onclick="event.stopPropagation(); openDetailsWrapper(${data.id}, '${data.type}', 1, 1)" class="flex-1 bg-white text-black py-2 rounded text-xs font-bold scroll-btn transition-colors flex items-center justify-center gap-2 shadow-sm">
                             <i class="fas fa-play"></i> Watch
                         </button>
                         <button id="${btnId}" onclick="event.stopPropagation(); toggleWatchlist(${data.id}, '${data.type}', '${data.title.replace(/'/g, "")}', '${data.posterUrl}', '${btnId}', ${data.numericVote}, '${data.year}', '${data.overview ? data.overview.replace(/'/g, "") : ""}', '${data.status}', '${data.genres}')" class="px-3 py-2 bg-black/40 border border-white/10 text-white rounded hover:bg-white/10 transition-colors flex items-center justify-center" title="Add to Library">
@@ -3460,13 +3491,13 @@
             if (max <= 1) return;
 
             const prev = document.createElement('button');
-            prev.className = "px-3 py-1 bg-card-bg border border-border-color rounded md:hover:bg-primary md:hover:text-black disabled:opacity-50 text-text-main";
+            prev.className = "px-3 py-1 bg-card-bg border border-border-color rounded scroll-btn disabled:opacity-50 text-text-main";
             prev.innerHTML = '<i class="fas fa-chevron-left"></i>';
             prev.disabled = current === 1;
             prev.onclick = () => callback(current - 1);
 
             const next = document.createElement('button');
-            next.className = "px-3 py-1 bg-card-bg border border-border-color rounded md:hover:bg-primary md:hover:text-black disabled:opacity-50 text-text-main";
+            next.className = "px-3 py-1 bg-card-bg border border-border-color rounded scroll-btn disabled:opacity-50 text-text-main";
             next.innerHTML = '<i class="fas fa-chevron-right"></i>';
             next.disabled = current === max;
             next.onclick = () => callback(current + 1);
@@ -3591,8 +3622,8 @@
                                         <div class="flex items-center justify-between mb-3">
                                             <h3 class="text-lg font-bold text-text-main mb-0">Cast</h3>
                                             <div class="flex items-center gap-2 hidden md:flex">
-                                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
-                                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
+                                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
+                                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
                                             </div>
                                         </div>
                                         ${castHtml}
@@ -3750,8 +3781,8 @@
                             <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
                             ${type === 'tv' ? `
                             <div class="bg-white/5 backdrop-blur-md px-4 py-3 flex justify-between items-center border-t border-white/10 mt-0 border-x border-b">
-                                <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
-                                <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
+                                <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg scroll-btn border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
+                                <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg scroll-btn border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
                             </div>
                             ` : ''}
                         </div>
@@ -3774,8 +3805,8 @@
                                     <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                         <h4 class="text-base font-bold text-text-main mb-0">Other Seasons</h4>
                                         <div class="flex items-center gap-2 hidden md:flex">
-                                            <button onclick="scrollRow(this, -1)" class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-white/10"><i class="fas fa-chevron-left text-xs"></i></button>
-                                            <button onclick="scrollRow(this, 1)" class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-white/10"><i class="fas fa-chevron-right text-xs"></i></button>
+                                            <button onclick="scrollRow(this, -1)" class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center scroll-btn transition-colors border border-white/10"><i class="fas fa-chevron-left text-xs"></i></button>
+                                            <button onclick="scrollRow(this, 1)" class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center scroll-btn transition-colors border border-white/10"><i class="fas fa-chevron-right text-xs"></i></button>
                                         </div>
                                     </div>
                                     <div id="tv-seasons-list" class="horizontal-scroll-container p-2 custom-scroll bg-black/10 h-full"></div>
@@ -3791,8 +3822,8 @@
                         <div class="flex items-center justify-between mb-3 ">
                             <h4 class="text-lg font-bold text-text-main mb-0">${collectionData ? collectionData.name : 'Relations'}</h4>
                             <div class="flex items-center gap-2 hidden md:flex">
-                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
-                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
+                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
+                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
                             </div>
                         </div>
                         <div id="tmdb-collection-list" class="horizontal-scroll-container p-2"></div>
@@ -3801,8 +3832,8 @@
                         <div class="flex items-center justify-between mb-3">
                             <h3 id="tmdb-rec-title" class="text-lg font-bold text-text-main mb-0">You may also like</h3>
                             <div class="flex items-center gap-2 hidden md:flex">
-                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
-                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center hover:bg-primary hover:text-black transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
+                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
+                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
                             </div>
                         </div>
                         <div id="tmdb-recommendations" class="horizontal-scroll-container p-2"></div>
