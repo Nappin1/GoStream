@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <link rel="icon" type="image/png" href="images/G-icon.png">
 
     <!-- Relaxed CSP to prevent 'Failed to fetch' errors in preview environments -->
@@ -25,7 +24,7 @@
     <script src="cordova.js"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
@@ -33,9 +32,6 @@
 
     <script>
         tailwind.config = {
-            future: {
-                hoverOnlyWhenSupported: true,
-            },
             theme: {
                 extend: {
                     screens: { 'nav-bp': '1025px' },
@@ -49,7 +45,7 @@
                         'text-muted': 'var(--text-muted)',
                         'input-bg': 'var(--bg-input)'
                     },
-                    fontFamily: { sans: ['Geist', 'sans-serif'] }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
@@ -58,67 +54,36 @@
     <style>
         /* --- GLOBAL VARIABLES & THEME --- */
         :root {
-            /* Modern Slate Palette */
-            --color-primary: #cae962;
-            /* Keep lime/primary accent */
-            --bg-main: #020617;
-            /* Slate 950 */
-            --bg-card: #0f172a;
-            /* Slate 900 */
-            --bg-nav: #0f172a;
-            /* Slate 900 */
-            --bg-input: #1e293b;
-            /* Slate 800 */
-            --border-color: #1e293b;
-            /* Slate 800 */
-            --text-main: #f8fafc;
-            /* Slate 50 */
-            --text-muted: #94a3b8;
-            /* Slate 400 */
-            --shadow-color: rgba(0, 0, 0, 0.5);
-
-            /* Glassmorphism Variables */
-            --glass-bg: rgba(15, 23, 42, 0.6);
-            /* Slate 900 based glass */
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        /* Skeleton Loader Animation */
-        .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-            background-size: 200% 100%;
-            animation: skeleton-loading 1.5s infinite;
-            border-radius: 0.5rem;
-        }
-
-        @keyframes skeleton-loading {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
+            --color-primary: #0ea5e9;
+            /* Modern sleek blue */
+            --bg-main: #0B0E14;
+            /* Deep rich dark background */
+            --bg-card: #151A23;
+            /* Slightly lighter card background */
+            --bg-nav: rgba(11, 14, 20, 0.85);
+            /* Translucent nav for glass effect */
+            --bg-input: #1C2331;
+            /* Subtle input background */
+            --border-color: rgba(255, 255, 255, 0.08);
+            /* Soft translucent borders */
+            --text-main: #F3F4F6;
+            /* Crisp white text */
+            --text-muted: #9CA3AF;
+            /* Muted gray */
+            --shadow-color: rgba(14, 165, 233, 0.15);
+            /* Subtle primary color glow */
         }
 
         body {
             background-color: var(--bg-main);
-            /* Deep, modern gradient background for glass effect visibility */
-            background: linear-gradient(135deg, #1a1b1e 0%, #0d0d0f 100%);
-            background-attachment: fixed;
             color: var(--text-main);
-            font-family: 'Geist', sans-serif;
+            font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
             -webkit-user-select: none;
             user-select: none;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
-            overscroll-behavior-y: none;
-            /* Prevents whole-page pull-to-refresh */
-            overscroll-behavior-x: none;
-            /* Prevents browser swipe-to-go-back */
-            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
         }
 
         button {
@@ -133,37 +98,30 @@
         }
 
         /* Custom Scrollbar */
-        .custom-scroll {
-            scrollbar-width: thin;
-            scrollbar-color: #444 var(--bg-input);
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: contain;
-            /* Prevents bounce/pull-to-refresh on mobile */
-        }
-
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--bg-input);
-            border-radius: 4px;
+            background: var(--bg-main);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 4px;
+            background: #2D3748;
+            border-radius: 8px;
+            border: 2px solid var(--bg-main);
+            /* Creates a padded look */
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #4A5568;
         }
 
         /* Selection */
         ::selection {
             background-color: var(--color-primary);
-            color: #000;
+            color: #fff;
         }
 
         /* Loader */
@@ -173,31 +131,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(5px);
+            background: var(--bg-main);
             z-index: 9999;
             display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(128, 128, 128, 0.2);
-            border-top: 5px solid var(--color-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            overflow: hidden;
         }
 
         .hidden-loader {
@@ -213,19 +150,20 @@
 
         .nav-link.active {
             background-color: rgba(255, 255, 255, 0.05);
-            border-left-color: var(--color-primary);
             color: white;
             font-weight: 700;
+            border-radius: 0.5rem;
         }
 
         .nav-link.active i {
             color: var(--color-primary);
         }
 
-        @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+        @media (min-width: 1025px) {
             .nav-link:hover {
                 color: white;
-                background-color: rgba(255, 255, 255, 0.02);
+                background-color: rgba(255, 255, 255, 0.05);
+                border-radius: 0.5rem;
             }
         }
 
@@ -241,35 +179,31 @@
         }
 
         .movie-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
-            background-color: transparent;
-            /* Changed from var(--bg-card) */
-            border: 0;
-            border-radius: 0.5rem;
-            position: relative;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            /* Rounded-2xl style */
         }
 
-        /* Hover effects only for devices that support hover and larger screens */
-        @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+        /* Hover effects only for devices that support hover and larger screens (desktop) */
+        @media (hover: hover) and (min-width: 1025px) {
             .movie-card:hover {
-                transform: scale(1.03);
-                box-shadow: 0 10px 20px var(--shadow-color);
+                transform: translateY(-4px) scale(1.02);
+                box-shadow: 0 12px 24px var(--shadow-color);
+                border-color: rgba(255, 255, 255, 0.15);
                 z-index: 10;
+                position: relative;
             }
 
             .movie-card:hover img {
-                opacity: 0.8;
+                opacity: 0.85;
             }
 
             /* General button hover opacity if not handled by tailwind classes */
             button:hover {
                 opacity: 0.9;
-            }
-
-            .scroll-btn:hover {
-                background-color: var(--color-primary);
-                color: #000;
             }
         }
 
@@ -277,8 +211,6 @@
             transition: opacity 0.2s ease-in-out;
             width: 100%;
             height: 100%;
-            border-radius: 0.5rem;
-            /* Ensure radius matches card for glass appeal */
         }
 
         /* Global Pop-out Hover Card */
@@ -286,12 +218,10 @@
             position: fixed;
             z-index: 9999;
             width: 320px;
-            background: rgba(42, 44, 49, 0.7);
-            /* Glass bg */
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 0.50rem;
-            box-shadow: var(--glass-shadow);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
             overflow: hidden;
             opacity: 0;
             transform: translateY(10px);
@@ -313,14 +243,27 @@
 
         .card-info {
             background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0));
-            border-bottom-left-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
+            pointer-events: none;
         }
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .results-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .results-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 24px;
+            }
         }
 
         .horizontal-scroll-container {
@@ -329,19 +272,6 @@
             gap: 1rem;
             padding-bottom: 1rem;
             scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            /* Momentum scrolling */
-            touch-action: pan-x;
-            /* Explicitly prioritize horizontal swiping */
-            overscroll-behavior-x: contain;
-            /* Prevents browser forward/back swipes */
-            scrollbar-width: none;
-            /* Hide scrollbar in modern browsers natively */
-        }
-
-        /* Hide the legacy scrollbar for horizontal containers explicitly */
-        .horizontal-scroll-container::-webkit-scrollbar {
-            display: none;
         }
 
         /* Fade Mask for Horizontal Scroll */
@@ -361,20 +291,11 @@
             max-width: 280px;
         }
 
-        /* iPad Landscape Anilist Grid Override */
-        /* Due to dual sidebars, 1024px viewports squash the main content to <500px, resulting in 2 cards.
-           This forces 3 columns specifically for tablets in landscape mode. */
-        @media (min-width: 1024px) and (max-width: 1279px) {
-            #grid-anilist {
-                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-            }
-        }
-
         /* Filter Selects */
         .filter-select {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-muted);
             font-size: 0.8rem;
             font-weight: 500;
@@ -394,7 +315,6 @@
             min-width: auto;
             white-space: nowrap;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         /* Focus only for global (keyboard nav) but Remove Hover for mobile */
@@ -410,14 +330,37 @@
             color: white;
         }
 
-        /* Scrollbar Hide Utility */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+        /* Scrollbar Hide Utility - Only for touch devices/mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
         }
 
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        /* Visible scrollbar for desktop horizontal scrolling */
+        @media (hover: hover) and (pointer: fine) {
+            .horizontal-scroll-container::-webkit-scrollbar {
+                height: 8px;
+            }
+
+            .horizontal-scroll-container::-webkit-scrollbar-track {
+                background: var(--bg-input);
+                border-radius: 4px;
+            }
+
+            .horizontal-scroll-container::-webkit-scrollbar-thumb {
+                background: #444;
+                border-radius: 4px;
+            }
+
+            .horizontal-scroll-container::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
         }
 
         @media (min-width: 640px) {
@@ -428,7 +371,7 @@
             }
         }
 
-        @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+        @media (min-width: 1025px) {
 
             /* Desktop Hover Effects */
             .filter-select:hover {
@@ -576,10 +519,56 @@
 </head>
 
 <body>
-    <div id="global-loader" class="hidden-loader">
-        <div class="flex flex-col items-center gap-4">
-            <div class="spinner"></div>
-            <p class="text-primary font-bold tracking-widest animate-pulse">LOADING</p>
+    <div id="global-loader" class="hidden-loader bg-dark-bg z-[9999]">
+        <!-- Sidebar Skeleton (lg only) -->
+        <div
+            class="hidden lg:flex fixed top-0 left-0 w-64 h-full border-r border-border-color bg-black/60 p-6 flex-col gap-6 animate-pulse z-[10000]">
+            <div class="h-8 w-3/4 bg-white/5 rounded mx-auto mb-6"></div>
+            <div class="h-10 w-full bg-white/5 rounded"></div>
+            <div class="h-10 w-full bg-white/5 rounded"></div>
+            <div class="h-4 w-1/2 bg-white/5 rounded mt-4 mb-2"></div>
+            <div class="h-10 w-full bg-white/5 rounded"></div>
+            <div class="h-10 w-full bg-white/5 rounded"></div>
+            <div class="h-10 w-full bg-white/5 rounded"></div>
+        </div>
+
+        <!-- Main Content Skeleton -->
+        <div class="lg:pl-64 w-full h-full flex flex-col p-4 md:p-8 gap-8 animate-pulse pt-20 lg:pt-8 overflow-hidden">
+            <!-- Banner Skeleton -->
+            <div class="w-full h-48 md:h-[50vh] bg-white/5 rounded-2xl flex-shrink-0"></div>
+
+            <!-- Cards Grid Skeleton -->
+            <div class="flex flex-col gap-4 w-full">
+                <div class="w-48 h-8 bg-white/5 rounded-md mb-2"></div>
+                <div class="flex gap-4 md:gap-6 overflow-hidden">
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Nav Skeleton (Mobile) -->
+        <div
+            class="lg:hidden fixed bottom-0 left-0 right-0 h-[70px] bg-black/60 border-t border-border-color flex justify-around items-center px-4 animate-pulse z-[10000]">
+            <div class="w-10 h-10 bg-white/5 rounded-full"></div>
+            <div class="w-10 h-10 bg-white/5 rounded-full"></div>
+            <div class="w-10 h-10 bg-white/5 rounded-full"></div>
         </div>
     </div>
 
@@ -589,8 +578,8 @@
 
     <!-- DESKTOP SIDEBAR -->
     <aside id="sidebar"
-        class="fixed top-0 left-0 z-50 h-screen w-64 bg-black/10 backdrop-blur-xl border-r border-white/10 hidden lg:flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
-        <div class="h-16 flex items-center justify-center px-6 border-b border-white/5 flex-shrink-0 transition-all duration-300"
+        class="fixed top-0 left-0 z-50 h-screen w-64 bg-black/60 backdrop-blur-xl border-r border-border-color hidden lg:flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
+        <div class="h-16 flex items-center justify-center px-6 border-b border-border-color flex-shrink-0 transition-all duration-300"
             id="sidebar-header">
             <a onclick="router('home')" class="cursor-pointer flex items-center gap-2 overflow-hidden">
                 <i class="fas fa-play-circle text-2xl text-primary visible-collapsed hidden"></i>
@@ -605,7 +594,7 @@
 
 
         <button onclick="toggleSidebar()"
-            class="absolute top-1/2 -right-4 -translate-y-1/2 z-50 bg-black/40 backdrop-blur-md rounded p-2 shadow-lg border border-white/10 hover:text-white hover:bg-white/10 transition-transform duration-300 transform"
+            class="absolute top-1/2 -right-4 -translate-y-1/2 z-50 bg-input-bg rounded p-2 shadow-md hover:text-white hover:bg-gray-700 transition-transform duration-300 transform"
             id="sidebar-toggle-btn" title="Collapse Sidebar">
             <i class="fas fa-chevron-left text-lg"></i>
         </button>
@@ -614,13 +603,13 @@
             <a onclick="router('home')" data-target="home" title="Home"
                 class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
                 <i
-                    class="fas fa-house w-8 text-center text-lg lg:group-hover:text-primary transition-colors flex-shrink-0"></i>
+                    class="fas fa-house w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
                 <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Home</span>
             </a>
             <a onclick="router('search')" data-target="search" title="Search"
                 class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
                 <i
-                    class="fas fa-search w-8 text-center text-lg lg:group-hover:text-primary transition-colors flex-shrink-0"></i>
+                    class="fas fa-search w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
                 <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Search</span>
             </a>
             <div class="pt-1 mt-2 mb-2 mx-2 transition-all duration-300 uppercase text-text-muted text-xs"
@@ -629,40 +618,40 @@
             <a onclick="router('movies')" data-target="movies" title="Movies"
                 class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
                 <i
-                    class="fas fa-clapperboard w-8 text-center text-lg lg:group-hover:text-primary transition-colors flex-shrink-0"></i>
+                    class="fas fa-clapperboard w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
                 <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Movies</span>
             </a>
             <a onclick="router('tv')" data-target="tv" title="TV Shows"
                 class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
                 <i
-                    class="fas fa-tv w-8 text-center text-lg lg:group-hover:text-primary transition-colors flex-shrink-0"></i>
+                    class="fas fa-tv w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
                 <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">TV Shows</span>
             </a>
             <a onclick="router('anime-anilist')" data-target="anime-anilist" title="Anime"
                 class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
                 <i
-                    class="fas fa-dragon w-8 text-center text-lg lg:group-hover:text-primary transition-colors flex-shrink-0"></i>
+                    class="fas fa-dragon w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
                 <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Anime</span>
             </a>
             <a onclick="router('watchlist')" data-target="watchlist" title="Library"
                 class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
                 <i
-                    class="fas fa-lines-leaning w-8 text-center text-lg lg:group-hover:text-primary transition-colors flex-shrink-0"></i>
+                    class="fas fa-lines-leaning w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
                 <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Library</span>
             </a>
             <a onclick="router('history')" data-target="history" title="History"
                 class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
                 <i
-                    class="fas fa-history w-8 text-center text-lg lg:group-hover:text-primary transition-colors flex-shrink-0"></i>
+                    class="fas fa-history w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
                 <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">History</span>
             </a>
         </div>
 
-        <div class="p-4 border-t border-white/5 flex-shrink-0 flex flex-col items-center">
+        <div class="p-4 border-t border-border-color flex-shrink-0 flex flex-col items-center">
             <a onclick="router('legal')" data-target="legal" title="Legal/DMCA"
                 class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
                 <i
-                    class="fas fa-scale-balanced w-8 text-center text-lg lg:group-hover:text-primary transition-colors flex-shrink-0"></i>
+                    class="fas fa-scale-balanced w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
                 <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Legal/DMCA</span>
             </a>
         </div>
@@ -670,7 +659,7 @@
 
     <!-- MOBILE BOTTOM NAV -->
     <div id="bottom-nav"
-        class="lg:hidden fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-xl border-t border-white/10 z-50 flex justify-around items-center h-[70px] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
+        class="lg:hidden fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-xl border-t border-white/5 z-50 flex justify-around items-center h-[70px] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
         <button onclick="router('home')" data-target="home" title="Home"
             class="bottom-nav-item flex flex-col items-center justify-center gap-1.5 w-full h-full text-gray-400 hover:text-white transition-all group">
             <i class="fas fa-house group-[.active]:text-primary transition-colors"></i>
@@ -694,54 +683,54 @@
     <div id="more-menu-modal"
         class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden flex flex-col justify-end transition-opacity duration-300"
         onclick="toggleMoreMenu()">
-        <div class="mb-24 mx-4 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl transform transition-transform duration-300 translate-y-full"
+        <div class="mb-24 mx-4 bg-[#1e1e1e] border border-border-color rounded-2xl overflow-hidden shadow-2xl transform transition-transform duration-300 translate-y-full"
             id="more-menu-content" onclick="event.stopPropagation()">
             <div class="p-4 grid grid-cols-4 gap-4">
                 <button onclick="router('movies'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
                     <div
-                        class="w-12 h-12 rounded-full bg-white/5 lg:group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                        <i class="fas fa-clapperboard text-white lg:group-hover:text-primary text-xl"></i>
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-clapperboard text-white group-hover:text-primary text-xl"></i>
                     </div>
-                    <span class="text-xs text-gray-300 lg:group-hover:text-white">Movies</span>
+                    <span class="text-xs text-gray-300 group-hover:text-white">Movies</span>
                 </button>
                 <button onclick="router('tv'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
                     <div
-                        class="w-12 h-12 rounded-full bg-white/5 lg:group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                        <i class="fas fa-tv text-white lg:group-hover:text-primary text-xl"></i>
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-tv text-white group-hover:text-primary text-xl"></i>
                     </div>
-                    <span class="text-xs text-gray-300 lg:group-hover:text-white">TV Shows</span>
+                    <span class="text-xs text-gray-300 group-hover:text-white">TV Shows</span>
                 </button>
                 <button onclick="router('anime-anilist'); toggleMoreMenu()"
                     class="flex flex-col items-center gap-2 group">
                     <div
-                        class="w-12 h-12 rounded-full bg-white/5 lg:group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                        <i class="fas fa-dragon text-white lg:group-hover:text-primary text-xl"></i>
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-dragon text-white group-hover:text-primary text-xl"></i>
                     </div>
-                    <span class="text-xs text-gray-300 lg:group-hover:text-white">Anime</span>
+                    <span class="text-xs text-gray-300 group-hover:text-white">Anime</span>
                 </button>
 
                 <button onclick="router('watchlist'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
                     <div
-                        class="w-12 h-12 rounded-full bg-white/5 lg:group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                        <i class="fas fa-lines-leaning text-white lg:group-hover:text-primary text-xl"></i>
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-lines-leaning text-white group-hover:text-primary text-xl"></i>
                     </div>
-                    <span class="text-xs text-gray-300 lg:group-hover:text-white">Library</span>
+                    <span class="text-xs text-gray-300 group-hover:text-white">Library</span>
                 </button>
 
                 <button onclick="router('history'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
                     <div
-                        class="w-12 h-12 rounded-full bg-white/5 lg:group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                        <i class="fas fa-history text-white lg:group-hover:text-primary text-xl"></i>
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-history text-white group-hover:text-primary text-xl"></i>
                     </div>
-                    <span class="text-xs text-gray-300 lg:group-hover:text-white">History</span>
+                    <span class="text-xs text-gray-300 group-hover:text-white">History</span>
                 </button>
 
                 <button onclick="router('legal'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
                     <div
-                        class="w-12 h-12 rounded-full bg-white/5 lg:group-hover:bg-primary/20 flex items-center justify-center transition-colors">
-                        <i class="fas fa-scale-balanced text-white lg:group-hover:text-primary text-xl"></i>
+                        class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                        <i class="fas fa-scale-balanced text-white group-hover:text-primary text-xl"></i>
                     </div>
-                    <span class="text-xs text-gray-300 lg:group-hover:text-white">Legal</span>
+                    <span class="text-xs text-gray-300 group-hover:text-white">Legal</span>
                 </button>
             </div>
             <!-- Quick Actions -->
@@ -755,8 +744,7 @@
 
     <!-- Trailer Modal -->
     <div id="trailer-modal" class="modal-overlay z-[1100] flex items-center justify-center p-4">
-        <div
-            class="w-full max-w-5xl bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/10 rounded-lg overflow-hidden shadow-2xl flex flex-col">
+        <div class="w-full max-w-5xl bg-black rounded overflow-hidden shadow-2xl flex flex-col">
             <!-- Modal Header with Close Button -->
             <div class="flex flex-col bg-[#1a1a1a] border-b border-gray-800">
                 <div class="flex justify-between items-center p-3">
@@ -779,16 +767,16 @@
 
     <!-- Confirmation Modal -->
     <div id="confirmation-modal"
-        class="fixed inset-0 z-[1200] bg-black/80 backdrop-blur-sm flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+        class="fixed inset-0 z-[1200] bg-black/80 backdrop-blur-md flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
         <div
-            class="bg-black/90 border border-white/10 p-6 rounded-xl shadow-2xl max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300">
+            class="bg-card-bg border border-border-color p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300">
             <h3 id="confirm-title" class="text-xl font-bold text-white mb-2">Confirm</h3>
-            <p id="confirm-msg" class="text-gray-300 mb-6">Are you sure?</p>
+            <p id="confirm-msg" class="text-gray-400 mb-6 text-sm">Are you sure?</p>
             <div class="flex justify-end gap-3">
                 <button onclick="hideConfirmation()"
-                    class="px-4 py-2 rounded text-sm font-medium text-gray-400 hover:text-white hover:bg-white/10 transition-colors">Cancel</button>
+                    class="px-5 py-2.5 rounded-full text-sm font-medium text-gray-400 hover:text-white hover:bg-white/10 transition-colors">Cancel</button>
                 <button id="confirm-yes"
-                    class="px-4 py-2 rounded text-sm font-bold bg-primary text-black hover:bg-primary/90 transition-colors">Confirm</button>
+                    class="px-5 py-2.5 rounded-full text-sm font-bold bg-primary text-black hover:bg-primary/90 transition-colors shadow-[0_4px_14px_rgba(14,165,233,0.3)]">Confirm</button>
             </div>
         </div>
     </div>
@@ -812,7 +800,7 @@
 
             <!-- Carousel Controls -->
             <div
-                class="absolute inset-0 z-30 flex justify-between items-center px-4 md:px-8 opacity-0 lg:group-hover:opacity-100 transition-opacity pointer-events-none">
+                class="absolute inset-0 z-30 flex justify-between items-center px-4 md:px-8 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <button onclick="prevBanner()" class="carousel-btn pointer-events-auto"><i
                         class="fas fa-chevron-left"></i></button>
                 <button onclick="nextBanner()" class="carousel-btn pointer-events-auto"><i
@@ -830,68 +818,28 @@
 
 
         <section id="view-home" class="view-section px-4 sm:px-6 lg:px-8 py-8 space-y-8 hidden">
-            <div id="continue-watching-container" class="discovery-row hidden scroll-wrapper">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl md:text-2xl font-bold text-text-main flex items-center">
-                        <span class="vline"></span>Continue Watching
-                        <button onclick="clearHistory()"
-                            class="ml-4 text-xs text-text-muted hover:text-primary underline">Clear</button>
-                    </h2>
-                    <div class="flex items-center gap-2 hidden md:flex">
-                        <button onclick="scrollRow(this, -1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                class="fas fa-chevron-left text-sm"></i></button>
-                        <button onclick="scrollRow(this, 1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                class="fas fa-chevron-right text-sm"></i></button>
-                    </div>
-                </div>
+            <div id="continue-watching-container" class="discovery-row hidden">
+                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center">
+                    <span class="vline"></span>Continue Watching
+                    <button onclick="clearHistory()"
+                        class="ml-auto text-xs text-text-muted hover:text-primary underline">Clear</button>
+                </h2>
                 <div id="row-continue-watching" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
 
-            <div class="discovery-row scroll-wrapper">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl md:text-2xl font-bold text-text-main flex items-center"><span
-                            class="vline"></span>Trending Now</h2>
-                    <div class="flex items-center gap-2 hidden md:flex">
-                        <button onclick="scrollRow(this, -1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                class="fas fa-chevron-left text-sm"></i></button>
-                        <button onclick="scrollRow(this, 1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                class="fas fa-chevron-right text-sm"></i></button>
-                    </div>
-                </div>
+            <div class="discovery-row">
+                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
+                        class="vline"></span>Trending Now</h2>
                 <div id="row-trending" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
-            <div class="discovery-row scroll-wrapper">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl md:text-2xl font-bold text-text-main flex items-center"><span
-                            class="vline"></span>Top Rated Movies</h2>
-                    <div class="flex items-center gap-2 hidden md:flex">
-                        <button onclick="scrollRow(this, -1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                class="fas fa-chevron-left text-sm"></i></button>
-                        <button onclick="scrollRow(this, 1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                class="fas fa-chevron-right text-sm"></i></button>
-                    </div>
-                </div>
+            <div class="discovery-row">
+                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
+                        class="vline"></span>Top Rated Movies</h2>
                 <div id="row-top-rated" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
-            <div class="discovery-row scroll-wrapper">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl md:text-2xl font-bold text-text-main flex items-center"><span
-                            class="vline"></span>Popular Action Movies</h2>
-                    <div class="flex items-center gap-2 hidden md:flex">
-                        <button onclick="scrollRow(this, -1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                class="fas fa-chevron-left text-sm"></i></button>
-                        <button onclick="scrollRow(this, 1)"
-                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                class="fas fa-chevron-right text-sm"></i></button>
-                    </div>
-                </div>
+            <div class="discovery-row">
+                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
+                        class="vline"></span>Popular Action Movies</h2>
                 <div id="row-action" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
         </section>
@@ -928,9 +876,9 @@
 
             <!-- TAB CONTENT: ANIME (Existing) -->
             <!-- TAB CONTENT: ANIME (Modified for 3-Col Layout) -->
-            <div id="anilist-tab-anime" class="flex flex-col lg:flex-row gap-6">
+            <div id="anilist-tab-anime" class="flex flex-col min-[1025px]:flex-row gap-6">
                 <!-- LEFT SIDEBAR: Top 10 Airing -->
-                <div class="w-full lg:w-64 flex-shrink-0 order-2 lg:order-1">
+                <div class="w-full min-[1025px]:w-64 flex-shrink-0 order-2 min-[1025px]:order-1">
                     <h3 class="text-lg font-bold text-primary mb-4 border-l-4 border-primary pl-3">Top 10 Airing</h3>
                     <div id="anilist-top-airing" class="space-y-4">
                         <!-- Items rendered here -->
@@ -943,7 +891,7 @@
                 </div>
 
                 <!-- CENTER: Main Content -->
-                <div class="flex-grow min-w-0 order-1 lg:order-2">
+                <div class="flex-grow min-w-0 order-1 min-[1025px]:order-2">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                         <h2 class="text-xl md:text-3xl font-bold text-text-main flex items-center"><span
                                 class="vline"></span>Anime<sup class="text-xs text-primary ml-2">ANILIST</sup></h2>
@@ -952,17 +900,17 @@
                     <div id="grid-anilist" class="results-grid"></div>
                     <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
                         <button onclick="changeAnilistPage(-1)"
-                            class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded scroll-btn font-bold"><i
-                                class="fas fa-chevron-left"></i></button>
+                            class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                                class="fas fa-angle-left"></i></button>
                         <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
                         <button onclick="changeAnilistPage(1)"
-                            class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded scroll-btn font-bold"><i
-                                class="fas fa-chevron-right"></i></button>
+                            class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
+                                class="fas fa-angle-right"></i></button>
                     </div>
                 </div>
 
                 <!-- RIGHT SIDEBAR: Top 10 Popular -->
-                <div class="w-full lg:w-64 flex-shrink-0 order-3 lg:order-3">
+                <div class="w-full min-[1025px]:w-64 flex-shrink-0 order-3">
                     <h3 class="text-lg font-bold text-primary mb-4 border-l-4 border-primary pl-3">Top 10 Most Popular
                     </h3>
                     <div id="anilist-top-popular" class="space-y-4">
@@ -983,18 +931,18 @@
                             class="vline"></span>Voice Actors<sup class="text-xs text-primary ml-2">ANILIST</sup></h2>
                     <div class="relative w-full md:w-64">
                         <input id="va-search-input" type="text" placeholder="Search Voice Actors..."
-                            class="bg-white/5 backdrop-blur-md border border-white/10 text-text-main text-sm rounded-md py-2 pl-8 pr-3 w-full focus:outline-none focus:bg-black/40 focus:border-primary transition-all">
+                            class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-2 pl-8 pr-3 w-full focus:outline-none focus:border-primary transition-colors">
                         <i class="fas fa-search text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
                     </div>
                 </div>
                 <div id="grid-anilist-va" class="results-grid"></div>
                 <div id="pag-anilist-va" class="pagination-controls mt-8 flex justify-center gap-2">
                     <button onclick="changeAnilistVAPage(-1)"
-                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded scroll-btn font-bold"><i
+                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
                             class="fas fa-chevron-left"></i></button>
                     <span id="anilist-va-page-num" class="px-3 py-1 text-primary font-bold">1</span>
                     <button onclick="changeAnilistVAPage(1)"
-                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded scroll-btn font-bold"><i
+                        class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold"><i
                             class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
@@ -1036,8 +984,8 @@
 
             <div class="relative w-full mb-6">
                 <input id="mobile-search-input" type="text" placeholder="Search movies, tv, people..."
-                    class="w-full bg-white/5 backdrop-blur-md border border-white/10 text-white text-sm rounded-lg py-3 pl-10 pr-3 focus:outline-none focus:bg-black/40 focus:border-primary transition-all shadow-sm">
-                <i class="fas fa-search absolute left-3 top-3.5 text-text-muted text-sm"></i>
+                    class="w-full bg-input-bg/80 backdrop-blur-sm border border-border-color text-black text-sm rounded-full py-3 pl-10 pr-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-sm">
+                <i class="fas fa-search absolute left-4 top-3.5 text-text-muted text-sm pointer-events-none"></i>
             </div>
             <h2 id="search-header" class="text-2xl font-bold text-text-main mb-6">Search Results</h2>
             <div id="grid-search" class="results-grid"></div>
@@ -1060,9 +1008,9 @@
             <div id="actor-content" class="animate-fade-in"></div>
         </section>
 
-        <section id="view-anilist-details" class="view-section hidden w-full bg-transparent">
+        <section id="view-anilist-details" class="view-section hidden w-full bg-dark-bg">
             <div id="anilist-details-banner" class="w-full h-[300px] md:h-[400px] bg-cover bg-top bg-center relative">
-                <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-[#0d0d0f] to-transparent"></div>
+                <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
             </div>
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
                 <div class="flex flex-col md:flex-row gap-8">
@@ -1075,16 +1023,19 @@
                         </button>
 
                         <!-- WATCH NOW BUTTON SECTION -->
-                        <div class="mb-8 flex items-center gap-4">
-                            <button id="anilist-details-watchlist-btn"
-                                class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2">
-                                <i class="material-icons">bookmark_add</i> Watchlist
+                        <div class="mb-4 flex items-center gap-4">
+                            <button id="anilist-watch-now-btn"
+                                class="w-full bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_4px_14px_rgba(255,255,255,0.25)] flex items-center justify-center flex-grow">
+                                <i class="fas fa-play text-lg group-hover:scale-110 transition-transform mr-2"></i> PLAY
+                                NOW
                             </button>
                         </div>
-                        <button id="anilist-watch-now-btn"
-                            class="w-full bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center flex-grow">
-                            <i class="fas fa-play text-lg lg:group-hover:scale-110 transition-transform"></i> PLAY NOW
-                        </button>
+                        <div class="flex flex-row gap-3 w-full" id="anilist-secondary-btns">
+                            <button id="anilist-details-watchlist-btn"
+                                class="flex-1 bg-gray-800/80 backdrop-blur-md text-white font-bold py-3 px-4 rounded-full border border-gray-700 hover:bg-gray-700 transition-all flex items-center justify-center gap-2">
+                                <i class="material-icons text-xl">bookmark_add</i> Watchlist
+                            </button>
+                        </div>
                     </div>
                     <div class="flex-1 pt-4 md:pt-16 min-w-0">
                         <button onclick="router('anime-anilist')"
@@ -1111,8 +1062,7 @@
                                 class="text-text-muted text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto pr-2">
                             </div>
                         </div>
-                        <div
-                            class="bg-white/5 backdrop-blur-md p-4 rounded-md shadow-md text-sm space-y-3 border border-white/10">
+                        <div class="bg-card-bg p-4 rounded-md shadow-md text-sm space-y-3 border border-border-color">
                             <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
@@ -1158,18 +1108,8 @@
                                         class="text-text-main text-xs font-medium text-right md:text-left"></p>
                                 </div>
                             </div>
-                            <div class="mb-8 border-t border-border-color pt-2 scroll-wrapper">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="text-lg font-bold text-text-main mb-0">Cast & Voice Actors</h3>
-                                    <div class="flex items-center gap-2 hidden md:flex">
-                                        <button onclick="scrollRow(this, -1)"
-                                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                                class="fas fa-chevron-left text-sm"></i></button>
-                                        <button onclick="scrollRow(this, 1)"
-                                            class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                                class="fas fa-chevron-right text-sm"></i></button>
-                                    </div>
-                                </div>
+                            <div class="mb-8 border-t border-border-color pt-2">
+                                <h3 class="text-lg font-bold text-text-main mb-3">Cast & Voice Actors</h3>
                                 <div id="anilist-cast-grid" class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
                                 </div>
                             </div>
@@ -1180,7 +1120,7 @@
             </div>
         </section>
 
-        <section id="view-anilist-player" class="view-section hidden w-full bg-transparent">
+        <section id="view-anilist-player" class="view-section hidden w-full bg-dark-bg">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
                 <button id="anilist-player-back-btn"
                     class="flex items-center gap-3 text-gray-300 mb-4 hover:text-white transition-colors duration-200">
@@ -1198,7 +1138,7 @@
                     <div
                         class="w-full lg:w-3/4 rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8 lg:mb-0">
                         <div
-                            class="bg-white/5 backdrop-blur-md px-4 py-3 flex flex-wrap gap-3 items-center border-b border-white/10 justify-between">
+                            class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
                             <div class="flex items-center gap-2 text-primary font-bold"><i
                                     class="fas fa-play-circle"></i>
                                 <span id="anilist-player-ep">Episode 1</span>
@@ -1208,19 +1148,19 @@
                         <div class="aspect-video relative bg-black"><iframe id="anilist-iframe" class="w-full h-full"
                                 src="" frameborder="0" allowfullscreen></iframe></div>
                         <div
-                            class="bg-white/5 backdrop-blur-md px-4 py-3 flex justify-between items-center border-t border-white/10">
+                            class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
                             <button onclick="changeAnilistEp(-1)"
-                                class="px-4 py-1.5 bg-input-bg scroll-btn border border-border-color rounded text-sm transition font-medium">
+                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">
                                 <i class="fas fa-backward mr-1"></i> Prev</button>
                             <button onclick="changeAnilistEp(1)"
-                                class="px-4 py-1.5 bg-input-bg scroll-btn border border-border-color rounded text-sm transition font-medium">Next
+                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next
                                 <i class="fas fa-forward ml-1"></i></button>
                         </div>
                     </div>
 
                     <!-- Episodes List Container -->
                     <div
-                        class="w-full lg:w-1/4 bg-white/5 backdrop-blur-md border border-white/10 rounded overflow-hidden relative min-h-0">
+                        class="w-full lg:w-1/4 bg-card-bg border border-border-color rounded overflow-hidden relative min-h-0">
                         <div class="w-full h-full flex flex-col lg:absolute lg:inset-0">
                             <div class="p-3 border-b border-border-color bg-input-bg flex-shrink-0">
                                 <h3 class="text-base font-bold text-text-main">Episodes</h3>
@@ -1234,34 +1174,16 @@
                                 <div
                                     class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                     <h3 class="text-base font-bold text-text-main mb-0">Relations</h3>
-                                    <div class="flex items-center gap-2 hidden md:flex">
-                                        <button onclick="scrollRow(this, -1)"
-                                            class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center scroll-btn transition-colors border border-white/10"><i
-                                                class="fas fa-chevron-left text-xs"></i></button>
-                                        <button onclick="scrollRow(this, 1)"
-                                            class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center scroll-btn transition-colors border border-white/10"><i
-                                                class="fas fa-chevron-right text-xs"></i></button>
-                                    </div>
                                 </div>
                                 <div id="anilist-info-Relations"
-                                    class="horizontal-scroll-container p-2 custom-scroll bg-black/10 h-full">
+                                    class="horizontal-scroll-container p-2 custom-scroll bg-black/10 max-h-full items-start">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-3 text-sm space-y-3 scroll-wrapper">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-lg font-bold text-text-main mb-0">You may also like</h3>
-                        <div class="flex items-center gap-2 hidden md:flex">
-                            <button onclick="scrollRow(this, -1)"
-                                class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                    class="fas fa-chevron-left text-sm"></i></button>
-                            <button onclick="scrollRow(this, 1)"
-                                class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i
-                                    class="fas fa-chevron-right text-sm"></i></button>
-                        </div>
-                    </div>
+                <div class="mt-3 text-sm space-y-3">
+                    <h3 class="text-lg font-bold text-text-main mb-3">You may also like</h3>
                     <div id="anilist-recommendations-grid" class="horizontal-scroll-container p-2"></div>
                 </div>
             </div>
@@ -1437,6 +1359,7 @@
             historyTab: 'all',
             watchlist: (function () { try { return JSON.parse(localStorage.getItem('goStreamWatchlist')) || []; } catch (e) { return []; } })(),
             continueWatching: (function () { try { return JSON.parse(localStorage.getItem('goStreamContinueWatching')) || []; } catch (e) { return []; } })(),
+            episodeViewMode: 'numbers', // 'numbers' or 'thumbnails'
             bannerInterval: null,
             bannerItems: [],
             bannerIndex: 0,
@@ -1468,15 +1391,6 @@
         /**
          * CORE UTILITIES
          */
-        function scrollRow(btn, direction) {
-            const wrapper = btn.closest('.scroll-wrapper');
-            if (!wrapper) return;
-            const container = wrapper.querySelector('.horizontal-scroll-container, .overflow-x-auto');
-            if (container) {
-                const scrollAmount = container.clientWidth * 0.8;
-                container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-            }
-        }
         const loader = {
             count: 0,
             show: () => {
@@ -1629,11 +1543,6 @@
             localStorage.setItem('goStreamContinueWatching', JSON.stringify(appState.continueWatching));
         }
 
-        function clearHistory() {
-            appState.continueWatching = [];
-            localStorage.removeItem('goStreamContinueWatching');
-            renderContinueWatching();
-        }
 
         function renderContinueWatching() {
             const container = document.getElementById('row-continue-watching');
@@ -1658,7 +1567,7 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = 'movie-card cursor-pointer rounded relative group';
+                card.className = 'movie-card cursor-pointer rounded-xl relative group';
 
                 let badge = '';
                 if (item.type === 'tv' && item.season) {
@@ -1672,7 +1581,7 @@
                     <div class="aspect-video overflow-hidden relative">
                         <img src="${imgUrl}" class="w-full h-full object-cover">
                         ${badge}
-                        <div class="absolute inset-0 bg-black/40 opacity-0 lg:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20 pointer-events-none">
                             <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg"></i>
                         </div>
                     </div>
@@ -1743,10 +1652,6 @@
             genreSelect.value = stateRef.genre;
             genreSelect.onchange = (e) => {
                 stateRef.genre = e.target.value;
-                if (!isAnilist && stateRef.genre && stateRef.sort === 'trending') {
-                    stateRef.sort = 'popularity.desc';
-                    sortSelect.value = 'popularity.desc';
-                }
                 resetAndLoad(section);
             };
 
@@ -1763,10 +1668,6 @@
                 statusSelect.value = stateRef.status;
                 statusSelect.onchange = (e) => {
                     stateRef.status = e.target.value;
-                    if (stateRef.status && stateRef.sort === 'trending') {
-                        stateRef.sort = 'popularity.desc';
-                        sortSelect.value = 'popularity.desc';
-                    }
                     resetAndLoad(section);
                 };
             }
@@ -1777,10 +1678,6 @@
             countrySelect.value = stateRef.country;
             countrySelect.onchange = (e) => {
                 stateRef.country = e.target.value;
-                if (stateRef.country && stateRef.sort === 'trending') {
-                    stateRef.sort = 'popularity.desc';
-                    sortSelect.value = 'popularity.desc';
-                }
                 resetAndLoad(section);
             };
 
@@ -1818,10 +1715,6 @@
             yearSelect.value = stateRef.year;
             yearSelect.onchange = (e) => {
                 stateRef.year = e.target.value;
-                if (!isAnilist && stateRef.year && stateRef.sort === 'trending') {
-                    stateRef.sort = 'popularity.desc';
-                    sortSelect.value = 'popularity.desc';
-                }
                 resetAndLoad(section);
             };
             container.append(yearSelect);
@@ -1859,11 +1752,21 @@
 
         async function fetchTMDBLogo(id, type) {
             try {
+                // Determine correct endpoint based on type
+                // Anime from Anilist might strictly be 'anime' type in our appState, 
+                // but we need to know if we can find a TMDB equivalent or if wait, 
+                // Anilist doesn't track TMDB IDs easily unless we mapped them.
+                // For this implementation, we will primarily support Movies/TV from TMDB.
+                // If the item has a 'media_type' of 'anime', we might skip or try to search. 
+                // BUT, our bannerItems coming from mappedAnilist have type 'anime'.
+                // For now, let's focus on 'movie' and 'tv'. 
+
                 let tmdbType = type;
-                if (type === 'anime') return null;
+                if (type === 'anime') return null; // Skip for now unless we have a mapping
 
                 const data = await fetchTMDB(`/${tmdbType}/${id}/images`, { include_image_language: 'en,null' }, false);
                 if (data && data.logos && data.logos.length > 0) {
+                    // Find the best logo: preferably English, highest vote or width
                     const englishLogos = data.logos.filter(l => l.iso_639_1 === 'en');
                     const bestLogo = englishLogos.length > 0 ? englishLogos[0] : data.logos[0];
                     return bestLogo.file_path;
@@ -1872,39 +1775,6 @@
                 console.warn("Logo fetch failed", e);
             }
             return null;
-        }
-
-        // --- SKELETON LOADER UTILITY ---
-        function renderSkeletons(containerId, count = 10, type = 'poster') {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            container.innerHTML = '';
-
-            for (let i = 0; i < count; i++) {
-                const card = document.createElement('div');
-                // Ensure it matches movie-card classes for layout
-                if (type === 'landscape') {
-                    card.className = 'movie-card rounded relative overflow-hidden flex-shrink-0 w-[280px]';
-                } else {
-                    card.className = 'movie-card rounded relative overflow-hidden';
-                }
-
-                let aspectContent = '';
-                if (type === 'landscape') {
-                    aspectContent = `<div class="aspect-video skeleton w-full h-full"></div>`;
-                } else {
-                    aspectContent = `<div class="aspect-[2/3] skeleton w-full h-full"></div>`;
-                }
-
-                card.innerHTML = `
-                    ${aspectContent}
-                    <div class="absolute bottom-0 left-0 w-full p-3 space-y-2 bg-gradient-to-t from-black/80 to-transparent">
-                        <div class="h-4 skeleton w-3/4 rounded opacity-70"></div>
-                        <div class="h-3 skeleton w-1/2 rounded opacity-50"></div>
-                    </div>
-                `;
-                container.appendChild(card);
-            }
         }
 
         async function loadHomeData() {
@@ -1917,12 +1787,11 @@
                 return;
             }
 
+            document.getElementById('row-trending').innerHTML = getRowSkeleton(6);
+            document.getElementById('row-top-rated').innerHTML = getRowSkeleton(6);
+            document.getElementById('row-action').innerHTML = getRowSkeleton(6);
             // Fetch TMDB Trending
-            renderSkeletons('row-trending', 10, 'landscape');
-            renderSkeletons('row-top-rated', 10, 'landscape');
-            renderSkeletons('row-action', 10, 'landscape');
-
-            const trendingTMDBPromise = fetchTMDB('/trending/all/day', {}, false);
+            const trendingTMDBPromise = fetchTMDB('/trending/all/day');
 
             // Fetch Anilist Trending for Banner
             const anilistQuery = `
@@ -1933,10 +1802,10 @@
                     }
                 }
             }`;
-            const anilistPromise = fetchAnilist(anilistQuery, {}, false); // Disable global loader
+            const anilistPromise = fetchAnilist(anilistQuery);
 
-            const topRatedPromise = fetchTMDB('/movie/top_rated', {}, false);
-            const actionPromise = fetchTMDB('/discover/movie', { with_genres: 28 }, false);
+            const topRatedPromise = fetchTMDB('/movie/top_rated');
+            const actionPromise = fetchTMDB('/discover/movie', { with_genres: 28 });
 
             const [trendingTMDB, anilistData, topRated, action] = await Promise.all([
                 trendingTMDBPromise,
@@ -1949,7 +1818,15 @@
             let bannerCandidates = [];
             if (trendingTMDB && trendingTMDB.results) {
                 renderTMDBGrid('row-trending', trendingTMDB.results, null, true);
-                bannerCandidates = [...bannerCandidates, ...trendingTMDB.results.slice(0, 10)];
+
+                const now = new Date();
+                const releasedTrending = trendingTMDB.results.filter(item => {
+                    const dateStr = item.release_date || item.first_air_date;
+                    if (!dateStr) return false;
+                    return new Date(dateStr) <= now;
+                });
+
+                bannerCandidates = [...bannerCandidates, ...releasedTrending.slice(0, 10)];
             }
 
             // Shuffle once for randomness as requested, but then act as a carousel
@@ -2112,10 +1989,10 @@
                     
                     <div class="flex gap-4">
                         <button class="bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center gap-2 group" onclick="openDetailsWrapper(${playParams})">
-                            <i class="fas fa-play text-lg lg:group-hover:scale-110 transition-transform"></i> ${btnText}
+                            <i class="fas fa-play text-lg group-hover:scale-110 transition-transform"></i> ${btnText}
                         </button>
-                        <button id="banner-watchlist-btn-${item.id}" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center group" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ')}', '${status}', '${genresStr}')">
-                           <i class="material-icons lg:group-hover:text-primary transition-colors">bookmark_add</i>
+                        <button id="banner-watchlist-btn-${item.id}" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center group" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/ /g, ' ')}', '${status}', '${genresStr}')">
+                           <i class="material-icons group-hover:text-primary transition-colors">bookmark_add</i>
                         </button>
                     </div>
                 `;
@@ -2136,8 +2013,8 @@
             const gridId = `grid-${key}`;
             const grid = document.getElementById(gridId);
 
-            // loader.show();
-            renderSkeletons(gridId, 20, 'poster');
+            grid.innerHTML = getGridSkeleton(12);
+            loader.show();
 
             const params = {
                 language: 'en-US',
@@ -2226,8 +2103,8 @@
         /**
          * ANILIST API
          */
-        async function fetchAnilist(query, variables = {}, showLoader = true) {
-            if (showLoader) loader.show();
+        async function fetchAnilist(query, variables = {}) {
+            loader.show();
             try {
                 const res = await fetch(ANILIST_API_URL, {
                     method: 'POST',
@@ -2239,7 +2116,7 @@
                 return json.data;
             } catch (e) {
                 console.error("Anilist Error", e);
-                if (showLoader) loader.hide();
+                loader.hide();
                 return null;
             }
         }
@@ -2307,8 +2184,7 @@
             const state = appState.anilist;
             const gridId = 'grid-anilist';
             const grid = document.getElementById(gridId);
-
-            renderSkeletons(gridId, 24, 'poster');
+            grid.innerHTML = getGridSkeleton(12);
 
             if (state.filters.sort === 'RECENTLY_UPDATED') {
                 const query = `
@@ -2324,7 +2200,7 @@
                         }
                     }
                 }`;
-                const data = await fetchAnilist(query, { page: state.page }, false);
+                const data = await fetchAnilist(query, { page: state.page });
                 if (data && data.Page.airingSchedules) {
                     // Map AiringSchedules to shared media format
                     // We can optionally use the 'episode' data to show "Ep X" badge if we want
@@ -2375,7 +2251,7 @@
                 if (state.filters.country) vars.country = state.filters.country;
                 if (state.filters.year) vars.year = parseInt(state.filters.year);
 
-                const data = await fetchAnilist(query, vars, false);
+                const data = await fetchAnilist(query, vars);
                 if (data && data.Page.media) {
                     state.data = data.Page.media;
                     const mappedData = state.data.map(mapAnilistToShared);
@@ -2394,6 +2270,8 @@
             // Avoid refetching if already populated (simple check)
             if (airingContainer.children.length > 5 && !airingContainer.querySelector('.animate-pulse')) return;
 
+            airingContainer.innerHTML = getListSkeleton(10);
+            popularContainer.innerHTML = getListSkeleton(10);
             const query = `
             query {
                 airing: Page(page: 1, perPage: 10) {
@@ -2434,16 +2312,16 @@
                 // Rank Color: Top 3 get special colors
                 let rankColor = 'text-gray-500';
                 if (index === 0) rankColor = 'text-yellow-400';
-                else if (index === 1) rankColor = 'text-gray-200';
+                else if (index === 1) rankColor = 'text-gray-300';
                 else if (index === 2) rankColor = 'text-orange-400';
 
                 card.innerHTML = `
                     <div class="text-2xl font-black ${rankColor} w-10 text-center flex-shrink-0 italic">#${index + 1}</div>
                     <div class="relative w-12 h-16 flex-shrink-0 rounded overflow-hidden shadow-sm">
-                        <img src="${img}" class="w-full h-full object-cover lg:group-hover:scale-110 transition-transform duration-300">
+                        <img src="${img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-xs font-bold truncate text-gray-200 lg:group-hover:text-primary transition-colors leading-tight mb-1">${title}</h4>
+                        <h4 class="text-xs font-bold truncate text-gray-200 group-hover:text-primary transition-colors leading-tight mb-1">${title}</h4>
                         <div class="flex items-center gap-2 text-[10px] text-gray-400">
                              <span class="text-primary"><i class="fas fa-star text-[8px]"></i> ${score}</span>
                              <span>•</span>
@@ -2460,6 +2338,7 @@
             const gridId = 'grid-anilist-va';
             const grid = document.getElementById(gridId);
             const state = appState.anilist;
+            grid.innerHTML = getGridSkeleton(12);
 
             const query = `
             query ($page: Int, $search: String) {
@@ -2660,18 +2539,20 @@
             trailerBtn.id = "anilist-trailer-btn";
 
             if (anime.trailer && (anime.trailer.site === 'youtube' || anime.trailer.site === 'YouTube')) {
-                trailerBtn.className = "bg-gray-700/50 text-white font-bold py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2 flex-grow";
+                trailerBtn.className = "flex-1 bg-gray-700/50 text-white font-bold py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2 backdrop-blur-md";
                 trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Trailer';
                 trailerBtn.onclick = () => openTrailerModal([{ key: anime.trailer.id, name: 'Main Trailer', site: 'YouTube' }]);
             } else {
-                trailerBtn.className = "bg-gray-800/50 text-gray-500 font-bold py-3 px-4 rounded cursor-not-allowed flex items-center justify-center gap-2 flex-grow";
+                trailerBtn.className = "flex-1 bg-gray-800/50 text-gray-500 font-bold py-3 px-4 rounded cursor-not-allowed flex items-center justify-center gap-2 backdrop-blur-md";
                 trailerBtn.innerHTML = '<i class="fab fa-youtube text-gray-500 text-lg"></i> No Trailer';
                 trailerBtn.disabled = true;
             }
 
-            // Insert before watchlist button, ensuring we don't duplicate if re-opening
-            // Actually the view is re-rendered usually, but `wlBtn.parentNode` is safe
-            wlBtn.parentNode.insertBefore(trailerBtn, wlBtn);
+            // Insert into secondary buttons row
+            const secContainer = document.getElementById('anilist-secondary-btns');
+            if (secContainer) {
+                secContainer.appendChild(trailerBtn);
+            }
 
             // Metadata
             document.getElementById('anilist-info-desc').innerHTML = anime.description || 'No description available.';
@@ -2719,11 +2600,11 @@
                             el.onclick = () => openVoiceActorDetails(va.id);
                             const roleDisplay = charEdge.role.charAt(0).toUpperCase() + charEdge.role.slice(1).toLowerCase();
                             el.innerHTML = `
-                            <div class="aspect-square rounded-full overflow-hidden border border-border-color w-20 h-20 mx-auto lg:group-hover:border-primary transition-colors">
+                            <div class="aspect-square rounded-full overflow-hidden border border-border-color w-20 h-20 mx-auto group-hover:border-primary transition-colors">
                                 <img src="${va.image.medium}" class="w-full h-full object-cover" alt="Voice Actor Image">
                             </div>
                             <div class="text-center">
-                                <p class="text-xs text-text-main font-semibold truncate lg:group-hover:text-primary transition-colors" title="${va.name.full}">${va.name.full}</p>
+                                <p class="text-xs text-text-main font-semibold truncate group-hover:text-primary transition-colors" title="${va.name.full}">${va.name.full}</p>
                                 <p class="text-[10px] text-text-muted truncate" title="${charEdge.node.name.userPreferred} (${roleDisplay})">
                                     ${charEdge.node.name.userPreferred} | ${roleDisplay}
                                 </p>
@@ -2793,8 +2674,18 @@
             }
 
             const watchBtn = document.getElementById('anilist-watch-now-btn');
-            watchBtn.innerHTML = `<i class="fas fa-play mr-2"></i> ${btnText}`;
-            watchBtn.onclick = () => openAnilistPlayer(id, startEp);
+
+            if (anime.status === 'NOT_YET_RELEASED') {
+                watchBtn.innerHTML = `<i class="fas fa-clock mr-2"></i> Not yet released`;
+                watchBtn.className = "w-full bg-gray-600 text-gray-300 font-bold py-3 px-8 rounded flex items-center justify-center flex-grow cursor-not-allowed";
+                watchBtn.disabled = true;
+                watchBtn.onclick = null;
+            } else {
+                watchBtn.innerHTML = `<i class="fas fa-play mr-2"></i> ${btnText}`;
+                watchBtn.className = "w-full bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_4px_14px_rgba(255,255,255,0.25)] flex items-center justify-center flex-grow";
+                watchBtn.disabled = false;
+                watchBtn.onclick = () => openAnilistPlayer(id, startEp);
+            }
         }
 
         // EPISODE LIST HELPERS
@@ -2807,6 +2698,17 @@
             if (!document.getElementById('view-anilist-player').classList.contains('hidden')) {
                 if (appState.anilist.currentAnime) openAnilistPlayer(appState.anilist.currentAnime.id, appState.anilist.currentEp);
             } else if (!document.getElementById('tmdb-player-content').innerHTML === "") {
+                if (window.renderCurrentTMDBEpisodes) window.renderCurrentTMDBEpisodes();
+            }
+        }
+
+        function toggleEpisodeView() {
+            appState.episodeViewMode = appState.episodeViewMode === 'thumbnails' ? 'numbers' : 'thumbnails';
+            const btn = document.getElementById('ep-view-btn');
+            if (btn) {
+                btn.innerHTML = appState.episodeViewMode === 'thumbnails' ? '<i class="fas fa-th"></i>' : '<i class="fas fa-list"></i>';
+            }
+            if (document.getElementById('tmdb-player-content') && document.getElementById('tmdb-player-content').innerHTML !== "") {
                 if (window.renderCurrentTMDBEpisodes) window.renderCurrentTMDBEpisodes();
             }
         }
@@ -2841,25 +2743,68 @@
                 data.reverse();
             }
 
-            // Enforce Grid View always
-            container.className = 'grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full';
+            // Layout and view style
+            const isThumbMode = appState.episodeViewMode === 'thumbnails' && type !== 'anilist';
+
+            if (isThumbMode) {
+                container.className = 'flex flex-col gap-3 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full';
+            } else {
+                container.className = 'grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full';
+            }
 
             data.forEach(ep => {
                 const isCurrent = ep.number == currentEp;
                 const wrapper = document.createElement('div');
                 wrapper.className = 'relative group w-full';
 
-                // GRID VIEW ONLY
-                const btn = document.createElement('button');
-                btn.onclick = () => onPlayClick(ep.number);
-                btn.className = `w-full p-2 rounded border border-border-color text-xs transition-colors truncate ${isCurrent ? 'bg-primary text-black font-bold border-primary' : 'bg-input-bg text-text-muted hover:border-primary hover:text-primary'}`;
-                btn.innerText = ep.number;
-                btn.title = ep.title;
-                wrapper.appendChild(btn);
+                if (isThumbMode) {
+                    // THUMBNAIL LIST VIEW
+                    wrapper.className = `w-full relative group cursor-pointer flex flex-col rounded-lg border transition-colors ${isCurrent ? 'border-primary bg-primary/10' : 'border-border-color bg-card-bg hover:border-primary/50'}`;
+                    wrapper.onclick = () => onPlayClick(ep.number);
 
-                if (type === 'anilist' && appState.anilist.currentAnime && appState.anilist.currentAnime.status === 'RELEASING' && ep.number === data.length) { // Simplified NEW badge
-                    // Note: 'data.length' logic only works if sorted ASC
+                    const imgUrl = ep.still ? IMG_URL + ep.still : 'https://placehold.co/300x170/202125/FFF?text=No+Image';
+                    const overviewText = ep.overview ? ep.overview : 'No description available.';
+                    const dateText = ep.air_date ? ep.air_date : '';
+
+                    wrapper.innerHTML = `
+                        <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2 sm:gap-3 p-2 sm:p-3 items-start relative z-10">
+                            <div class="w-full sm:w-32 lg:w-full xl:w-32 aspect-video flex-shrink-0 relative rounded overflow-hidden shadow-sm bg-black">
+                                <img src="${imgUrl}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 duration-200 bg-black/20">
+                                    <i class="fas fa-play text-white text-3xl sm:text-xl lg:text-4xl xl:text-xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] transform group-hover:scale-110 transition-transform"></i>
+                                </div>
+                                ${isCurrent ? '<div class="absolute top-1 left-1 bg-primary text-black text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded shadow z-20"><i class="fas fa-play mr-1"></i>PLAYING</div>' : ''}
+                            </div>
+                            <div class="flex-1 min-w-0 w-full flex flex-col justify-start mt-1 sm:mt-0 lg:mt-2 xl:mt-0 relative">
+                                <h4 class="text-xs sm:text-sm font-bold text-white leading-tight mb-1" title="${ep.title.replace(/"/g, '&quot;')}"><span class="text-primary mr-1">${ep.number}.</span>${ep.title}</h4>
+                            </div>
+                        </div>
+                        
+                        <!-- NEW TOOLTIP/HOVER EFFECT FOR METADATA -->
+                        <!-- Positioned to the left/right of the card to avoid vertical scroll clipping -->
+                        <div class="fixed hidden md:block w-72 bg-gray-900 border border-border-color shadow-2xl rounded p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[100] pointer-events-none transform translate-x-4 group-hover:translate-x-0" style="left: -19rem; top: 0; bottom: auto;">
+                            <h4 class="text-sm font-bold text-white mb-2 leading-tight"><span class="text-primary mr-1">${ep.number}.</span>${ep.title}</h4>
+                            <div class="text-[11px] text-primary font-medium mb-3">${dateText}</div>
+                            <p class="text-xs text-gray-300 leading-relaxed">${overviewText}</p>
+                            <!-- Tooltip Arrow (pointing right) -->
+                            <div class="absolute top-6 -right-2 border-y-8 border-y-transparent border-l-8 border-l-border-color"></div>
+                            <div class="absolute top-[25px] -right-[7px] border-y-[7px] border-y-transparent border-l-[7px] border-l-gray-900"></div>
+                        </div>
+                    `;
+                } else {
+                    // GRID VIEW ONLY (Numbers)
+                    const btn = document.createElement('button');
+                    btn.onclick = () => onPlayClick(ep.number);
+                    btn.className = `w-full p-2 rounded border border-border-color text-xs transition-colors truncate ${isCurrent ? 'bg-primary text-black font-bold border-primary' : 'bg-input-bg text-text-muted hover:border-primary hover:text-primary'}`;
+                    btn.innerText = ep.number;
+                    btn.title = ep.title;
+                    wrapper.appendChild(btn);
+
+                    if (type === 'anilist' && appState.anilist.currentAnime && appState.anilist.currentAnime.status === 'RELEASING' && ep.number === data.length) { // Simplified NEW badge
+                        // Note: 'data.length' logic only works if sorted ASC
+                    }
                 }
+
                 container.appendChild(wrapper);
             });
         }
@@ -3097,7 +3042,20 @@
         setupSearchListener('sidebar-search-input');
         setupSearchListener('mobile-search-input');
 
-        async function performSearch(query, page = 1) {
+        /**          * SKELETON LOADERS (NEW)          */
+        function getGridSkeleton(count = 12, isLandscape = false) {
+            let html = '';
+            const aspectClass = isLandscape ? 'aspect-video' : 'aspect-[2/3]';
+            for (let i = 0; i < count; i++) { html += '<div class=\"movie-card animate-pulse rounded-xl relative group ' + (isLandscape ? 'landscape-card' : '') + '\">' + '<div class=\"' + aspectClass + ' bg-white/5 overflow-hidden relative border border-white/5 rounded\"></div>' + '<div class=\"absolute bottom-0 left-0 w-full p-3 card-info flex flex-col gap-2\">' + '<div class=\"h-3 bg-white/10 rounded w-3/4\"></div>' + '<div class=\"flex justify-between\">' + '<div class=\"h-2 bg-white/10 rounded w-1/4\"></div>' + '<div class=\"h-2 bg-white/10 rounded w-1/4\"></div>' + '</div>' + '</div>' + '</div>'; } return html;
+        }
+        function getRowSkeleton(count = 6) {
+            let html = '';
+            for (let i = 0; i < count; i++) { html += '<div class=\"flex-shrink-0 w-32 sm:w-40 md:w-48 movie-card animate-pulse rounded-xl relative group\">' + '<div class=\"aspect-[2/3] bg-white/5 overflow-hidden relative border border-white/5 rounded-xl\"></div>' + '<div class=\"absolute bottom-0 left-0 w-full p-3 card-info flex flex-col gap-2\">' + '<div class=\"h-3 bg-white/10 rounded w-3/4\"></div>' + '<div class=\"flex justify-between\">' + '<div class=\"h-2 bg-white/10 rounded w-1/4\"></div>' + '<div class=\"h-2 bg-white/10 rounded w-1/4\"></div>' + '</div>' + '</div>' + '</div>'; } return html;
+        }
+        function getListSkeleton(count = 10) {
+            let html = '';
+            for (let i = 0; i < count; i++) { html += '<div class=\"flex items-center gap-3 animate-pulse p-2 rounded\">' + '<div class=\"w-12 h-16 bg-white/5 rounded flex-shrink-0\"></div>' + '<div class=\"flex-1 flex flex-col gap-2\">' + '<div class=\"h-3 bg-white/10 rounded w-3/4\"></div>' + '<div class=\"h-2 bg-white/10 rounded w-1/2\"></div>' + '</div>' + '</div>'; } return html;
+        } function getDetailsSkeleton() { return '<div class=\"w-full h-[300px] md:h-[600px] bg-white/5 animate-pulse relative\">' + '<div class=\"absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent z-10\"></div>' + '</div>' + '<div class=\"container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48\">' + '<div class=\"flex flex-col md:flex-row gap-8\">' + '<div class=\"w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4 animate-pulse\">' + '<div class=\"w-[180px] h-[270px] md:w-full md:h-[390px] mx-auto md:mx-0 hidden md:block rounded shadow-2xl bg-white/5\"></div>' + '<div class=\"h-12 bg-white/10 rounded overflow-hidden w-full\"></div>' + '<div class=\"flex gap-3 w-full\">' + '<div class=\"h-12 bg-white/10 rounded overflow-hidden flex-1\"></div>' + '<div class=\"h-12 bg-white/10 rounded overflow-hidden flex-1\"></div>' + '</div>' + '</div>' + '<div class=\"flex-1 pt-4 md:pt-16 min-w-0 animate-pulse\">' + '<div class=\"flex gap-4 mb-4\">' + '<div class=\"h-4 bg-white/10 rounded w-12\"></div>' + '<div class=\"h-4 bg-white/10 rounded w-12\"></div>' + '<div class=\"h-4 bg-white/10 rounded w-12\"></div>' + '</div>' + '<div class=\"h-10 bg-white/10 rounded w-2/3 mb-4\"></div>' + '<div class=\"h-4 bg-white/10 rounded w-1/3 mb-8\"></div>' + '<div class=\"space-y-2 mb-6\">' + '<div class=\"h-4 bg-white/10 rounded w-full\"></div>' + '<div class=\"h-4 bg-white/10 rounded w-full\"></div>' + '<div class=\"h-4 bg-white/10 rounded w-3/4\"></div>' + '</div>' + '<div class=\"h-48 bg-white/5 rounded-md border border-white/5\"></div>' + '</div>' + '</div>' + '</div>'; } function getPlayerSkeleton(type) { let html = '<div class=\"container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12 animate-pulse\">' + '<div class=\"h-8 bg-white/10 rounded w-1/3 mb-4\"></div>' + '<div class=\"flex flex-col lg:flex-row gap-6\">' + '<div class=\"' + (type === 'tv' ? 'w-full lg:w-3/4' : 'w-full') + ' rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8 lg:mb-0\">' + '<div class=\"bg-card-bg px-4 py-3 flex justify-between border-b border-white/5\">' + '<div class=\"h-5 bg-white/10 rounded w-24\"></div>' + '<div class=\"flex gap-2\"><div class=\"h-6 w-16 bg-white/10 rounded\"></div><div class=\"h-6 w-16 bg-white/10 rounded\"></div></div>' + '</div>' + '<div class=\"aspect-video bg-white/5 w-full\"></div>' + '</div>'; if (type === 'tv') { html += '<div class=\"w-full lg:w-1/4 bg-card-bg border border-border-color rounded overflow-hidden relative min-h-[400px] flex flex-col\">' + '<div class=\"p-3 border-b border-white/5 bg-[#111] flex justify-between\">' + '<div class=\"h-5 bg-white/10 rounded w-24\"></div>' + '</div>' + '<div class=\"p-3 space-y-2\">' + '<div class=\"h-10 bg-white/5 rounded w-full\"></div>' + '<div class=\"h-10 bg-white/5 rounded w-full\"></div>' + '<div class=\"h-10 bg-white/5 rounded w-full\"></div>' + '<div class=\"h-10 bg-white/5 rounded w-full\"></div>' + '</div>' + '</div>'; } html += '</div>' + '<div class=\"mt-8 text-sm space-y-3\">' + '<div class=\"h-6 bg-white/10 rounded w-48 mb-3\"></div>' + '<div class=\"flex gap-4 overflow-hidden\">' + getRowSkeleton(5) + '</div>' + '</div>' + '</div>'; return html; } async function performSearch(query, page = 1) {
             router('search');
             const grid = document.getElementById('grid-search');
             grid.innerHTML = '<p class="text-gray-400">Searching...</p>';
@@ -3275,7 +3233,7 @@
         function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview, genres, statusText) {
             const card = document.createElement('div');
             const widthClass = isHorizontal ? 'landscape-card' : '';
-            card.className = `movie-card rounded cursor-pointer relative group ${widthClass}`;
+            card.className = `movie-card rounded-xl cursor-pointer relative group ${widthClass}`;
 
             const aspectClass = isHorizontal ? 'aspect-video' : 'aspect-[2/3]';
 
@@ -3296,12 +3254,12 @@
                 <div class="${aspectClass} overflow-hidden relative">
                     <img src="${posterUrl}" class="w-full h-full object-cover">
                     
-                    
+                    ${type !== 'actor' || ''}
 
                     <!-- HOVER PLAY ICON OVERLAY -->
                     ${type !== 'actor' ? `
-                    <div class="absolute inset-0 bg-black/40 opacity-0 lg:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20">
-                         <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg transform scale-90 lg:group-hover:scale-100 transition-transform duration-300"></i>
+                    <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20 pointer-events-none">
+                         <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300"></i>
                     </div>` : ''}
 
                      ${type !== 'actor' ? ` <div class="absolute top-1.5 left-1.5 bg-black/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10 flex items-center gap-1">
@@ -3363,8 +3321,8 @@
         }
 
         function showHoverCard(targetElem, data) {
-            // Disable on small screens
-            if (window.innerWidth < 1024) return;
+            // Disable on small screens (tablets/mobile)
+            if (window.innerWidth < 1025) return;
 
             const card = document.getElementById('global-hover-card');
             if (!card) return;
@@ -3465,15 +3423,23 @@
                     <p class="text-xs text-gray-400 line-clamp-4 leading-relaxed flex-grow z-10 border-t border-white/5 pt-2">${data.overview}</p>
                     
                     <div class="flex gap-2 pt-3 mt-auto z-10">
-                         <button onclick="event.stopPropagation(); openDetailsWrapper(${data.id}, '${data.type}', 1, 1)" class="flex-1 bg-white text-black py-2 rounded text-xs font-bold scroll-btn transition-colors flex items-center justify-center gap-2 shadow-sm">
+                         <button onclick="event.stopPropagation(); openDetailsWrapper(${data.id}, '${data.type}', 1, 1)" class="flex-1 bg-white text-black py-2 rounded text-xs font-bold hover:bg-primary hover:text-black transition-colors flex items-center justify-center gap-2 shadow-sm">
                             <i class="fas fa-play"></i> Watch
                         </button>
-                        <button id="${btnId}" onclick="event.stopPropagation(); toggleWatchlist(${data.id}, '${data.type}', '${data.title.replace(/'/g, "")}', '${data.posterUrl}', '${btnId}', ${data.numericVote}, '${data.year}', '${data.overview ? data.overview.replace(/'/g, "") : ""}', '${data.status}', '${data.genres}')" class="px-3 py-2 bg-black/40 border border-white/10 text-white rounded hover:bg-white/10 transition-colors flex items-center justify-center" title="Add to Library">
+                        <button id="${btnId}" class="px-3 py-2 bg-black/40 border border-white/10 text-white rounded hover:bg-white/10 transition-colors flex items-center justify-center btn-hover-watchlist" title="Add to Library">
                             ${isWatchlisted ? '<i class="material-icons text-primary">bookmark_added</i>' : '<i class="material-icons">bookmark_add</i>'}
                         </button>
                     </div>
                 </div>
             `;
+
+            const wlBtn = card.querySelector('#' + btnId);
+            if (wlBtn) {
+                wlBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleWatchlist(data.id, data.type, data.title, data.posterUrl, btnId, data.numericVote, data.year, data.overview, data.status, data.genres);
+                };
+            }
 
             card.classList.add('visible');
         }
@@ -3492,13 +3458,13 @@
             if (max <= 1) return;
 
             const prev = document.createElement('button');
-            prev.className = "px-3 py-1 bg-card-bg border border-border-color rounded scroll-btn disabled:opacity-50 text-text-main";
+            prev.className = "px-3 py-1 bg-card-bg border border-border-color rounded md:hover:bg-primary md:hover:text-black disabled:opacity-50 text-text-main";
             prev.innerHTML = '<i class="fas fa-chevron-left"></i>';
             prev.disabled = current === 1;
             prev.onclick = () => callback(current - 1);
 
             const next = document.createElement('button');
-            next.className = "px-3 py-1 bg-card-bg border border-border-color rounded scroll-btn disabled:opacity-50 text-text-main";
+            next.className = "px-3 py-1 bg-card-bg border border-border-color rounded md:hover:bg-primary md:hover:text-black disabled:opacity-50 text-text-main";
             next.innerHTML = '<i class="fas fa-chevron-right"></i>';
             next.disabled = current === max;
             next.onclick = () => callback(current + 1);
@@ -3515,7 +3481,7 @@
             try {
                 router('tmdb-details');
                 const container = document.getElementById('tmdb-details-content');
-                container.innerHTML = '';
+                container.innerHTML = getDetailsSkeleton();
                 loader.show();
 
                 const [details, credits] = await Promise.all([
@@ -3550,11 +3516,11 @@
                         const safeName = c.name.replace(/['"]/g, '');
                         const safeChar = c.character ? c.character.replace(/['"]/g, '') : '';
                         return `
-                            <div class="flex-shrink-0 w-24 text-center cursor-pointer group" onclick="openActorDetails(${c.id})">
-                                <img src="${profile}" alt="${safeName}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-border-color lg:group-hover:border-primary transition-colors">
-                                <p class="text-xs font-semibold text-text-main truncate lg:group-hover:text-primary transition-colors" title="${safeName}">${safeName}</p>
-                                <p class="text-[10px] text-text-muted truncate" title="${safeChar}">${safeChar}</p>
-                            </div>
+            <div class="flex-shrink-0 w-24 text-center cursor-pointer group" onclick="openActorDetails(${c.id})">
+            <img src="${profile}" alt="${safeName}" class="w-20 h-20 rounded-full object-cover mx-auto mb-2 border-2 border-border-color group-hover:border-primary transition-colors">
+                <p class="text-xs font-semibold text-text-main truncate group-hover:text-primary transition-colors" title="${safeName}">${safeName}</p>
+                <p class="text-[10px] text-text-muted truncate" title="${safeChar}">${safeChar}</p>
+            </div>
                         `;
                     }).join('');
                 } else {
@@ -3577,9 +3543,32 @@
                 const overview = details.overview ? details.overview.replace(/</g, "&lt;") : 'No overview available.';
                 const safeTitle = title.replace(/['"]/g, "");
 
+                const isUnreleased = rawDateString ? new Date(rawDateString) > new Date() : false;
+
+                let playButtonHtml = '';
+                if (isUnreleased) {
+                    playButtonHtml = `
+                                <!-- WATCH NOW BUTTON -->
+                                <div class="mb-4 flex items-center gap-4">
+                                    <button id="tmdb-watch-now-btn" disabled class="w-full bg-gray-600 text-gray-300 font-bold py-3 px-8 rounded flex items-center justify-center gap-2 flex-grow cursor-not-allowed">
+                                        <i class="fas fa-clock text-lg"></i> Not yet released
+                                    </button>
+                                </div>
+                    `;
+                } else {
+                    playButtonHtml = `
+                                <!-- WATCH NOW BUTTON -->
+                                <div class="mb-4 flex items-center gap-4">
+                                    <button id="tmdb-watch-now-btn" class="w-full bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_4px_14px_rgba(255,255,255,0.25)] flex items-center justify-center gap-2 flex-grow">
+                                        <i class="fas fa-play text-lg group-hover:scale-110 transition-transform"></i> ${btnText}
+                                    </button>
+                                </div>
+                    `;
+                }
+
                 container.innerHTML = `
                     <div class="w-full h-[300px] md:h-[600px] bg-cover bg-top bg-center relative" style="background-image: url('${backdrop}')">
-                        <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
+                        <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent z-10"></div>
                     </div>
                     <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
                         <div class="flex flex-col md:flex-row gap-8">
@@ -3587,14 +3576,12 @@
                                 <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-arrow-left text-lg mr-2"></i> Back</button>
                                 <img src="${poster}" class="w-[180px] md:w-full mx-auto md:mx-0 hidden md:block rounded shadow-2xl">
                                 
-                                    
-                                <!-- WATCH NOW BUTTON -->
-                                <div class="mb-8 flex items-center gap-4">
-                                    <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${safeTitle}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}', '${overview.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ')}', '${status}', '${genresHtml.replace(/'/g, "\\'")}')" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center"><i class="material-icons">bookmark_add</i></button>
-                                </div>
-                                    <button id="tmdb-watch-now-btn" class="w-full bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 flex-grow">
-                                        <i class="fas fa-play text-lg lg:group-hover:scale-110 transition-transform"></i> ${btnText}
+                                ${playButtonHtml}
+                                <div class="flex flex-row gap-3 w-full" id="tmdb-secondary-btns">
+                                    <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${safeTitle}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}', '${overview.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/ /g, ' ')}', '${status}', '${genresHtml.replace(/'/g, "\\'")}')" class="flex-1 bg-gray-800/80 backdrop-blur-md text-white font-bold py-3 px-4 rounded-full border border-gray-700 hover:bg-gray-700 transition-all flex items-center justify-center gap-2">
+                                        <i class="material-icons text-xl">bookmark_add</i> Watchlist
                                     </button>
+                                </div>
                             </div>
                             <div class="flex-1 pt-4 md:pt-16 min-w-0">
                                 <button onclick="router(appState.lastView || 'home')" class="mb-4 hidden md:block text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-arrow-left text-lg mr-2"></i> Back</button>
@@ -3619,16 +3606,7 @@
                                         <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Production</span><p class="text-text-main text-xs font-medium text-right md:text-left">${details.production_companies?.[0]?.name || 'N/A'}</p></div>
                                         <div class="flex justify-between md:block"><span class="text-text-muted text-xs">Genres</span><p class="text-text-main text-xs font-medium text-right md:text-left">${genresHtml}</p></div>
                                     </div>
-                                    <div class="mb-0 scroll-wrapper">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <h3 class="text-lg font-bold text-text-main mb-0">Cast</h3>
-                                            <div class="flex items-center gap-2 hidden md:flex">
-                                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
-                                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
-                                            </div>
-                                        </div>
-                                        ${castHtml}
-                                    </div>
+                                    <div class="mb-0"><h3 class="text-lg font-bold text-text-main mb-3">Cast</h3><div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin">${castHtml}</div></div>
                                 </div>
                             </div>
                         </div>
@@ -3636,7 +3614,9 @@
                 `;
 
                 updateWatchlistButtonState(id, 'tmdb-watchlist-btn');
-                document.getElementById('tmdb-watch-now-btn').onclick = () => openTMDBPlayer(id, type, resumeSeason, resumeEp);
+                if (!isUnreleased) {
+                    document.getElementById('tmdb-watch-now-btn').onclick = () => openTMDBPlayer(id, type, resumeSeason, resumeEp);
+                }
 
                 const videos = await fetchTMDB(`/${type}/${id}/videos`, {}, false);
                 let trailers = [];
@@ -3647,20 +3627,21 @@
 
                 const trailerBtn = document.createElement('button');
                 if (trailers.length > 0) {
-                    trailerBtn.className = "bg-gray-700/50 text-white font-bold py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2 flex-grow";
+                    trailerBtn.className = "flex-1 bg-gray-700/50 text-white font-bold py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center gap-2 backdrop-blur-md";
                     trailerBtn.innerHTML = '<i class="fab fa-youtube text-red-500 text-lg"></i> Trailer';
                     // Pass the array directly, map if necessary to ensure consistent structure if we use it elsewhere, 
                     // but TMDB result objects {key, name, site} work fine.
                     trailerBtn.onclick = () => openTrailerModal(trailers);
                 } else {
-                    trailerBtn.className = "bg-gray-800/50 text-gray-500 font-bold py-3 px-4 rounded cursor-not-allowed flex items-center justify-center gap-2 flex-grow";
+                    trailerBtn.className = "flex-1 bg-gray-800/50 text-gray-500 font-bold py-3 px-4 rounded cursor-not-allowed flex items-center justify-center gap-2 backdrop-blur-md";
                     trailerBtn.innerHTML = '<i class="fab fa-youtube text-gray-500 text-lg"></i> No Trailer';
                     trailerBtn.disabled = true;
                 }
 
-                // Insert before watchlist button
-                const watchlistBtn = document.getElementById('tmdb-watchlist-btn');
-                watchlistBtn.parentNode.insertBefore(trailerBtn, watchlistBtn);
+                // Insert into secondary buttons row
+                const secContainer = document.getElementById('tmdb-secondary-btns');
+                secContainer.appendChild(trailerBtn);
+
 
             } catch (error) {
                 console.error("Error in openTMDBDetails:", error);
@@ -3721,6 +3702,7 @@
             if (firstVideo) {
                 iframe.src = `https://www.youtube.com/embed/${firstVideo.key}?autoplay=1`;
                 modal.classList.add('open');
+
             }
         }
 
@@ -3729,7 +3711,9 @@
             const iframe = document.getElementById('trailer-iframe');
             iframe.src = '';
             modal.classList.remove('open');
+
         }
+
 
         // NEW: Open TMDB Player View
         async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
@@ -3737,7 +3721,7 @@
                 router('tmdb-player');
                 const container = document.getElementById('tmdb-player-content');
                 // Don't fully clear if we want to preserve state? No, better clear to avoid conflicts.
-                container.innerHTML = '';
+                container.innerHTML = getPlayerSkeleton(type);
                 loader.show();
 
                 const [details, recommendations] = await Promise.all([
@@ -3772,8 +3756,8 @@
 
                     <div class="flex flex-col lg:flex-row gap-6">
                         <!-- Player Container -->
-                        <div class="${type === 'tv' ? 'w-full lg:w-3/4' : 'w-full'} rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8 lg:mb-0">
-                            <div class="bg-white/5 backdrop-blur-md px-4 py-3 flex flex-wrap gap-3 items-center border-b border-white/10 justify-between">
+                        <div class="${type === 'tv' || collectionData ? 'w-full lg:w-3/4' : 'w-full'} rounded overflow-hidden border border-border-color bg-black shadow-xl mb-8 lg:mb-0">
+                            <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
                                 <div class="flex items-center gap-2">
                                     <span class="text-primary font-bold"><i class="fas fa-play-circle mr-2"></i> ${type === 'tv' ? `<span id="tv-player-info">S${startSeason} E${startEpisode}</span>` : ''}</span>
                                 </div>
@@ -3781,61 +3765,49 @@
                             </div>
                             <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
                             ${type === 'tv' ? `
-                            <div class="bg-white/5 backdrop-blur-md px-4 py-3 flex justify-between items-center border-t border-white/10 mt-0 border-x border-b">
-                                <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg scroll-btn border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
-                                <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg scroll-btn border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
+                            <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 border-x border-b">
+                                <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
+                                <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
                             </div>
                             ` : ''}
                         </div>
 
-                         <!-- TV SHOW EPISODES SIDEBAR -->
-                         ${type === 'tv' ? `
-                         <div class="w-full lg:w-1/4 bg-white/5 backdrop-blur-md border border-white/10 rounded overflow-hidden relative min-h-0">
+                        <!-- TV & Movie Right Sidebar -->
+                        <div class="${type === 'tv' || collectionData ? 'w-full lg:w-1/4 bg-card-bg border border-border-color rounded overflow-hidden relative min-h-0' : 'hidden'}">
                             <div class="w-full h-full flex flex-col lg:absolute lg:inset-0">
-                                <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
+                                ${type === 'tv' ? `
+                                <div class="p-3 border-b border-border-color px-4 bg-[#111] flex justify-between items-center flex-shrink-0">
                                      <div class="flex items-center gap-2">
-                                         <h3 class="text-base font-bold text-text-main">Episodes</h3>
+                                         <h3 class="text-base font-extrabold text-white">Episodes</h3>
+                                         <h2 id="tv-season-title" class="text-xs font-normal text-text-muted hidden"></h2>
                                      </div>
-                                     <div class="flex gap-1">
-                                     </div>
-                                     <h2 id="tv-season-title" class="text-xs font-normal text-text-muted hidden"></h2>
+                                     <button id="ep-view-btn" onclick="toggleEpisodeView()" class="w-8 h-8 flex items-center justify-center rounded backdrop-blur-md bg-white/5 border border-white/10 text-text-muted hover:text-white hover:bg-primary hover:border-primary transition-all text-sm shadow-sm" title="Toggle Layout">
+                                         ${appState.episodeViewMode === 'thumbnails' ? '<i class="fas fa-th"></i>' : '<i class="fas fa-list"></i>'}
+                                     </button>
                                 </div>
                                 <div id="tv-episodes-grid" class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full"></div>
                                 
-                                <div id="tv-seasons-container" class="flex-shrink-0 border-t border-white/10 hidden flex-col relative w-full overflow-hidden scroll-wrapper">
+                                <div id="tv-seasons-container" class="flex-shrink-0 border-t border-border-color hidden flex-col relative w-full overflow-hidden scroll-wrapper">
                                     <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                         <h4 class="text-base font-bold text-text-main mb-0">Other Seasons</h4>
-                                        <div class="flex items-center gap-2 hidden md:flex">
-                                            <button onclick="scrollRow(this, -1)" class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center scroll-btn transition-colors border border-white/10"><i class="fas fa-chevron-left text-xs"></i></button>
-                                            <button onclick="scrollRow(this, 1)" class="w-6 h-6 rounded-full bg-dark-bg flex items-center justify-center scroll-btn transition-colors border border-white/10"><i class="fas fa-chevron-right text-xs"></i></button>
-                                        </div>
                                     </div>
-                                    <div id="tv-seasons-list" class="horizontal-scroll-container p-2 custom-scroll bg-black/10 h-full"></div>
+                                    <div id="tv-seasons-list" class="horizontal-scroll-container p-2 custom-scroll bg-black/10 maxh-full overflow-y-auto items-start"></div>
+                                </div>
+                                ` : ''}
+
+                                <div id="tmdb-collection-container" class="flex-shrink-0 ${collectionData ? 'border-t border-border-color' : ''} ${collectionData ? '' : 'hidden'} flex-col relative w-full overflow-hidden scroll-wrapper h-full">
+                                    <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
+                                        <h4 class="text-base font-bold text-text-main mb-0">${collectionData ? collectionData.name : 'Relations'}</h4>
+                                    </div>
+                                    <div id="tmdb-collection-list" class="grid grid-cols-2 gap-3 p-2 md:pb-14 custom-scroll bg-black/10 max-h-full overflow-y-auto items-start"></div>
                                 </div>
                             </div>
                         </div>
-                         ` : ''}
                     </div>
 
-                    <!-- TV SHOW SEASONS & EPISODES CONTAINER REMOVED FROM HERE -->
-
-                    <div id="tmdb-collection-container" class="text-sm space-y-3 scroll-wrapper ${collectionData ? '' : 'hidden'}">
-                        <div class="flex items-center justify-between mb-3 ">
-                            <h4 class="text-lg font-bold text-text-main mb-0">${collectionData ? collectionData.name : 'Relations'}</h4>
-                            <div class="flex items-center gap-2 hidden md:flex">
-                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
-                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
-                            </div>
-                        </div>
-                        <div id="tmdb-collection-list" class="horizontal-scroll-container p-2"></div>
-                    </div>
                     <div class="mt-3 text-sm space-y-3 scroll-wrapper">
                         <div class="flex items-center justify-between mb-3">
                             <h3 id="tmdb-rec-title" class="text-lg font-bold text-text-main mb-0">You may also like</h3>
-                            <div class="flex items-center gap-2 hidden md:flex">
-                                <button onclick="scrollRow(this, -1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-left text-sm"></i></button>
-                                <button onclick="scrollRow(this, 1)" class="w-8 h-8 rounded-full bg-input-bg flex items-center justify-center scroll-btn transition-colors border border-border-color"><i class="fas fa-chevron-right text-sm"></i></button>
-                            </div>
                         </div>
                         <div id="tmdb-recommendations" class="horizontal-scroll-container p-2"></div>
                     </div>
@@ -4009,7 +3981,7 @@
         async function openActorDetails(id) {
             router('actor');
             const container = document.getElementById('actor-content');
-            container.innerHTML = '';
+            container.innerHTML = getDetailsSkeleton();
             loader.show();
 
             const [person, credits, externalIds] = await Promise.all([
@@ -4131,7 +4103,7 @@
         async function openVoiceActorDetails(id) {
             router('actor');
             const container = document.getElementById('actor-content');
-            container.innerHTML = '';
+            container.innerHTML = getDetailsSkeleton();
             loader.show();
 
             const query = `query ($id: Int) {
@@ -4567,15 +4539,44 @@
             appState.continueWatching = appState.continueWatching.filter(i => i.id !== id);
             localStorage.setItem('goStreamContinueWatching', JSON.stringify(appState.continueWatching));
             renderHistory();
-            renderContinueWatching();
             showToast('Item removed from history');
+        }
+
+        let pendingConfirmCallback = null;
+
+        function showConfirmation(title, msg, onConfirm) {
+            const modal = document.getElementById('confirmation-modal');
+            const titleEl = document.getElementById('confirm-title');
+            const msgEl = document.getElementById('confirm-msg');
+            const yesBtn = document.getElementById('confirm-yes');
+
+            titleEl.innerText = title;
+            msgEl.innerText = msg;
+            pendingConfirmCallback = onConfirm;
+
+            yesBtn.onclick = () => {
+                if (pendingConfirmCallback) pendingConfirmCallback();
+                hideConfirmation();
+            };
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-95');
+            modal.querySelector('div').classList.add('scale-100');
+        }
+
+        function hideConfirmation() {
+            const modal = document.getElementById('confirmation-modal');
+            pendingConfirmCallback = null;
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.add('scale-95');
+            modal.querySelector('div').classList.remove('scale-100');
         }
 
         function clearHistory() {
             if (appState.continueWatching.length === 0) return;
-            showConfirmation('Clear History', 'Are you sure you want to clear your entire history?', () => {
+            showConfirmation('Clear History', 'Are you sure you want to clear your entire history? This action cannot be undone.', () => {
                 appState.continueWatching = [];
-                localStorage.setItem('goStreamContinueWatching', JSON.stringify([]));
+                localStorage.removeItem('goStreamContinueWatching');
                 renderHistory();
                 renderContinueWatching();
                 showToast('History cleared');
@@ -4665,7 +4666,7 @@
                     const imgUrl = item.poster ? getPosterUrl(item.poster) : 'https://placehold.co/500x750?text=No+Img';
 
                     const card = document.createElement('div');
-                    card.className = 'movie-card rounded cursor-pointer relative group aspect-[2/3] overflow-hidden'; // Match default card classes
+                    card.className = 'movie-card rounded-xl cursor-pointer relative group aspect-[2/3] overflow-hidden'; // Match default card classes
 
                     // PREPARE HOVER DATA
                     // Use stored data or safe defaults
@@ -4720,7 +4721,7 @@
                             </div>
                             
                             <!-- Hover Play Overlay -->
-                            <div class="absolute inset-0 bg-black/40 opacity-0 lg:group-hover:opacity-100 flex items-center justify-center transition-opacity z-10 pointer-events-none">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-10 pointer-events-none">
                                 <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg"></i>
                             </div>
                      `;
