@@ -34,7 +34,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    screens: { 'nav-bp': '1025px' },
+                    screens: { 'nav-bp': '1024px' },
                     colors: {
                         'primary': 'var(--color-primary)',
                         'dark-bg': 'var(--bg-main)',
@@ -184,6 +184,8 @@
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 1rem;
+            transform: translateZ(0);
+            isolation: isolate;
             /* Rounded-2xl style */
         }
 
@@ -224,14 +226,15 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
             overflow: hidden;
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(10px) translateZ(0);
+            isolation: isolate;
             transition: opacity 0.2s ease-out, transform 0.2s ease-out;
             pointer-events: none;
         }
 
         #global-hover-card.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) translateZ(0);
             pointer-events: auto;
         }
 
@@ -271,6 +274,7 @@
             overflow-x: auto;
             gap: 1rem;
             padding-bottom: 1rem;
+            padding-inline: 4px;
             scroll-behavior: smooth;
         }
 
@@ -520,20 +524,24 @@
 
 <body>
     <div id="global-loader" class="hidden-loader bg-dark-bg z-[9999]">
-        <!-- Sidebar Skeleton (lg only) -->
+        <!-- Navbar Skeleton (lg only) -->
         <div
-            class="hidden lg:flex fixed top-0 left-0 w-64 h-full border-r border-border-color bg-black/60 p-6 flex-col gap-6 animate-pulse z-[10000]">
-            <div class="h-8 w-3/4 bg-white/5 rounded mx-auto mb-6"></div>
-            <div class="h-10 w-full bg-white/5 rounded"></div>
-            <div class="h-10 w-full bg-white/5 rounded"></div>
-            <div class="h-4 w-1/2 bg-white/5 rounded mt-4 mb-2"></div>
-            <div class="h-10 w-full bg-white/5 rounded"></div>
-            <div class="h-10 w-full bg-white/5 rounded"></div>
-            <div class="h-10 w-full bg-white/5 rounded"></div>
+            class="hidden lg:flex fixed top-0 w-full h-20 bg-black/60 backdrop-blur-md border-b border-border-color items-center justify-between px-8 animate-pulse z-[10000]">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-white/5"></div>
+                <div class="w-24 h-6 bg-white/5 rounded"></div>
+            </div>
+            <div class="flex gap-6">
+                <div class="w-16 h-6 bg-white/5 rounded"></div>
+                <div class="w-16 h-6 bg-white/5 rounded"></div>
+                <div class="w-16 h-6 bg-white/5 rounded"></div>
+                <div class="w-16 h-6 bg-white/5 rounded"></div>
+            </div>
+            <div class="w-8 h-8 bg-white/5 rounded-full"></div>
         </div>
 
         <!-- Main Content Skeleton -->
-        <div class="lg:pl-64 w-full h-full flex flex-col p-4 md:p-8 gap-8 animate-pulse pt-20 lg:pt-8 overflow-hidden">
+        <div class="w-full h-full flex flex-col p-4 md:p-8 gap-8 animate-pulse lg:pt-20 overflow-hidden">
             <!-- Banner Skeleton -->
             <div class="w-full h-48 md:h-[50vh] bg-white/5 rounded-2xl flex-shrink-0"></div>
 
@@ -576,90 +584,49 @@
 
 
 
-    <!-- DESKTOP SIDEBAR -->
-    <aside id="sidebar"
-        class="fixed top-0 left-0 z-50 h-screen w-64 bg-black/60 backdrop-blur-xl border-r border-border-color hidden lg:flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
-        <div class="h-16 flex items-center justify-center px-6 border-b border-border-color flex-shrink-0 transition-all duration-300"
-            id="sidebar-header">
-            <a onclick="router('home')" class="cursor-pointer flex items-center gap-2 overflow-hidden">
-                <i class="fas fa-play-circle text-2xl text-primary visible-collapsed hidden"></i>
-                <h1 id="sidebar-logo-text"
-                    class="text-2xl font-extrabold text-white tracking-tight whitespace-nowrap transition-opacity duration-300">
-                    Go<span class="text-primary">Stream</span>
-                </h1>
-            </a>
+    <!-- DESKTOP TOP NAV (Replaced Sidebar) -->
+    <nav id="top-navbar"
+        class="fixed top-0 left-0 right-0 z-[100] h-20 hidden lg:flex items-center justify-between px-8 transition-all duration-300">
+        <!-- Logo -->
+        <a onclick="router('home')" class="cursor-pointer flex items-center gap-2">
+            <div class="bg-primary w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fas fa-play text-white ml-0.5 text-sm"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold text-white tracking-tight">Go<span class="text-primary">Stream</span>
+            </h1>
+        </a>
+
+        <!-- Main Links -->
+        <div class="flex items-center space-x-2">
+            <a onclick="router('home')" data-target="home"
+                class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">Home</a>
+            <a onclick="router('movies')" data-target="movies"
+                class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">Movies</a>
+            <a onclick="router('tv')" data-target="tv"
+                class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">TV
+                Shows</a>
+            <a onclick="router('anime-anilist')" data-target="anime-anilist"
+                class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">Anime</a>
+            <a onclick="router('watchlist')" data-target="watchlist"
+                class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">Library</a>
+            <a onclick="router('history')" data-target="history"
+                class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">History</a>
         </div>
 
-
-
-
-        <button onclick="toggleSidebar()"
-            class="absolute top-1/2 -right-4 -translate-y-1/2 z-50 bg-input-bg rounded p-2 shadow-md hover:text-white hover:bg-gray-700 transition-transform duration-300 transform"
-            id="sidebar-toggle-btn" title="Collapse Sidebar">
-            <i class="fas fa-chevron-left text-lg"></i>
-        </button>
-
-        <div class="flex-1 overflow-y-auto pt-2 px-3 space-y-1 custom-scroll overflow-x-hidden">
-            <a onclick="router('home')" data-target="home" title="Home"
-                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
-                <i
-                    class="fas fa-house w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
-                <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Home</span>
-            </a>
+        <!-- Utilities (Search, Legal) -->
+        <div class="flex items-center space-x-4">
             <a onclick="router('search')" data-target="search" title="Search"
-                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
-                <i
-                    class="fas fa-search w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
-                <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Search</span>
-            </a>
-            <div class="pt-1 mt-2 mb-2 mx-2 transition-all duration-300 uppercase text-text-muted text-xs"
-                id="sidebar-divider">
-                Media</div>
-            <a onclick="router('movies')" data-target="movies" title="Movies"
-                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
-                <i
-                    class="fas fa-clapperboard w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
-                <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Movies</span>
-            </a>
-            <a onclick="router('tv')" data-target="tv" title="TV Shows"
-                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
-                <i
-                    class="fas fa-tv w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
-                <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">TV Shows</span>
-            </a>
-            <a onclick="router('anime-anilist')" data-target="anime-anilist" title="Anime"
-                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
-                <i
-                    class="fas fa-dragon w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
-                <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Anime</span>
-            </a>
-            <a onclick="router('watchlist')" data-target="watchlist" title="Library"
-                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
-                <i
-                    class="fas fa-lines-leaning w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
-                <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Library</span>
-            </a>
-            <a onclick="router('history')" data-target="history" title="History"
-                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
-                <i
-                    class="fas fa-history w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
-                <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">History</span>
-            </a>
-        </div>
-
-        <div class="p-4 border-t border-border-color flex-shrink-0 flex flex-col items-center">
+                class="cursor-pointer text-gray-300 hover:text-white hover:bg-white/10 rounded-full h-10 w-10 flex items-center justify-center transition-colors"><i
+                    class="fas fa-search text-lg"></i></a>
             <a onclick="router('legal')" data-target="legal" title="Legal/DMCA"
-                class="nav-link flex items-center px-3 py-3 text-sm font-bold rounded-lg text-text-muted hover:bg-white/5 hover:text-white transition-all group whitespace-nowrap">
-                <i
-                    class="fas fa-scale-balanced w-8 text-center text-lg group-hover:text-primary transition-colors flex-shrink-0"></i>
-                <span class="sidebar-label transition-opacity duration-300 uppercase ml-2">Legal/DMCA</span>
-            </a>
+                class="cursor-pointer text-gray-300 hover:text-white hover:bg-white/10 rounded-full h-10 w-10 flex items-center justify-center transition-colors"><i
+                    class="fas fa-scale-balanced text-lg"></i></a>
         </div>
-    </aside>
+    </nav>
 
     <!-- MOBILE BOTTOM NAV -->
     <div id="bottom-nav"
-        class="lg:hidden fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-xl border-t border-white/5 z-50 flex justify-around items-center h-[70px] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
+        class="lg:hidden fixed bottom-0 left-0 right-0 bg-black z-50 flex justify-around items-center h-[70px] pb-[env(safe-area-inset-bottom)] transition-all duration-300">
         <button onclick="router('home')" data-target="home" title="Home"
             class="bottom-nav-item flex flex-col items-center justify-center gap-1.5 w-full h-full text-gray-400 hover:text-white transition-all group">
             <i class="fas fa-house group-[.active]:text-primary transition-colors"></i>
@@ -781,21 +748,19 @@
         </div>
     </div>
 
-    <!-- Main Content: Added Padding for Sidebar -->
-    <main id="main-content" class="lg:pl-64 lg:pt-0 pb-24 min-h-screen flex flex-col transition-all duration-300">
+    <!-- Main Content: Top Padding for Nav, except on home banner -->
+    <main id="main-content" class="pb-24 min-h-screen flex flex-col transition-all duration-300 w-full">
         <section id="shared-banner"
-            class="relative h-[50vh] md:h-[65vh] flex items-end p-0 bg-dark-bg transition-all duration-500 hidden overflow-hidden group">
+            class="relative h-[65vh] md:h-[80vh] flex items-end p-0 bg-black transition-all duration-500 hidden overflow-hidden group">
             <!-- Banner Background Layers -->
             <div id="banner-bg-container" class="absolute inset-0">
                 <!-- JS will inject .banner-bg-wrapper divs here -->
             </div>
 
-            <!-- Gradients -->
+            <!-- Gradients based on Cineby (Heavy bottom-to-top fade) -->
+            <div class="absolute inset-0 bg-black/40 z-10 pointer-events-none"></div>
             <div
-                class="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent z-10 pointer-events-none">
-            </div>
-            <div
-                class="absolute inset-0 bg-gradient-to-r from-dark-bg via-dark-bg/60 to-transparent z-10 pointer-events-none">
+                class="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/70 to-transparent z-10 pointer-events-none">
             </div>
 
             <!-- Carousel Controls -->
@@ -808,43 +773,59 @@
             </div>
 
             <!-- Banner Content -->
-            <div class="z-20 w-full max-w-4xl relative p-4 md:p-12 mb-8 md:mb-0 fade-in">
+            <div class="z-20 w-full max-w-5xl relative p-4 md:p-12 mb-8 md:mb-12 fade-in">
                 <div id="banner-content" class="transition-opacity duration-500"></div>
                 <!-- Indicators -->
-                <div id="banner-indicators" class="flex gap-2 mt-6"></div>
+                <div id="banner-indicators" class="flex gap-2 mt-6 hidden"></div>
             </div>
         </section>
 
-
-
         <section id="view-home" class="view-section px-4 sm:px-6 lg:px-8 py-8 space-y-8 hidden">
             <div id="continue-watching-container" class="discovery-row hidden">
-                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center">
-                    <span class="vline"></span>Continue Watching
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 flex items-center">
+                    <span class="border-l-4 border-primary h-6 mr-3"></span>Continue Watching
                     <button onclick="clearHistory()"
                         class="ml-auto text-xs text-text-muted hover:text-primary underline">Clear</button>
                 </h2>
                 <div id="row-continue-watching" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
 
-            <div class="discovery-row">
-                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
-                        class="vline"></span>Trending Now</h2>
+            <div id="top-10-container" class="discovery-row hidden">
+                <h2 class="text-3xl md:text-8xl font-extrabold text-white mb-4 flex items-center">
+                    <span class="text-transparent" style="-webkit-text-stroke: 1.5px #0ea5e9;">TOP 10</span>
+                    <span
+                        class="ml-4 text-sm md:text-lg tracking-widest font-semibold uppercase text-white mt-1">Content
+                        Today</span>
+                </h2>
+                <div id="row-top-10" class="flex overflow-x-auto gap-6 pt-4 pb-12 pl-4 md:pl-12 no-scrollbar"></div>
+            </div>
+
+            <div class="discovery-row hidden">
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 flex items-center"><span
+                        class="border-l-4 border-primary h-6 mr-3"></span>Trending Now</h2>
                 <div id="row-trending" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
             <div class="discovery-row">
-                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
-                        class="vline"></span>Top Rated Movies</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 flex items-center"><span
+                        class="border-l-4 border-primary h-6 mr-3"></span>Top Rated Movies</h2>
                 <div id="row-top-rated" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
             <div class="discovery-row">
-                <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4 flex items-center"><span
-                        class="vline"></span>Popular Action Movies</h2>
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-4 flex items-center"><span
+                        class="border-l-4 border-primary h-6 mr-3"></span>Popular Action Movies</h2>
                 <div id="row-action" class="horizontal-scroll-container pb-4 p-2"></div>
             </div>
         </section>
 
-        <section id="view-movies" class="view-section px-4 mt-8 mb-4 w-full sm:px-6 lg:px-8 hidden">
+        <section id="view-movies" class="view-section px-4 lg:pt-20 mt-8 mb-4 w-full sm:px-6 lg:px-8 hidden">
+            <!-- Breadcrumbs -->
+            <div class="w-full hidden md:flex items-center mb-6 text-sm text-gray-400 fade-in">
+                <a onclick="router('home')" class="cursor-pointer hover:text-white flex items-center transition-colors">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                <span class="text-white font-medium">Movies</span>
+            </div>
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
                         class="vline"></span>Movies<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
@@ -854,7 +835,15 @@
             <div id="pag-movies" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
-        <section id="view-tv" class="view-section px-4 mt-8 mb-4 w-full sm:px-6 lg:px-8 hidden">
+        <section id="view-tv" class="view-section px-4 lg:pt-20 mt-8 mb-4 w-full sm:px-6 lg:px-8 hidden">
+            <!-- Breadcrumbs -->
+            <div class="w-full hidden md:flex items-center mb-6 text-sm text-gray-400 fade-in">
+                <a onclick="router('home')" class="cursor-pointer hover:text-white flex items-center transition-colors">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                <span class="text-white font-medium">TV Shows</span>
+            </div>
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
                         class="vline"></span>TV<sup class="text-xs text-primary ml-2">TMDB</sup></h2>
@@ -864,7 +853,15 @@
             <div id="pag-tv" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
-        <section id="view-anime-anilist" class="view-section hidden w-full px-4 mt-8 mb-4 sm:px-6 lg:px-8">
+        <section id="view-anime-anilist" class="view-section hidden w-full px-4 lg:pt-20 mt-8 mb-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumbs -->
+            <div class="w-full hidden md:flex items-center mb-6 text-sm text-gray-400 fade-in">
+                <a onclick="router('home')" class="cursor-pointer hover:text-white flex items-center transition-colors">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                <span class="text-white font-medium">Anime</span>
+            </div>
             <!-- TABS -->
             <div class="flex items-center space-x-6 mb-6 border-b border-white/10 pb-1">
                 <button onclick="switchAnilistTab('anime')" id="tab-btn-anime"
@@ -948,7 +945,15 @@
             </div>
         </section>
 
-        <section id="view-watchlist" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+        <section id="view-watchlist" class="view-section px-4 sm:px-6 lg:px-8 lg:pt-20 py-8 hidden">
+            <!-- Breadcrumbs -->
+            <div class="w-full hidden md:flex items-center mb-6 text-sm text-gray-400 fade-in">
+                <a onclick="router('home')" class="cursor-pointer hover:text-white flex items-center transition-colors">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                <span class="text-white font-medium">Library</span>
+            </div>
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main mb-4 flex items-center"><span
                         class="vline"></span>Library<sup class="text-xs text-primary ml-2">TMDB | ANILIST</sup></h2>
@@ -956,7 +961,15 @@
             <div id="grid-watchlist" class="results-grid"></div>
         </section>
 
-        <section id="view-history" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+        <section id="view-history" class="view-section px-4 sm:px-6 lg:px-8 lg:pt-20 py-8 hidden">
+            <!-- Breadcrumbs -->
+            <div class="w-full hidden md:flex items-center mb-6 text-sm text-gray-400 fade-in">
+                <a onclick="router('home')" class="cursor-pointer hover:text-white flex items-center transition-colors">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                <span class="text-white font-medium">History</span>
+            </div>
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <h2 class="text-xl md:text-3xl font-bold text-text-main flex items-center"><span
                         class="vline"></span>History</h2>
@@ -979,7 +992,15 @@
             <div id="history-content" class="space-y-8 animate-fade-in"></div>
         </section>
 
-        <section id="view-search" class="view-section px-4 sm:px-6 lg:px-8 py-8 hidden">
+        <section id="view-search" class="view-section px-4 sm:px-6 lg:px-8 lg:pt-20 py-8 hidden">
+            <!-- Breadcrumbs -->
+            <div class="w-full hidden md:flex items-center mb-6 text-sm text-gray-400 fade-in">
+                <a onclick="router('home')" class="cursor-pointer hover:text-white flex items-center transition-colors">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                <span class="text-white font-medium">Search</span>
+            </div>
             <!-- Mobile Search Input (visible on lg:hidden, or always if we want) -->
 
             <div class="relative w-full mb-6">
@@ -992,23 +1013,85 @@
             <div id="pag-search" class="pagination-controls mt-8 flex justify-center gap-2"></div>
         </section>
 
-        <section id="view-tmdb-details" class="view-section hidden w-full">
+        <section id="view-tmdb-details" class="view-section hidden w-full relative">
+            <div
+                class="absolute inset-x-0 top-24 container mx-auto px-4 sm:px-6 lg:px-8 hidden md:flex flex-wrap items-center text-sm text-gray-300 fade-in z-50">
+                <a onclick="router('home')"
+                    class="cursor-pointer hover:text-white flex items-center transition-colors drop-shadow-md">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md"></i>
+                <a id="tmdb-details-category-link"
+                    class="cursor-pointer hover:text-white transition-colors drop-shadow-md shrink-0">Movies</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md"></i>
+                <span class="text-white font-medium drop-shadow-md shrink-0">Details</span>
+
+                <i id="tmdb-details-player-sep"
+                    class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md hidden"></i>
+                <a id="tmdb-details-player-link"
+                    class="cursor-pointer hover:text-white transition-colors drop-shadow-md text-primary font-medium shrink-0 hidden">Player</a>
+            </div>
             <div id="tmdb-details-content" class="animate-fade-in">
                 <!-- Content injected by JS -->
             </div>
         </section>
 
-        <section id="view-tmdb-player" class="view-section hidden w-full">
+        <section id="view-tmdb-player" class="view-section hidden w-full relative">
+            <div
+                class="absolute inset-x-0 top-24 container mx-auto px-4 sm:px-6 lg:px-8 hidden md:flex flex-wrap items-center text-sm text-gray-300 fade-in z-50">
+                <a onclick="router('home')"
+                    class="cursor-pointer hover:text-white flex items-center transition-colors drop-shadow-md">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md"></i>
+                <a id="tmdb-player-category-link"
+                    class="cursor-pointer hover:text-white transition-colors drop-shadow-md shrink-0">Movies</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md"></i>
+                <a id="tmdb-player-details-link"
+                    class="cursor-pointer hover:text-white transition-colors drop-shadow-md shrink-0">Details</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md"></i>
+                <span class="text-white font-medium drop-shadow-md shrink-0">Player</span>
+            </div>
             <div id="tmdb-player-content" class="animate-fade-in">
                 <!-- Content injected by JS -->
             </div>
         </section>
 
-        <section id="view-actor" class="view-section hidden w-full">
-            <div id="actor-content" class="animate-fade-in"></div>
+        <section id="view-actor" class="view-section hidden w-full relative bg-dark-bg">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-24 pb-8 relative">
+                <div class="w-full hidden md:flex flex-wrap items-center mb-6 text-sm text-gray-400 fade-in">
+                    <a onclick="router('home')"
+                        class="cursor-pointer hover:text-white flex items-center transition-colors">
+                        <i class="fas fa-home mr-2 text-primary"></i>Home
+                    </a>
+                    <i id="actor-breadcrumb-sep" class="fas fa-chevron-right text-[10px] mx-3 text-gray-600 hidden"></i>
+                    <a id="actor-breadcrumb-link"
+                        class="cursor-pointer hover:text-white transition-colors shrink-0 hidden">Source</a>
+                    <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                    <span class="text-white font-medium shrink-0">Actor</span>
+                </div>
+                <div id="actor-content" class="animate-fade-in"></div>
+            </div>
         </section>
 
-        <section id="view-anilist-details" class="view-section hidden w-full bg-dark-bg">
+        <section id="view-anilist-details" class="view-section hidden w-full bg-dark-bg relative">
+            <div
+                class="absolute inset-x-0 top-24 container mx-auto px-4 sm:px-6 lg:px-8 hidden md:flex flex-wrap items-center text-sm text-gray-300 fade-in z-50">
+                <a onclick="router('home')"
+                    class="cursor-pointer hover:text-white flex items-center transition-colors drop-shadow-md">
+                    <i class="fas fa-home mr-2 text-primary"></i>Home
+                </a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md"></i>
+                <a onclick="router('anime-anilist')"
+                    class="cursor-pointer hover:text-white transition-colors drop-shadow-md shrink-0">Anime</a>
+                <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md"></i>
+                <span class="text-white font-medium drop-shadow-md shrink-0">Details</span>
+
+                <i id="anilist-details-player-sep"
+                    class="fas fa-chevron-right text-[10px] mx-3 text-gray-400 drop-shadow-md hidden"></i>
+                <a id="anilist-details-player-link"
+                    class="cursor-pointer hover:text-white transition-colors drop-shadow-md text-primary font-medium shrink-0 hidden">Player</a>
+            </div>
             <div id="anilist-details-banner" class="w-full h-[300px] md:h-[400px] bg-cover bg-top bg-center relative">
                 <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent"></div>
             </div>
@@ -1032,8 +1115,8 @@
                         </div>
                         <div class="flex flex-row gap-3 w-full" id="anilist-secondary-btns">
                             <button id="anilist-details-watchlist-btn"
-                                class="flex-1 bg-gray-800/80 backdrop-blur-md text-white font-bold py-3 px-4 rounded-full border border-gray-700 hover:bg-gray-700 transition-all flex items-center justify-center gap-2">
-                                <i class="material-icons text-xl">bookmark_add</i> Watchlist
+                                class="bg-white/10 backdrop-blur-xl border border-white/20 text-white font-semibold flex-1 flex items-center justify-center gap-2 py-2.5 px-6 rounded-md hover:bg-white/20 transition-colors">
+                                <i class="material-icons text-xl">bookmark_add</i>
                             </button>
                         </div>
                     </div>
@@ -1121,7 +1204,21 @@
         </section>
 
         <section id="view-anilist-player" class="view-section hidden w-full bg-dark-bg">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-24 pb-12 relative">
+                <div class="w-full hidden md:flex items-center flex-wrap mb-6 text-sm text-gray-400 fade-in">
+                    <a onclick="router('home')"
+                        class="cursor-pointer hover:text-white flex items-center transition-colors">
+                        <i class="fas fa-home mr-2 text-primary"></i>Home
+                    </a>
+                    <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                    <a onclick="router('anime-anilist')"
+                        class="cursor-pointer hover:text-white transition-colors shrink-0">Anime</a>
+                    <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                    <a id="anilist-player-details-link"
+                        class="cursor-pointer hover:text-white transition-colors shrink-0">Details</a>
+                    <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                    <span class="text-white font-medium shrink-0">Player</span>
+                </div>
                 <button id="anilist-player-back-btn"
                     class="flex items-center gap-3 text-gray-300 mb-4 hover:text-white transition-colors duration-200">
 
@@ -1149,11 +1246,11 @@
                                 src="" frameborder="0" allowfullscreen></iframe></div>
                         <div
                             class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
-                            <button onclick="changeAnilistEp(-1)"
-                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">
+                            <button id="btn-anilist-prev" onclick="changeAnilistEp(-1)"
+                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed">
                                 <i class="fas fa-backward mr-1"></i> Prev</button>
-                            <button onclick="changeAnilistEp(1)"
-                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next
+                            <button id="btn-anilist-next" onclick="changeAnilistEp(1)"
+                                class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed">Next
                                 <i class="fas fa-forward ml-1"></i></button>
                         </div>
                     </div>
@@ -1166,7 +1263,7 @@
                                 <h3 class="text-base font-bold text-text-main">Episodes</h3>
                             </div>
                             <div id="anilist-episodes-grid"
-                                class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full">
+                                class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full touch-pan-y overscroll-contain">
                             </div>
                             <!-- Relations Container moved here -->
                             <div id="anilist-info-Relations-Container"
@@ -1176,7 +1273,7 @@
                                     <h3 class="text-base font-bold text-text-main mb-0">Relations</h3>
                                 </div>
                                 <div id="anilist-info-Relations"
-                                    class="horizontal-scroll-container p-2 custom-scroll bg-black/10 max-h-full items-start">
+                                    class="horizontal-scroll-container p-2 custom-scroll bg-black/10 max-h-full items-start touch-pan-x overscroll-contain">
                                 </div>
                             </div>
                         </div>
@@ -1189,8 +1286,17 @@
             </div>
         </section>
 
-        <section id="view-legal" class="view-section px-4 mt-8 mb-4 w-full sm:px-6 lg:px-8 hidden">
+        <section id="view-legal" class="view-section px-4 mt-8 md:mt-24 mb-4 w-full sm:px-6 lg:px-8 hidden">
             <div class="max-w-4xl mx-auto">
+                <!-- Breadcrumbs -->
+                <div class="w-full hidden md:flex items-center mb-6 text-sm text-gray-400 fade-in">
+                    <a onclick="router('home')"
+                        class="cursor-pointer hover:text-white flex items-center transition-colors">
+                        <i class="fas fa-home mr-2 text-primary"></i>Home
+                    </a>
+                    <i class="fas fa-chevron-right text-[10px] mx-3 text-gray-600"></i>
+                    <span class="text-white font-medium">Legal</span>
+                </div>
                 <h2 class="text-3xl font-extrabold text-white mb-2 flex items-center"><span class="vline"></span>Legal
                     Stuff</h2>
                 <p class="text-text-muted mb-8 text-lg">Third-Party Hosting & Copyright Disclaimer</p>
@@ -1388,20 +1494,36 @@
             }
         };
 
+        window.toggleVolume = function (iframeId, btnId) {
+            const iframe = document.getElementById(iframeId);
+            const btn = document.getElementById(btnId);
+            const icon = btn.querySelector('i');
+
+            if (iframe.dataset.muted === 'false') {
+                iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":[]}', '*');
+                iframe.dataset.muted = 'true';
+                icon.innerText = 'volume_off';
+            } else {
+                iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":[]}', '*');
+                iframe.dataset.muted = 'false';
+                icon.innerText = 'volume_up';
+            }
+        };
+
         /**
          * CORE UTILITIES
          */
         const loader = {
-            count: 0,
+            count: 0, isInitialBoot: true,
             show: () => {
                 loader.count++;
-                document.getElementById('global-loader').classList.remove('hidden-loader');
+                if (loader.isInitialBoot) document.getElementById('global-loader').classList.remove('hidden-loader');
             },
             hide: () => {
                 loader.count--;
                 if (loader.count <= 0) {
                     loader.count = 0;
-                    document.getElementById('global-loader').classList.add('hidden-loader');
+                    if (loader.isInitialBoot) { document.getElementById('global-loader').classList.add('hidden-loader'); loader.isInitialBoot = false; }
                 }
             }
         };
@@ -1428,6 +1550,11 @@
             const aniFrame = document.getElementById('anilist-iframe');
             if (tmdbFrame) tmdbFrame.src = "";
             if (aniFrame) aniFrame.src = "";
+
+            const tmdbBgPlayer = document.getElementById('tmdb-bg-player');
+            if (tmdbBgPlayer) tmdbBgPlayer.src = "";
+            const anilistBgPlayer = document.getElementById('anilist-bg-player');
+            if (anilistBgPlayer) anilistBgPlayer.src = "";
 
             stopBannerRotation();
 
@@ -1819,6 +1946,10 @@
             if (trendingTMDB && trendingTMDB.results) {
                 renderTMDBGrid('row-trending', trendingTMDB.results, null, true);
 
+                // Render Top 10 Content Today
+                document.getElementById('top-10-container').classList.remove('hidden');
+                renderTop10List('row-top-10', trendingTMDB.results.slice(0, 10));
+
                 const now = new Date();
                 const releasedTrending = trendingTMDB.results.filter(item => {
                     const dateStr = item.release_date || item.first_air_date;
@@ -1978,20 +2109,22 @@
 
                 contentDiv.innerHTML = `
                     ${titleHtml}
-                    <div class="flex items-center gap-3 text-sm font-bold text-white mb-4 drop-shadow-md">
-                        <span class="text-primary"><i class="fas fa-star text-xs"></i> ${vote.toFixed(1)}</span>
-                        <span class="w-1 h-4 bg-white/30 rounded-full"></span>
+                    <div class="flex items-center gap-3 text-sm font-medium text-white mb-4 drop-shadow-md">
+                        <span class="text-yellow-500 font-bold"><i class="fas fa-star text-xs"></i> ${vote.toFixed(1)}</span>
+                        <span class="text-gray-500">|</span>
                         <span>${year}</span>
-                        <span class="w-1 h-4 bg-white/30 rounded-full"></span>
-                        <span class="uppercase border border-white/40 px-2 py-0.5 rounded textxs">${type}</span>
+                        <span class="text-gray-500">|</span>
+                        <span>${genresStr}</span>
+                        <span class="text-gray-500">|</span>
+                        <span class="uppercase text-[#0ea5e9]">${type}</span>
                     </div>
-                    <p class="text-gray-200 text-sm md:text-base mb-8 drop-shadow-md line-clamp-3 max-w-2xl text-shadow-sm font-medium leading-relaxed">${desc}</p>
+                    <p class="text-white text-sm md:text-base mb-8 drop-shadow-md line-clamp-3 md:line-clamp-4 max-w-2xl font-medium leading-relaxed">${desc}</p>
                     
-                    <div class="flex gap-4">
-                        <button class="bg-white text-black font-bold py-3 px-8 rounded hover:bg-primary transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center gap-2 group" onclick="openDetailsWrapper(${playParams})">
-                            <i class="fas fa-play text-lg group-hover:scale-110 transition-transform"></i> ${btnText}
+                    <div class="flex gap-4 mt-2">
+                        <button class="bg-white text-black font-semibold py-2.5 px-6 rounded-md hover:bg-gray-200 transition-colors flex items-center gap-2" onclick="openDetailsWrapper(${playParams})">
+                            <i class="fas fa-play text-lg"></i> <span class="capitalize">${btnText}</span>
                         </button>
-                        <button id="banner-watchlist-btn-${item.id}" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center group" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/ /g, ' ')}', '${status}', '${genresStr}')">
+                        <button id="banner-watchlist-btn-${item.id}" class="bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded-md shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center group" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/ /g, ' ')}', '${status}', '${genresStr}')">
                            <i class="material-icons group-hover:text-primary transition-colors">bookmark_add</i>
                         </button>
                     </div>
@@ -2497,7 +2630,34 @@
 
             // Populate Details View
             const bannerUrl = getBackdropUrl(anime.bannerImage || anime.coverImage.extraLarge);
-            document.getElementById('anilist-details-banner').style.backgroundImage = `url(${bannerUrl})`;
+            const bannerEl = document.getElementById('anilist-details-banner');
+
+            const trailerId = (anime.trailer && anime.trailer.site === 'youtube') ? anime.trailer.id : null;
+
+            if (trailerId) {
+                bannerEl.style.backgroundImage = 'none';
+                bannerEl.style.backgroundColor = 'black';
+            } else {
+                bannerEl.style.backgroundImage = `url(${bannerUrl})`;
+                bannerEl.style.backgroundColor = 'transparent';
+            }
+
+            let bannerInnerHtml = `<div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg via-dark-bg/60 to-transparent z-10 pointer-events-none"></div>`;
+
+            if (trailerId) {
+                bannerEl.classList.add('overflow-hidden');
+                bannerInnerHtml += `
+                    <iframe id="anilist-bg-player" class="absolute w-[200%] md:w-full aspect-video top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0" 
+                            src="https://www.youtube.com/embed/${trailerId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${trailerId}&modestbranding=1&enablejsapi=1" 
+                            frameborder="0" allow="autoplay; encrypted-media" data-muted="true" allowfullscreen></iframe>
+                    <button id="anilist-unmute-btn" onclick="toggleVolume('anilist-bg-player', 'anilist-unmute-btn')" class="absolute top-24 right-4 md:top-32 md:right-8 z-50 p-2 md:p-3 bg-black/50 rounded-full text-white pointer-events-auto hover:bg-black/80 transition-colors shadow-lg border border-white/20">
+                        <i class="material-icons text-sm md:text-xl w-4 h-4 md:w-6 md:h-6 flex items-center justify-center">volume_off</i>
+                    </button>
+                `;
+            } else {
+                bannerEl.classList.remove('overflow-hidden');
+            }
+            bannerEl.innerHTML = bannerInnerHtml;
 
             const title = anime.title.english || anime.title.romaji;
             document.getElementById('anilist-details-title').innerText = title;
@@ -2668,9 +2828,28 @@
             const resumeItem = appState.continueWatching.find(i => i.id === id && i.type === 'anime');
             let startEp = 1;
             let btnText = "PLAY NOW";
+            let hasPlayed = false;
             if (resumeItem && resumeItem.episode) {
                 startEp = resumeItem.episode;
                 btnText = `RESUME EP ${startEp}`;
+                hasPlayed = true;
+            } else if (resumeItem) {
+                hasPlayed = true;
+                btnText = "RESUME";
+            }
+
+            const isUnreleased = anime.status === 'NOT_YET_RELEASED';
+
+            // Breadcrumb Logic
+            const sepBtn = document.getElementById('anilist-details-player-sep');
+            const linkBtn = document.getElementById('anilist-details-player-link');
+            if (hasPlayed && !isUnreleased) {
+                sepBtn.classList.remove('hidden');
+                linkBtn.classList.remove('hidden');
+                linkBtn.onclick = () => openAnilistPlayer(id, startEp);
+            } else {
+                sepBtn.classList.add('hidden');
+                linkBtn.classList.add('hidden');
             }
 
             const watchBtn = document.getElementById('anilist-watch-now-btn');
@@ -2814,6 +2993,12 @@
             router('anilist-player');
             const state = appState.anilist;
             const targetId = parseInt(id); // Ensure int
+
+            // Link breadcrumb
+            const detailsLink = document.getElementById('anilist-player-details-link');
+            if (detailsLink) {
+                detailsLink.onclick = () => openAnilistDetails(id);
+            }
 
             // Clear sensitive UI elements immediately to prevent stale data
             document.getElementById('anilist-player-title').innerText = 'Loading...';
@@ -3002,6 +3187,13 @@
                     b.classList.remove('bg-primary', 'text-black', 'font-bold', 'border-primary');
                 }
             });
+
+            // Update next/prev buttons state
+            const prevBtn = document.getElementById('btn-anilist-prev');
+            const nextBtn = document.getElementById('btn-anilist-next');
+            const maxEps = appState.anilist.currentAnime.episodes || 9999;
+            if (prevBtn) prevBtn.disabled = ep <= 1;
+            if (nextBtn) nextBtn.disabled = ep >= maxEps;
         }
 
         function changeAnilistEp(dir) {
@@ -3135,6 +3327,28 @@
             }
         }
 
+        function renderTop10List(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            let html = '';
+            items.forEach((item, index) => {
+                const imgPath = item.poster_path || item.profile_path;
+                if (!imgPath) return;
+                const posterUrl = getPosterUrl(imgPath);
+                const num = index + 1;
+                const type = item.media_type || 'movie';
+
+                html += `
+                <div class="relative flex items-end shrink-0 cursor-pointer group w-[220px] sm:w-[260px] md:w-[300px]" onclick="openDetailsWrapper(${item.id}, '${type}')">
+                    <span class="absolute -left-6 md:-left-10 -bottom-4 md:-bottom-6 text-[100px] sm:text-[140px] md:text-[160px] font-black leading-none z-0 select-none group-hover:scale-105 transition-transform" style="color: transparent; -webkit-text-stroke: 2px #0ea5e9;">${num}</span>
+                    <img src="${posterUrl}" class="w-40 sm:w-48 md:w-56 rounded md:rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.8)] z-10 transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-105 ml-8" />
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
         async function renderTMDBGrid(containerId, items, typeOverride, isHorizontal = false, append = false) {
             const container = document.getElementById(containerId);
             if (!append) container.innerHTML = '';
@@ -3233,7 +3447,7 @@
         function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview, genres, statusText) {
             const card = document.createElement('div');
             const widthClass = isHorizontal ? 'landscape-card' : '';
-            card.className = `movie-card rounded-xl cursor-pointer relative group ${widthClass}`;
+            card.className = `movie-card rounded-md cursor-pointer relative group ${widthClass}`;
 
             const aspectClass = isHorizontal ? 'aspect-video' : 'aspect-[2/3]';
 
@@ -3426,7 +3640,7 @@
                          <button onclick="event.stopPropagation(); openDetailsWrapper(${data.id}, '${data.type}', 1, 1)" class="flex-1 bg-white text-black py-2 rounded text-xs font-bold hover:bg-primary hover:text-black transition-colors flex items-center justify-center gap-2 shadow-sm">
                             <i class="fas fa-play"></i> Watch
                         </button>
-                        <button id="${btnId}" class="px-3 py-2 bg-black/40 border border-white/10 text-white rounded hover:bg-white/10 transition-colors flex items-center justify-center btn-hover-watchlist" title="Add to Library">
+                        <button id="${btnId}" class="px-3 py-2 bg-black/40 border border-white/10 text-white rounded-md hover:bg-white/10 transition-colors flex items-center justify-center btn-hover-watchlist" title="Add to Library">
                             ${isWatchlisted ? '<i class="material-icons text-primary">bookmark_added</i>' : '<i class="material-icons">bookmark_add</i>'}
                         </button>
                     </div>
@@ -3484,23 +3698,43 @@
                 container.innerHTML = getDetailsSkeleton();
                 loader.show();
 
-                const [details, credits] = await Promise.all([
+                const [details, credits, videos, images] = await Promise.all([
                     fetchTMDB(`/${type}/${id}`, {}, false),
-                    fetchTMDB(`/${type}/${id}/credits`, {}, false)
+                    fetchTMDB(`/${type}/${id}/credits`, {}, false),
+                    fetchTMDB(`/${type}/${id}/videos`, {}, false),
+                    fetchTMDB(`/${type}/${id}/images`, { include_image_language: 'en,null' }, false).catch(() => null)
                 ]);
 
                 if (!details) { container.innerHTML = 'Error loading'; loader.hide(); return; }
+
+                let trailerKey = null;
+                if (videos && videos.results) {
+                    const trailer = videos.results.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
+                    if (trailer) trailerKey = trailer.key;
+                }
 
                 // Check history for resume context
                 const historyItem = appState.continueWatching.find(i => i.id === id && i.type === type);
                 let resumeSeason = 1;
                 let resumeEp = 1;
                 let btnText = "PLAY NOW";
+                let hasPlayed = false;
                 if (historyItem && historyItem.season) {
                     resumeSeason = historyItem.season;
                     resumeEp = historyItem.episode;
                     if (type === 'tv') btnText = `RESUME S${resumeSeason} E${resumeEp}`;
                     else btnText = "RESUME";
+                    hasPlayed = true;
+                } else if (historyItem) {
+                    btnText = "RESUME";
+                    hasPlayed = true;
+                }
+
+                // Breadcrumb Category Logic
+                const catLink = document.getElementById('tmdb-details-category-link');
+                if (catLink) {
+                    catLink.innerText = type === 'tv' ? 'TV Shows' : 'Movies';
+                    catLink.onclick = () => router(type === 'tv' ? 'tv' : 'movies');
                 }
 
                 const title = details.title || details.name;
@@ -3543,7 +3777,24 @@
                 const overview = details.overview ? details.overview.replace(/</g, "&lt;") : 'No overview available.';
                 const safeTitle = title.replace(/['"]/g, "");
 
+                let titleOrLogoHtml = `<h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight break-words">${title}</h1>`;
+                if (images && images.logos && images.logos.length > 0) {
+                    titleOrLogoHtml = `<img src="${IMG_URL}${images.logos[0].file_path}" alt="${safeTitle}" class="max-h-20 sm:max-h-24 md:max-h-32 max-w-[90%] sm:max-w-[70%] object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)] mb-4 origin-left">`;
+                }
+
                 const isUnreleased = rawDateString ? new Date(rawDateString) > new Date() : false;
+
+                // Breadcrumb Player Logic
+                const sepBtn = document.getElementById('tmdb-details-player-sep');
+                const pLinkBtn = document.getElementById('tmdb-details-player-link');
+                if (hasPlayed && !isUnreleased) {
+                    sepBtn.classList.remove('hidden');
+                    pLinkBtn.classList.remove('hidden');
+                    pLinkBtn.onclick = () => openTMDBPlayer(id, type, resumeSeason, resumeEp);
+                } else {
+                    sepBtn.classList.add('hidden');
+                    pLinkBtn.classList.add('hidden');
+                }
 
                 let playButtonHtml = '';
                 if (isUnreleased) {
@@ -3566,11 +3817,24 @@
                     `;
                 }
 
-                container.innerHTML = `
-                    <div class="w-full h-[300px] md:h-[600px] bg-cover bg-top bg-center relative" style="background-image: url('${backdrop}')">
-                        <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg to-transparent z-10"></div>
-                    </div>
-                    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-48">
+                let backgroundHtml = `
+                    <div class="w-full h-[300px] md:h-[600px] bg-cover bg-top bg-center relative overflow-hidden" style="${trailerKey ? 'background-color: black;' : `background-image: url('${backdrop}')`}">
+                        <div class="absolute inset-0 md:p-12 bg-gradient-to-t from-dark-bg via-dark-bg/60 to-transparent z-10 pointer-events-none"></div>
+                `;
+                if (trailerKey) {
+                    backgroundHtml += `
+                        <iframe id="tmdb-bg-player" class="absolute w-[200%] md:w-full aspect-video top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0" 
+                                src="https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${trailerKey}&modestbranding=1&enablejsapi=1" 
+                                frameborder="0" allow="autoplay; encrypted-media" data-muted="true" allowfullscreen></iframe>
+                        <button id="tmdb-unmute-btn" onclick="toggleVolume('tmdb-bg-player', 'tmdb-unmute-btn')" class="absolute top-24 right-4 md:top-32 md:right-8 z-50 p-2 md:p-3 bg-black/50 rounded-full text-white pointer-events-auto hover:bg-black/80 transition-colors shadow-lg border border-white/20">
+                            <i class="material-icons text-sm md:text-xl w-4 h-4 md:w-6 md:h-6 flex items-center justify-center">volume_off</i>
+                        </button>
+                    `;
+                }
+                backgroundHtml += `</div>`;
+
+                container.innerHTML = backgroundHtml + `
+                    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-12 -mt-32 md:-mt-96">
                         <div class="flex flex-col md:flex-row gap-8">
                             <div class="w-full md:w-[220px] lg:w-[260px] flex-shrink-0 space-y-4">
                                 <button onclick="router(appState.lastView || 'home')" class="mb-4 block md:hidden text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-arrow-left text-lg mr-2"></i> Back</button>
@@ -3578,8 +3842,8 @@
                                 
                                 ${playButtonHtml}
                                 <div class="flex flex-row gap-3 w-full" id="tmdb-secondary-btns">
-                                    <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${safeTitle}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}', '${overview.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/ /g, ' ')}', '${status}', '${genresHtml.replace(/'/g, "\\'")}')" class="flex-1 bg-gray-800/80 backdrop-blur-md text-white font-bold py-3 px-4 rounded-full border border-gray-700 hover:bg-gray-700 transition-all flex items-center justify-center gap-2">
-                                        <i class="material-icons text-xl">bookmark_add</i> Watchlist
+                                    <button id="tmdb-watchlist-btn" onclick="toggleWatchlist(${id}, '${type}', '${safeTitle}', '${details.poster_path}', 'tmdb-watchlist-btn', ${details.vote_average}, '${releaseDate.split('-')[0]}', '${overview.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/ /g, ' ')}', '${status}', '${genresHtml.replace(/'/g, "\\'")}')" class="bg-white/10 backdrop-blur-xl border border-white/20 text-white font-semibold flex items-center justify-center gap-2 py-2.5 px-6 rounded-md hover:bg-white/20 transition-colors">
+                                        <i class="material-icons text-xl">bookmark_add</i>
                                     </button>
                                 </div>
                             </div>
@@ -3590,7 +3854,7 @@
                                         <span class="px-2 py-0.5 border border-border-color rounded">${releaseDate.split('-')[0]}</span>
                                         <span class="uppercase">${type}</span>
                                     </div>
-                                    <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3 leading-tight">${title}</h1>
+                                    ${titleOrLogoHtml}
                                     <p class="text-gray-400 italic text-sm mb-5">${tagline}</p>
                                     <div class="mb-6">
                                         <h3 class="text-lg font-bold text-text-main mb-2">Overview</h3>
@@ -3618,7 +3882,6 @@
                     document.getElementById('tmdb-watch-now-btn').onclick = () => openTMDBPlayer(id, type, resumeSeason, resumeEp);
                 }
 
-                const videos = await fetchTMDB(`/${type}/${id}/videos`, {}, false);
                 let trailers = [];
                 if (videos && videos.results) {
                     // Filter for YouTube trailers
@@ -3720,6 +3983,18 @@
             try {
                 router('tmdb-player');
                 const container = document.getElementById('tmdb-player-content');
+
+                // Update Breadcrumb Links
+                const catLink = document.getElementById('tmdb-player-category-link');
+                if (catLink) {
+                    catLink.innerText = type === 'tv' ? 'TV Shows' : 'Movies';
+                    catLink.onclick = () => router(type === 'tv' ? 'tv' : 'movies');
+                }
+                const detLink = document.getElementById('tmdb-player-details-link');
+                if (detLink) {
+                    detLink.onclick = () => openTMDBDetails(id, type);
+                }
+
                 // Don't fully clear if we want to preserve state? No, better clear to avoid conflicts.
                 container.innerHTML = getPlayerSkeleton(type);
                 loader.show();
@@ -3748,8 +4023,8 @@
                 const year = (details.release_date || details.first_air_date || '').split('-')[0];
 
                 container.innerHTML = `
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
-                     <button id="tmdb-player-back-btn" onclick="openTMDBDetails(${id}, '${type}')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-20 md:pt-32 pb-12">
+                     <button id="tmdb-player-back-btn" onclick="openTMDBDetails(${id}, '${type}')" class="mb-4 text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium mt-6 md:mt-2">
     <i class="fas fa-arrow-left text-lg mr-2"></i>
     <span class="text-xl md:text-2xl font-extrabold text-white whitespace-nowrap">${title}</span>
 </button>
@@ -3766,8 +4041,8 @@
                             <div class="aspect-video relative bg-black"><iframe id="tmdb-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div>
                             ${type === 'tv' ? `
                             <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color mt-0 border-x border-b">
-                                <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium"><i class="fas fa-backward mr-1"></i> Prev</button>
-                                <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium">Next <i class="fas fa-forward ml-1"></i></button>
+                                <button id="btn-tv-prev" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-backward mr-1"></i> Prev</button>
+                                <button id="btn-tv-next" class="px-4 py-1.5 bg-input-bg hover:bg-primary hover:text-black border border-border-color rounded text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed">Next <i class="fas fa-forward ml-1"></i></button>
                             </div>
                             ` : ''}
                         </div>
@@ -3785,13 +4060,13 @@
                                          ${appState.episodeViewMode === 'thumbnails' ? '<i class="fas fa-th"></i>' : '<i class="fas fa-list"></i>'}
                                      </button>
                                 </div>
-                                <div id="tv-episodes-grid" class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full"></div>
+                                <div id="tv-episodes-grid" class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full touch-pan-y overscroll-contain"></div>
                                 
                                 <div id="tv-seasons-container" class="flex-shrink-0 border-t border-border-color hidden flex-col relative w-full overflow-hidden scroll-wrapper">
                                     <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                         <h4 class="text-base font-bold text-text-main mb-0">Other Seasons</h4>
                                     </div>
-                                    <div id="tv-seasons-list" class="horizontal-scroll-container p-2 custom-scroll bg-black/10 maxh-full overflow-y-auto items-start"></div>
+                                    <div id="tv-seasons-list" class="horizontal-scroll-container p-2 custom-scroll bg-black/10 maxh-full overflow-y-auto items-start touch-pan-x overscroll-contain"></div>
                                 </div>
                                 ` : ''}
 
@@ -3799,7 +4074,7 @@
                                     <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                         <h4 class="text-base font-bold text-text-main mb-0">${collectionData ? collectionData.name : 'Relations'}</h4>
                                     </div>
-                                    <div id="tmdb-collection-list" class="grid grid-cols-2 gap-3 p-2 md:pb-14 custom-scroll bg-black/10 max-h-full overflow-y-auto items-start"></div>
+                                    <div id="tmdb-collection-list" class="grid grid-cols-2 gap-3 p-2 md:pb-14 custom-scroll bg-black/10 max-h-full overflow-y-auto items-start touch-pan-y overscroll-contain"></div>
                                 </div>
                             </div>
                         </div>
@@ -3887,6 +4162,15 @@
                                         window.renderCurrentTMDBEpisodes();
                                     });
 
+                                    // Update Next/Prev Button states
+                                    const prevBtn = document.getElementById('btn-tv-prev');
+                                    const nextBtn = document.getElementById('btn-tv-next');
+                                    if (prevBtn) {
+                                        prevBtn.disabled = !window.currentTMDBEpisodes.find(e => e.episode_number === (ep - 1));
+                                    }
+                                    if (nextBtn) {
+                                        nextBtn.disabled = !window.currentTMDBEpisodes.find(e => e.episode_number === (ep + 1));
+                                    }
                                 };
 
                                 window.renderCurrentTMDBEpisodes();
@@ -3981,6 +4265,31 @@
         async function openActorDetails(id) {
             router('actor');
             const container = document.getElementById('actor-content');
+
+            // Dynamic Breadcrumb Links based on history
+            const sep = document.getElementById('actor-breadcrumb-sep');
+            const link = document.getElementById('actor-breadcrumb-link');
+            if (appState.lastView && appState.lastView !== 'home' && appState.lastView !== 'actor') {
+                let name = 'Back';
+                if (appState.lastView === 'movies') name = 'Movies';
+                else if (appState.lastView === 'tv') name = 'TV Shows';
+                else if (appState.lastView === 'anime-anilist') name = 'Anime';
+                else if (appState.lastView === 'search') name = 'Search Results';
+                else if (appState.lastView === 'tmdb-details' || appState.lastView === 'anilist-details') name = 'Details';
+
+                if (sep && link) {
+                    sep.classList.remove('hidden');
+                    link.classList.remove('hidden');
+                    link.innerText = name;
+                    link.onclick = () => router(appState.lastView);
+                }
+            } else {
+                if (sep && link) {
+                    sep.classList.add('hidden');
+                    link.classList.add('hidden');
+                }
+            }
+
             container.innerHTML = getDetailsSkeleton();
             loader.show();
 
@@ -4055,7 +4364,7 @@
             }
 
             container.innerHTML = `
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="w-full">
                     <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-arrow-left text-lg mr-2"></i> Back</button>
                     
                     <div class="flex flex-col md:flex-row gap-8">
@@ -4103,6 +4412,31 @@
         async function openVoiceActorDetails(id) {
             router('actor');
             const container = document.getElementById('actor-content');
+
+            // Dynamic Breadcrumb Links based on history
+            const sep = document.getElementById('actor-breadcrumb-sep');
+            const link = document.getElementById('actor-breadcrumb-link');
+            if (appState.lastView && appState.lastView !== 'home' && appState.lastView !== 'actor') {
+                let name = 'Back';
+                if (appState.lastView === 'movies') name = 'Movies';
+                else if (appState.lastView === 'tv') name = 'TV Shows';
+                else if (appState.lastView === 'anime-anilist') name = 'Anime';
+                else if (appState.lastView === 'search') name = 'Search Results';
+                else if (appState.lastView === 'tmdb-details' || appState.lastView === 'anilist-details') name = 'Details';
+
+                if (sep && link) {
+                    sep.classList.remove('hidden');
+                    link.classList.remove('hidden');
+                    link.innerText = name;
+                    link.onclick = () => router(appState.lastView);
+                }
+            } else {
+                if (sep && link) {
+                    sep.classList.add('hidden');
+                    link.classList.add('hidden');
+                }
+            }
+
             container.innerHTML = getDetailsSkeleton();
             loader.show();
 
@@ -4186,7 +4520,7 @@
                 : 'Voice Actor';
 
             container.innerHTML = `
-                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="w-full">
                     <button onclick="router(appState.lastView || 'home')" class="mb-6 text-gray-300 hover:text-white flex items-center gap-2 text-lg font-medium"><i class="fas fa-arrow-left text-lg mr-2"></i> Back</button>
                     
                     <div class="flex flex-col md:flex-row gap-8">
@@ -4262,28 +4596,24 @@
             const exists = appState.watchlist.find(i => i.id === id);
 
             const isHoverCard = btnId.startsWith('gh-wl-');
-            const iconClass = isHoverCard ? "material-icons" : "material-icons";
+            const isFullButton = btnId.includes('banner') || btnId.includes('details') || btnId.includes('tmdb');
+            const iconClass = isHoverCard ? "material-icons" : "material-icons text-lg";
 
             if (exists) {
-                btn.innerHTML = `<i class="${iconClass}">bookmark_added</i>`;
-            } else {
-                btn.innerHTML = `<i class="${iconClass}">bookmark_add</i>`;
-                if (btnId.includes('banner')) {
-                    btn.className = "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center";
+                if (isFullButton) {
+                    btn.innerHTML = `<i class="${iconClass}">bookmark_added</i>`;
+                    btn.className = "bg-white/10 backdrop-blur-xl border border-white/20 text-white font-semibold flex items-center justify-center gap-2 py-2.5 px-6 rounded-md hover:bg-white/20 transition-colors" + (btnId.includes('banner') ? "" : " flex");
                 } else {
-                    // This else block seems redundant if the class is already set, but preserving logic
-                    // Actually, if it's NOT banner, it might be hover card or sidebar or details.
-                    // Hover card already has classes set in showHoverCard.
-                    // If we overwrite className here, we might break hover card layout if we are not careful.
-                    // But the original code was: 
-                    // else { btn.className = "bg-gray-700/50 ..."; }
-                    // This looks like it was setting the same class for everything else? 
-                    // Wait, lines 3845-3846 set the SAME class as banner? 
-                    // "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center"
-                    // That class has `p-4` (padding). The hover card button is `px-3 py-2`. 
-                    // If this runs, it will break the hover card button style!
+                    btn.innerHTML = `<i class="${iconClass}">bookmark_added</i>`;
+                }
+            } else {
+                if (isFullButton) {
+                    btn.innerHTML = `<i class="${iconClass}">bookmark_add</i>`;
+                    btn.className = "bg-white/10 backdrop-blur-xl border border-white/20 text-white font-semibold flex items-center justify-center gap-2 py-2.5 px-6 rounded-md hover:bg-white/20 transition-colors" + (btnId.includes('banner') ? "" : " flex");
+                } else {
+                    btn.innerHTML = `<i class="${iconClass}">bookmark_add</i>`;
 
-                    // Let's protect hover card styles from being overwritten
+                    // Protect hover card styles from being overwritten
                     if (!isHoverCard) {
                         btn.className = "bg-gray-700/50 text-white font-bold pt-4 py-3 px-4 rounded shadow-lg hover:bg-gray-600 transition-all flex items-center justify-center";
                     }
@@ -4401,85 +4731,9 @@
         }
 
         /**
-         * SIDEBAR COLLAPSE LOGIC
+         * Top Navbar replaces Sidebar
          */
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const labels = document.querySelectorAll('.sidebar-label');
-            const logoText = document.getElementById('sidebar-logo-text');
-            const logoIcon = document.querySelector('.visible-collapsed');
-            const toggleBtn = document.getElementById('sidebar-toggle-btn');
-            const searchInput = document.getElementById('sidebar-search-input');
-            const navLinks = document.querySelectorAll('#sidebar .nav-link');
-
-            // Current State (check if collapsed)
-            const isCollapsed = sidebar.classList.contains('w-20');
-
-            if (isCollapsed) {
-                // EXPAND
-                sidebar.classList.replace('w-20', 'w-64');
-                mainContent.classList.replace('lg:pl-20', 'lg:pl-64');
-
-                logoText.classList.remove('hidden'); // Remove hidden first
-                requestAnimationFrame(() => {
-                    logoText.classList.remove('opacity-0', 'w-0');
-                    labels.forEach(l => l.classList.remove('opacity-0', 'hidden'));
-                });
-
-                logoIcon.classList.add('hidden');
-                if (searchInput) searchInput.classList.remove('opacity-0', 'pointer-events-none');
-
-                toggleBtn.classList.remove('rotate-180');
-                document.body.classList.remove('sidebar-collapsed');
-                localStorage.setItem('sidebar-collapsed', 'false');
-
-                navLinks.forEach(l => l.classList.remove('justify-center'));
-            } else {
-                // COLLAPSE
-                sidebar.classList.replace('w-64', 'w-20');
-                mainContent.classList.replace('lg:pl-64', 'lg:pl-20');
-
-                labels.forEach(l => l.classList.add('opacity-0', 'hidden'));
-                logoText.classList.add('opacity-0', 'w-0', 'hidden');
-
-                logoIcon.classList.remove('hidden');
-                if (searchInput) searchInput.classList.add('opacity-0', 'pointer-events-none');
-
-                toggleBtn.classList.add('rotate-180');
-                document.body.classList.add('sidebar-collapsed');
-                localStorage.setItem('sidebar-collapsed', 'true');
-
-                navLinks.forEach(l => l.classList.add('justify-center'));
-            }
-        }
-
-        // Init Sidebar State
         window.addEventListener('DOMContentLoaded', () => {
-            try {
-                if (localStorage.getItem('sidebar-collapsed') === 'true') {
-                    const sidebar = document.getElementById('sidebar');
-                    if (sidebar) {
-                        // Disable transitions temporarily
-                        sidebar.classList.add('duration-0');
-                        const mainContent = document.getElementById('main-content');
-                        if (mainContent) mainContent.classList.add('duration-0');
-
-                        toggleSidebar();
-
-                        // Re-enable transitions
-                        requestAnimationFrame(() => {
-                            setTimeout(() => {
-                                sidebar.classList.remove('duration-0');
-                                if (mainContent) mainContent.classList.remove('duration-0');
-                            }, 100);
-                        });
-                    }
-                }
-            } catch (e) {
-                console.warn("Sidebar init warn:", e);
-            }
-
             // Force router home call to be safe
             setTimeout(() => {
                 router('home');
