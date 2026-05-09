@@ -121,24 +121,26 @@
         }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
+        @media (hover: hover) and (pointer: fine) {
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-main);
-        }
+            ::-webkit-scrollbar-track {
+                background: var(--bg-main);
+            }
 
-        ::-webkit-scrollbar-thumb {
-            background: #2D3748;
-            border-radius: 8px;
-            border: 2px solid var(--bg-main);
-            /* Creates a padded look */
-        }
+            ::-webkit-scrollbar-thumb {
+                background: #2D3748;
+                border-radius: 8px;
+                border: 2px solid var(--bg-main);
+                /* Creates a padded look */
+            }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4A5568;
+            ::-webkit-scrollbar-thumb:hover {
+                background: #4A5568;
+            }
         }
 
         /* Selection */
@@ -271,7 +273,6 @@
             gap: 1rem;
             padding-bottom: 1rem;
             padding-inline: 4px;
-            scroll-behavior: smooth;
         }
 
         /* Fade Mask for Horizontal Scroll */
@@ -1263,8 +1264,7 @@
                     </div>
 
                     <!-- Episodes List Container -->
-                    <div
-                        class="w-full lg:w-1/4 bg-card-bg border border-border-color rounded overflow-hidden relative min-h-0">
+                    <div class="w-full lg:w-1/4 bg-card-bg border border-border-color rounded relative min-h-0">
                         <div class="w-full h-full flex flex-col lg:absolute lg:inset-0">
                             <div class="p-3 border-b border-border-color bg-input-bg flex-shrink-0">
                                 <h3 class="text-base font-bold text-text-main">Episodes</h3>
@@ -1274,7 +1274,7 @@
                             </div>
                             <!-- Relations Container moved here -->
                             <div id="anilist-info-Relations-Container"
-                                class="flex-shrink-0 border-t border-border-color hidden flex-col relative w-full overflow-hidden scroll-wrapper">
+                                class="flex-shrink-0 border-t border-border-color hidden flex-col relative w-full scroll-wrapper">
                                 <div
                                     class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                     <h3 class="text-base font-bold text-text-main mb-0">Relations</h3>
@@ -1400,20 +1400,22 @@
 
         const MOVIE_SOURCES = [
             // { name: '1', url: (id) => `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=true` },
-            { name: '1', url: (id) => `https://vidsrc-embed.ru/embed/movie/${id}?autoplay=1&ds_lang=en` },
-            { name: '2', url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
-            { name: '3', url: (id) => `https://vidlink.pro/movie/${id}` },
-            { name: '4', url: (id) => `https://111movies.com/movie/${id}` },
-            { name: '5', url: (id) => `https://vidrock.net/movie/${id}?autoplay=true&download=false` },
+            { name: '0', url: (id) => `https://vaplayer.ru/embed/movie/${id}?skin=netflix&color=6366f1&secondaryColor=6366f1&iconColor=6366f1` },
+            { name: '1', url: (id) => `https://vidsrc-embed.ru/embed/movie/${id}?ds_lang=en` },
+            { name: '2', url: (id) => `https://vidrock.net/movie/${id}?autoplay=true&download=false&lang=en` },
+            { name: '3', url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
+            { name: '4', url: (id) => `https://vidlink.pro/movie/${id}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&title=true&poster=true&autoplay=true` },
+            { name: '5', url: (id) => `https://111movies.com/movie/${id}` },
             { name: '6', url: (id) => `https://player.videasy.net/movie/${id}?color=B20710&colour=B20710&autoPlay=true&primarycolor=B20710&autoNext=true&nextButton=true&poster=true&autoplayNextEpisode=true&nextEpisode=true&adFree=true` }
         ];
 
         const TV_SOURCES = [
+            { name: '0', url: (id, s, e) => `https://vaplayer.ru/embed/tv/${id}/${s}/${e}?skin=netflix&color=6366f1&secondaryColor=6366f1&iconColor=6366f1` },
             { name: '1', url: (id, s, e) => `https://vidsrc-embed.ru/embed/tv/${id}/${s}/${e}?autoplay=1&ds_lang=en` },
-            { name: '2', url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
-            { name: '3', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?title=true&poster=true&autoplay=true&nextbutton=true` },
-            { name: '4', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` },
-            { name: '5', url: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}?autoplay=true&download=false&episodeselector=false&enlang` },
+            { name: '2', url: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}?autoplay=true&download=false&episodeselector=false&lang=en` },
+            { name: '3', url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
+            { name: '4', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=false` },
+            { name: '5', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` },
             { name: '6', url: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}?color=B20710&colour=B20710&autoPlay=true&primarycolor=B20710&autoNext=true&nextButton=true&poster=true&autoplayNextEpisode=true&nextEpisode=true&adFree=true` }
         ];
 
@@ -3932,7 +3934,7 @@
                         </div>
 
                         <!-- TV & Movie Right Sidebar -->
-                        <div class="${type === 'tv' || collectionData ? 'w-full lg:w-1/4 bg-card-bg border border-border-color rounded overflow-hidden relative min-h-0' : 'hidden'}">
+                        <div class="${type === 'tv' || collectionData ? 'w-full lg:w-1/4 bg-card-bg border border-border-color rounded relative min-h-0' : 'hidden'}">
                             <div class="w-full h-full flex flex-col lg:absolute lg:inset-0">
                                 ${type === 'tv' ? `
                                 <div class="p-3 border-b border-border-color px-4 bg-[#111] flex justify-between items-center flex-shrink-0">
@@ -3946,7 +3948,7 @@
                                 </div>
                                 <div id="tv-episodes-grid" class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full"></div>
                                 
-                                <div id="tv-seasons-container" class="flex-shrink-0 border-t border-border-color hidden flex-col relative w-full overflow-hidden scroll-wrapper">
+                                <div id="tv-seasons-container" class="flex-shrink-0 border-t border-border-color hidden flex-col relative w-full scroll-wrapper">
                                     <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                         <h4 class="text-base font-bold text-text-main mb-0">Other Seasons</h4>
                                     </div>
@@ -3954,7 +3956,7 @@
                                 </div>
                                 ` : ''}
 
-                                <div id="tmdb-collection-container" class="flex-shrink-0 ${collectionData ? 'border-t border-border-color' : ''} ${collectionData ? '' : 'hidden'} flex-col relative w-full overflow-hidden scroll-wrapper h-full">
+                                <div id="tmdb-collection-container" class="flex-shrink-0 ${collectionData ? 'border-t border-border-color' : ''} ${collectionData ? '' : 'hidden'} flex-col relative w-full scroll-wrapper h-full">
                                     <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                         <h4 class="text-base font-bold text-text-main mb-0">${collectionData ? collectionData.name : 'Relations'}</h4>
                                     </div>
