@@ -1270,7 +1270,7 @@
                                 <h3 class="text-base font-bold text-text-main">Episodes</h3>
                             </div>
                             <div id="anilist-episodes-grid"
-                                class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full overscroll-contain">
+                                class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full">
                             </div>
                             <!-- Relations Container moved here -->
                             <div id="anilist-info-Relations-Container"
@@ -1280,7 +1280,7 @@
                                     <h3 class="text-base font-bold text-text-main mb-0">Relations</h3>
                                 </div>
                                 <div id="anilist-info-Relations"
-                                    class="horizontal-scroll-container p-2 custom-scroll bg-[#020617]/10 max-h-full items-start overscroll-contain">
+                                    class="horizontal-scroll-container p-2 custom-scroll bg-[#020617]/10 max-h-full items-start">
                                 </div>
                             </div>
                         </div>
@@ -3944,13 +3944,13 @@
                                          ${appState.episodeViewMode === 'thumbnails' ? '<i class="ph ph-grid-nine"></i>' : '<i class="ph ph-list"></i>'}
                                      </button>
                                 </div>
-                                <div id="tv-episodes-grid" class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full overscroll-contain"></div>
+                                <div id="tv-episodes-grid" class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 content-start max-h-96 lg:max-h-full"></div>
                                 
                                 <div id="tv-seasons-container" class="flex-shrink-0 border-t border-border-color hidden flex-col relative w-full overflow-hidden scroll-wrapper">
                                     <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                         <h4 class="text-base font-bold text-text-main mb-0">Other Seasons</h4>
                                     </div>
-                                    <div id="tv-seasons-list" class="horizontal-scroll-container p-2 custom-scroll bg-[#020617]/10 max-h-full items-start overscroll-contain"></div>
+                                    <div id="tv-seasons-list" class="horizontal-scroll-container p-2 custom-scroll bg-[#020617]/10 max-h-full items-start"></div>
                                 </div>
                                 ` : ''}
 
@@ -3958,7 +3958,7 @@
                                     <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
                                         <h4 class="text-base font-bold text-text-main mb-0">${collectionData ? collectionData.name : 'Relations'}</h4>
                                     </div>
-                                    <div id="tmdb-collection-list" class="grid grid-cols-2 gap-3 p-2 md:pb-14 custom-scroll bg-[#020617]/10 max-h-full overflow-y-auto items-start overscroll-contain"></div>
+                                    <div id="tmdb-collection-list" class="grid grid-cols-2 gap-3 p-2 md:pb-14 custom-scroll bg-[#020617]/10 max-h-full overflow-y-auto items-start"></div>
                                 </div>
                             </div>
                         </div>
