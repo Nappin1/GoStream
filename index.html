@@ -86,7 +86,8 @@
             user-select: none;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
-            overflow-x: hidden;
+            overflow-x: clip; /* clip instead of hidden to prevent iOS vertical scroll bug */
+            -webkit-overflow-scrolling: touch;
         }
 
         button {
@@ -273,6 +274,11 @@
             gap: 1rem;
             padding-bottom: 1rem;
             padding-inline: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .custom-scroll {
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Fade Mask for Horizontal Scroll */
