@@ -17,14 +17,10 @@ body {
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
-    -webkit-user-select: none;
-    user-select: none;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
-    overflow-x: clip;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
     font-size: 16px;
-    /* Optimal reading size for mobile */
 }
 
 button,
@@ -36,6 +32,17 @@ input {
     -webkit-tap-highlight-color: transparent;
     min-height: 44px;
     /* Accessible mobile tap target */
+}
+
+/* Prevent text selection on cards and nav — but NOT on scroll containers */
+.movie-card,
+.nav-link,
+.bottom-nav-item,
+.filter-pill,
+.filter-toggle-btn,
+.server-toggle-btn {
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 button:focus {
@@ -186,16 +193,52 @@ button:focus {
 .horizontal-scroll-container {
     display: flex;
     overflow-x: auto;
+    overflow-y: hidden;
     gap: 1rem;
     padding-top: 1rem;
     padding-bottom: 1.5rem;
     padding-inline: 8px;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
+    /* Let browser handle touch direction naturally — don't restrict touch-action */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.horizontal-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Restore visible scrollbar on desktop pointer devices */
+@media (hover: hover) and (pointer: fine) {
+    .horizontal-scroll-container {
+        scrollbar-width: thin;
+        scrollbar-color: #444 var(--bg-input);
+    }
+
+    .horizontal-scroll-container::-webkit-scrollbar {
+        display: block;
+        height: 6px;
+    }
+
+    .horizontal-scroll-container::-webkit-scrollbar-track {
+        background: var(--bg-input);
+        border-radius: 4px;
+    }
+
+    .horizontal-scroll-container::-webkit-scrollbar-thumb {
+        background: #444;
+        border-radius: 4px;
+    }
+
+    .horizontal-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
 }
 
 .custom-scroll {
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
 .mask-linear-fade {
@@ -235,10 +278,16 @@ button:focus {
 }
 
 /* ============================================================
-   FILTER BAR
+   FILTER BAR & MODAL
    ============================================================ */
 
-/* Toggle button that shows/hides the filter pills */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* The single toggle button */
 .filter-toggle-btn {
     display: inline-flex;
     align-items: center;
@@ -253,6 +302,8 @@ button:focus {
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.18s ease;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .filter-toggle-btn:hover,
@@ -266,141 +317,92 @@ button:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
+    min-width: 18px;
     height: 18px;
-    border-radius: 50%;
+    padding: 0 4px;
+    border-radius: 9999px;
     background: var(--color-primary);
     color: #000;
     font-size: 0.65rem;
     font-weight: 800;
-    line-height: 1;
 }
 
-/* Pills panel — hidden by default, shown when .open */
-.filter-bar {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-}
-
-.filter-pills-panel {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.3s ease, opacity 0.25s ease;
-    pointer-events: none;
-}
-
-.filter-pills-panel.open {
-    max-height: 300px;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.filter-pill {
+/* Active filter chip shown next to button */
+.filter-chip {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.filter-chip:hover {
+    background: rgba(99, 102, 241, 0.25);
+}
+
+.filter-chip i {
+    font-size: 0.6rem;
+    opacity: 0.8;
+}
+
+/* Filter modal — group label */
+.filter-group-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+/* Filter option grid */
+.filter-options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Each option button */
+.filter-option-btn {
+    padding: 7px 14px;
     border-radius: 9999px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04);
     color: var(--text-muted);
     font-size: 0.78rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.15s ease;
     white-space: nowrap;
-    transition: all 0.18s ease;
+    -webkit-user-select: none;
     user-select: none;
-    position: relative;
 }
 
-.filter-pill:hover {
+.filter-option-btn:hover {
     border-color: rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.08);
     color: white;
 }
 
-.filter-pill.active {
-    background: rgba(99, 102, 241, 0.18);
+.filter-option-btn.selected {
+    background: rgba(99, 102, 241, 0.2);
     border-color: var(--color-primary);
     color: var(--color-primary);
+    font-weight: 600;
 }
 
-.filter-pill .pill-caret {
-    font-size: 0.65rem;
-    opacity: 0.7;
-    transition: transform 0.2s;
-}
-
-.filter-pill.open .pill-caret {
-    transform: rotate(180deg);
-}
-
-/* Dropdown panel */
-.filter-dropdown {
-    position: fixed;
-    min-width: 180px;
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
-    z-index: 9999;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(-6px) scale(0.97);
-    pointer-events: none;
-    transition: opacity 0.18s ease, transform 0.18s ease;
-    max-height: 260px;
-    overflow-y: auto;
-}
-
-.filter-dropdown.open {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-}
-
-.filter-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 14px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-}
-
-.filter-dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: white;
-}
-
-.filter-dropdown-item.selected {
-    color: var(--color-primary);
-    background: rgba(99, 102, 241, 0.1);
-}
-
-.filter-dropdown-item .check-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    flex-shrink: 0;
-    opacity: 0;
-    transition: opacity 0.15s;
-}
-
-.filter-dropdown-item.selected .check-dot {
-    opacity: 1;
-}
+/* border-white/8 helper */
+.border-white\/8 { border-color: rgba(255,255,255,0.08); }
 
 /* ============================================================
    SERVER SELECTOR
@@ -556,26 +558,6 @@ button:focus {
     .scrollbar-hide {
         -ms-overflow-style: none;
         scrollbar-width: none;
-    }
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .horizontal-scroll-container::-webkit-scrollbar {
-        height: 8px;
-    }
-
-    .horizontal-scroll-container::-webkit-scrollbar-track {
-        background: var(--bg-input);
-        border-radius: 4px;
-    }
-
-    .horizontal-scroll-container::-webkit-scrollbar-thumb {
-        background: #444;
-        border-radius: 4px;
-    }
-
-    .horizontal-scroll-container::-webkit-scrollbar-thumb:hover {
-        background: #555;
     }
 }
 
