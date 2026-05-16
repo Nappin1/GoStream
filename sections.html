@@ -1,0 +1,366 @@
+<!-- ============================================================
+     SHARED BANNER
+     ============================================================ -->
+<section id="shared-banner"
+    class="relative h-[65vh] md:h-[80vh] flex items-end p-0 bg-[#020617] transition-all duration-500 hidden overflow-hidden group">
+    <div id="banner-bg-container" class="absolute inset-0"></div>
+    <div class="absolute inset-0 bg-[#020617]/40 z-10 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/70 to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute inset-0 z-30 flex justify-between items-center px-4 md:px-8 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <button onclick="prevBanner()" class="carousel-btn pointer-events-auto"><i class="ph ph-caret-left"></i></button>
+        <button onclick="nextBanner()" class="carousel-btn pointer-events-auto"><i class="ph ph-caret-right"></i></button>
+    </div>
+    <div class="z-20 w-full max-w-5xl relative p-4 md:p-12 mb-8 md:mb-12 fade-in">
+        <div id="banner-content" class="transition-opacity duration-500"></div>
+        <div id="banner-indicators" class="flex gap-2 mt-6 hidden"></div>
+    </div>
+</section>
+
+<!-- ============================================================
+     HOME
+     ============================================================ -->
+<section id="view-home"
+    class="view-section max-w-[1440px] mx-auto w-full px-6 sm:px-8 lg:px-12 py-8 space-y-8 hidden">
+    <div id="continue-watching-container" class="discovery-row hidden">
+        <h2 class="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center">
+            <span class="border-l-4 border-primary h-6 mr-3"></span>Continue Watching
+            <button onclick="clearHistory()" class="ml-auto text-xs text-text-muted hover:text-primary underline">Clear</button>
+        </h2>
+        <div id="row-continue-watching" class="horizontal-scroll-container pb-4 p-2"></div>
+    </div>
+    <div id="top-10-container" class="discovery-row hidden">
+        <h2 class="text-3xl md:text-8xl font-extrabold text-white mb-4 flex items-center">
+            <span class="text-transparent" style="-webkit-text-stroke: 1.5px #0ea5e9;">TOP 10</span>
+            <span class="ml-4 text-sm md:text-lg tracking-widest font-semibold uppercase text-white mt-1">Content Today</span>
+        </h2>
+        <div id="row-top-10" class="flex overflow-x-auto gap-6 pt-4 pb-12 px-4 md:px-12 no-scrollbar overscroll-x-contain"></div>
+    </div>
+    <div class="discovery-row hidden">
+        <h2 class="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center">
+            <span class="border-l-4 border-primary h-6 mr-3"></span>Trending Now
+        </h2>
+        <div id="row-trending" class="horizontal-scroll-container pb-4 p-2"></div>
+    </div>
+    <div class="discovery-row">
+        <h2 class="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center">
+            <span class="border-l-4 border-primary h-6 mr-3"></span>Top Rated Movies
+        </h2>
+        <div id="row-top-rated" class="horizontal-scroll-container pb-4 p-2"></div>
+    </div>
+    <div class="discovery-row">
+        <h2 class="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center">
+            <span class="border-l-4 border-primary h-6 mr-3"></span>Popular Action Movies
+        </h2>
+        <div id="row-action" class="horizontal-scroll-container pb-4 p-2"></div>
+    </div>
+</section>
+
+<!-- ============================================================
+     MOVIES
+     ============================================================ -->
+<section id="view-movies"
+    class="view-section max-w-[1440px] mx-auto w-full px-4 lg:pt-20 mt-8 mb-4 sm:px-6 lg:px-8 hidden">
+    <div class="flex flex-row items-center justify-between mb-6 gap-3">
+        <h2 class="text-xl md:text-3xl font-extrabold text-text-main flex items-center shrink-0">
+            <span class="vline"></span>Movies<sup class="text-xs text-primary ml-2">TMDB</sup>
+        </h2>
+        <div id="movies-filters" class="filter-bar"></div>
+    </div>
+    <div id="grid-movies" class="results-grid"></div>
+    <div id="pag-movies" class="pagination-controls mt-8 flex justify-center gap-2"></div>
+</section>
+
+<!-- ============================================================
+     TV SHOWS
+     ============================================================ -->
+<section id="view-tv"
+    class="view-section max-w-[1440px] mx-auto w-full px-4 lg:pt-20 mt-8 mb-4 sm:px-6 lg:px-8 hidden">
+    <div class="flex flex-row items-center justify-between mb-6 gap-3">
+        <h2 class="text-xl md:text-3xl font-extrabold text-text-main flex items-center shrink-0">
+            <span class="vline"></span>TV Shows<sup class="text-xs text-primary ml-2">TMDB</sup>
+        </h2>
+        <div id="tv-filters" class="filter-bar"></div>
+    </div>
+    <div id="grid-tv" class="results-grid"></div>
+    <div id="pag-tv" class="pagination-controls mt-8 flex justify-center gap-2"></div>
+</section>
+
+<!-- ============================================================
+     ANIME
+     ============================================================ -->
+<section id="view-anime-anilist"
+    class="view-section max-w-[1440px] mx-auto w-full hidden px-4 lg:pt-20 mt-8 mb-4 sm:px-6 lg:px-8">
+    <!-- Tabs -->
+    <div class="flex items-center space-x-6 mb-6 border-b border-white/10 pb-1">
+        <button onclick="switchAnilistTab('anime')" id="tab-btn-anime"
+            class="text-lg font-bold text-primary border-b-2 border-primary pb-2 transition-colors">Anime</button>
+        <button onclick="switchAnilistTab('va')" id="tab-btn-va"
+            class="text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors">Voice Actors</button>
+    </div>
+
+    <!-- Tab: Anime -->
+    <div id="anilist-tab-anime" class="flex flex-col min-[1025px]:flex-row gap-6">
+        <!-- Left Sidebar: Top 10 Airing -->
+        <div class="w-full min-[1025px]:w-64 flex-shrink-0 order-2 min-[1025px]:order-1">
+            <h3 class="text-lg font-bold text-primary mb-4 border-l-4 border-primary pl-3">Top 10 Airing</h3>
+            <div id="anilist-top-airing" class="space-y-4">
+                <div class="animate-pulse space-y-4">
+                    <div class="h-16 bg-white/5 rounded"></div>
+                    <div class="h-16 bg-white/5 rounded"></div>
+                    <div class="h-16 bg-white/5 rounded"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Center: Main Grid -->
+        <div class="flex-grow min-w-0 order-1 min-[1025px]:order-2">
+            <div class="flex flex-row items-center justify-between mb-6 gap-3">
+                <h2 class="text-xl md:text-3xl font-extrabold text-text-main flex items-center shrink-0">
+                    <span class="vline"></span>Anime<sup class="text-xs text-primary ml-2">ANILIST</sup>
+                </h2>
+                <div id="anilist-filters" class="filter-bar"></div>
+            </div>
+            <div id="grid-anilist" class="results-grid"></div>
+            <div id="pag-anilist" class="pagination-controls mt-8 flex justify-center gap-2">
+                <button onclick="changeAnilistPage(-1)"
+                    class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold">
+                    <i class="ph ph-caret-left"></i>
+                </button>
+                <span id="anilist-page-num" class="px-3 py-1 text-primary font-bold">1</span>
+                <button onclick="changeAnilistPage(1)"
+                    class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold">
+                    <i class="ph ph-caret-right"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Right Sidebar: Top 10 Popular -->
+        <div class="w-full min-[1025px]:w-64 flex-shrink-0 order-3">
+            <h3 class="text-lg font-bold text-primary mb-4 border-l-4 border-primary pl-3">Top 10 Most Popular</h3>
+            <div id="anilist-top-popular" class="space-y-4">
+                <div class="animate-pulse space-y-4">
+                    <div class="h-16 bg-white/5 rounded"></div>
+                    <div class="h-16 bg-white/5 rounded"></div>
+                    <div class="h-16 bg-white/5 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Voice Actors -->
+    <div id="anilist-tab-va" class="hidden w-full">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <h2 class="text-xl md:text-3xl font-extrabold text-text-main flex items-center">
+                <span class="vline"></span>Voice Actors<sup class="text-xs text-primary ml-2">ANILIST</sup>
+            </h2>
+            <div class="relative w-full md:w-64">
+                <input id="va-search-input" type="text" placeholder="Search Voice Actors..."
+                    class="bg-input-bg border border-border-color text-text-main text-sm rounded-md py-2 pl-8 pr-3 w-full focus:outline-none focus:border-primary transition-colors">
+                <i class="ph ph-magnifying-glass text-text-muted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+            </div>
+        </div>
+        <div id="grid-anilist-va" class="results-grid"></div>
+        <div id="pag-anilist-va" class="pagination-controls mt-8 flex justify-center gap-2">
+            <button onclick="changeAnilistVAPage(-1)"
+                class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold">
+                <i class="ph ph-caret-left"></i>
+            </button>
+            <span id="anilist-va-page-num" class="px-3 py-1 text-primary font-bold">1</span>
+            <button onclick="changeAnilistVAPage(1)"
+                class="px-3 py-1 bg-card-bg border border-border-color text-text-main rounded md:hover:bg-primary md:hover:text-black font-bold">
+                <i class="ph ph-caret-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     LIBRARY (WATCHLIST)
+     ============================================================ -->
+<section id="view-watchlist"
+    class="view-section max-w-[1440px] mx-auto w-full px-6 sm:px-8 lg:px-12 lg:pt-20 py-8 hidden">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <h2 class="text-xl md:text-3xl font-extrabold text-text-main mb-4 flex items-center">
+            <span class="vline"></span>Library<sup class="text-xs text-primary ml-2">TMDB | ANILIST</sup>
+        </h2>
+    </div>
+    <div id="grid-watchlist" class="results-grid"></div>
+</section>
+
+<!-- ============================================================
+     HISTORY
+     ============================================================ -->
+<section id="view-history"
+    class="view-section max-w-[1440px] mx-auto w-full px-6 sm:px-8 lg:px-12 lg:pt-20 py-8 hidden">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <h2 class="text-xl md:text-3xl font-extrabold text-text-main flex items-center">
+            <span class="vline"></span>History
+        </h2>
+    </div>
+    <div class="flex items-center space-x-6 mb-8 border-b border-white/10 pb-1 overflow-x-auto scrollbar-hide">
+        <button onclick="switchHistoryTab('all')" id="hist-tab-all"
+            class="text-sm md:text-lg font-bold text-primary border-b-2 border-primary pb-2 transition-colors whitespace-nowrap">All Content</button>
+        <button onclick="switchHistoryTab('movie')" id="hist-tab-movie"
+            class="text-sm md:text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors whitespace-nowrap">Movies</button>
+        <button onclick="switchHistoryTab('tv')" id="hist-tab-tv"
+            class="text-sm md:text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors whitespace-nowrap">TV Shows</button>
+        <button onclick="switchHistoryTab('anime')" id="hist-tab-anime"
+            class="text-sm md:text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors whitespace-nowrap">Anime</button>
+    </div>
+    <div id="history-content" class="space-y-8 animate-fade-in"></div>
+</section>
+
+<!-- ============================================================
+     SEARCH
+     ============================================================ -->
+<section id="view-search"
+    class="view-section max-w-[1440px] mx-auto w-full px-6 sm:px-8 lg:px-12 lg:pt-20 py-8 hidden">
+    <div class="relative w-full mb-6">
+        <input id="mobile-search-input" type="text" placeholder="Search movies, tv, people..."
+            class="w-full bg-input-bg/80 backdrop-blur-sm border border-border-color text-black text-sm rounded-full py-3 pl-10 pr-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-sm">
+        <i class="ph ph-magnifying-glass absolute left-4 top-3.5 text-text-muted text-sm pointer-events-none"></i>
+    </div>
+    <h2 id="search-header" class="text-2xl font-bold text-text-main mb-6">Search Results</h2>
+    <div id="grid-search" class="results-grid"></div>
+    <div id="pag-search" class="pagination-controls mt-8 flex justify-center gap-2"></div>
+</section>
+
+
+<!-- ============================================================
+     TMDB PLAYER
+     ============================================================ -->
+<section id="view-tmdb-player" class="view-section max-w-[1440px] mx-auto w-full hidden relative">
+    <div id="tmdb-player-content" class="animate-fade-in"></div>
+</section>
+
+<!-- ============================================================
+     ACTOR
+     ============================================================ -->
+<section id="view-actor" class="view-section max-w-[1440px] mx-auto w-full hidden relative bg-dark-bg">
+    <div class="container mx-auto px-6 sm:px-8 lg:px-12 pt-4 md:pt-24 pb-8 relative">
+        <div id="actor-content" class="animate-fade-in"></div>
+    </div>
+</section>
+
+
+<!-- ============================================================
+     ANILIST PLAYER
+     ============================================================ -->
+<section id="view-anilist-player" class="view-section max-w-[1440px] mx-auto w-full hidden bg-dark-bg">
+    <div class="container mx-auto px-6 sm:px-8 lg:px-12 pt-4 md:pt-24 pb-12 relative">
+        <h2 id="anilist-player-title" class="text-xl md:text-2xl font-extrabold text-white leading-none mb-4"></h2>
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Player -->
+            <div class="w-full lg:w-3/4 rounded overflow-hidden border border-border-color bg-[#020617] shadow-xl mb-8 lg:mb-0">
+                <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
+                    <div class="flex items-center gap-2 text-primary font-bold">
+                        <i class="ph-fill ph-play-circle"></i>
+                        <span id="anilist-player-ep">Episode 1</span>
+                    </div>
+                    <div id="anime-server-buttons" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div class="aspect-video relative bg-[#020617]">
+                    <iframe id="anilist-iframe" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
+                    <button id="btn-anilist-prev" onclick="changeAnilistEp(-1)"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700 text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="ph-fill ph-skip-back"></i> Prev
+                    </button>
+                    <button id="btn-anilist-next" onclick="changeAnilistEp(1)"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700 text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next <i class="ph-fill ph-skip-forward"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Episodes List -->
+            <div class="w-full lg:w-1/4 bg-card-bg border border-border-color rounded relative min-h-0">
+                <div class="w-full h-full flex flex-col lg:absolute lg:inset-0 min-h-0">
+                    <div class="p-3 border-b border-border-color bg-input-bg flex-shrink-0">
+                        <h3 class="text-base font-bold text-text-main">Episodes</h3>
+                    </div>
+                    <div id="anilist-episodes-grid"
+                        class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-2 p-3 overflow-y-auto custom-scroll flex-1 min-h-0 content-start max-h-96 lg:max-h-full overscroll-contain">
+                    </div>
+                    <div id="anilist-info-Relations-Container"
+                        class="flex-shrink-0 border-t border-border-color hidden flex-col relative w-full scroll-wrapper">
+                        <div class="p-3 border-b border-border-color bg-input-bg flex justify-between items-center flex-shrink-0">
+                            <h3 class="text-base font-bold text-text-main mb-0">Relations</h3>
+                        </div>
+                        <div id="anilist-info-Relations"
+                            class="horizontal-scroll-container p-2 custom-scroll bg-[#020617]/10 max-h-full items-start">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 text-sm space-y-3">
+            <h3 class="text-lg font-bold text-text-main mb-3">You may also like</h3>
+            <div id="anilist-recommendations-grid" class="horizontal-scroll-container p-2"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     LEGAL
+     ============================================================ -->
+<section id="view-legal"
+    class="view-section max-w-[1440px] mx-auto w-full px-4 mt-8 md:mt-24 mb-4 sm:px-6 lg:px-8 hidden">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-extrabold text-white mb-2 flex items-center"><span class="vline"></span>Legal Stuff</h2>
+        <p class="text-text-muted mb-8 text-lg">Third-Party Hosting & Copyright Disclaimer</p>
+        <div class="grid gap-6">
+            <div class="bg-card-bg p-6 rounded-xl border border-border-color shadow-lg hover:border-primary transition-colors duration-300">
+                <div class="flex items-start gap-4">
+                    <div class="bg-primary/10 p-3 rounded-full shrink-0">
+                        <i class="ph ph-database text-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-2">No Content Hosting</h3>
+                        <p class="text-gray-400 leading-relaxed text-sm">
+                            <span class="font-bold text-primary">GoStream</span> acts strictly as a search index and information retrieval tool.
+                            The Website does not host, upload, manage, or store any video, audio, or media files on its own servers.
+                            All media content accessible through this Website is embedded from external, third-party services.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-card-bg p-6 rounded-xl border border-border-color shadow-lg hover:border-primary transition-colors duration-300">
+                <div class="flex items-start gap-4">
+                    <div class="bg-primary/10 p-3 rounded-full shrink-0">
+                        <i class="ph ph-network text-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-2">Third-Party Control</h3>
+                        <p class="text-gray-400 leading-relaxed text-sm mb-3">
+                            Since the Website does not control the underlying media files, we cannot guarantee the availability, accuracy, or permanence of any content. Issues such as:
+                        </p>
+                        <ul class="list-disc list-inside text-gray-400 text-sm space-y-1 ml-1">
+                            <li>Broken or dead links (404 errors).</li>
+                            <li>Incorrect video titles or metadata.</li>
+                            <li>Content removal due to DMCA takedowns or inactivity.</li>
+                        </ul>
+                        <p class="text-gray-400 leading-relaxed text-sm mt-3">
+                            ...are entirely outside the control of <span class="font-bold text-primary">GoStream</span>. These technical issues originate from the third-party file hosts (e.g., vidsrc).
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-card-bg p-6 rounded-xl border border-border-color shadow-lg hover:border-primary transition-colors duration-300">
+                <div class="flex items-start gap-4">
+                    <div class="bg-primary/10 p-3 rounded-full shrink-0">
+                        <i class="ph ph-copyright text-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-2">Copyright & Removal Requests</h3>
+                        <p class="text-gray-400 leading-relaxed text-sm">
+                            If you have legal concerns regarding copyright, please contact the original file host where the media is stored.
+                            <span class="font-bold text-primary">GoStream</span> does not possess the files and therefore cannot remove them from the internet.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-12 text-center border-t border-border-color pt-8">
+            <p class="text-text-muted text-sm">&copy; 2024 GoStream. All rights reserved.</p>
+        </div>
+    </div>
+</section>

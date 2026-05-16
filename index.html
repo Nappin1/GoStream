@@ -103,6 +103,34 @@
          MODALS
          ============================================================ -->
 
+    <!-- Filter Modal -->
+    <div id="filter-modal" class="modal-overlay z-[600] flex items-end md:items-center justify-center" onclick="closeFilterModal(event)">
+        <div class="w-full max-w-lg bg-[#0f172a] rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col max-h-[85vh]" onclick="event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex justify-between items-center px-5 py-4 border-b border-white/8 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <i class="ph ph-funnel-simple text-primary text-lg"></i>
+                    <span class="text-white font-bold text-base">Filters</span>
+                    <span id="filter-modal-badge" class="hidden px-2 py-0.5 bg-primary/20 text-primary text-xs font-bold rounded-full"></span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="filter-modal-reset" onclick="resetAllFilters()" class="text-xs text-text-muted hover:text-primary transition-colors font-medium">Reset all</button>
+                    <button onclick="document.getElementById('filter-modal').classList.remove('open'); document.body.style.overflow='';" class="text-gray-400 hover:text-white transition-colors p-1">
+                        <i class="ph ph-x text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Scrollable filter groups -->
+            <div id="filter-modal-body" class="overflow-y-auto flex-1 px-5 py-4 space-y-6"></div>
+            <!-- Footer -->
+            <div class="px-5 py-4 border-t border-white/8 flex-shrink-0">
+                <button onclick="document.getElementById('filter-modal').classList.remove('open'); document.body.style.overflow='';" class="w-full bg-primary text-black font-bold py-3 rounded-xl hover:bg-primary/90 transition-colors">
+                    Show Results
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Details Modal (TMDB + Anilist) -->
     <div id="details-modal" class="modal-overlay z-[500] flex items-center justify-center p-4" onclick="handleDetailsModalBackdropClick(event)">
         <div class="w-full max-w-3xl bg-[#020617] rounded overflow-hidden shadow-2xl flex flex-col" onclick="event.stopPropagation()">
