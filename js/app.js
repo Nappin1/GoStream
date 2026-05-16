@@ -395,142 +395,55 @@ function renderContinueWatching() {
 /**
  * FILTER LOGIC
  */
-function renderFilters(section) {
-    const containerId = section === 'anilist' ? 'anilist-filters' : `${section}-filters`;
-    const container = document.getElementById(containerId);
-    if (!container || container.dataset.rendered === 'true') return;
 
-    container.innerHTML = '';
-    container.dataset.rendered = 'true';
-    container.className = 'filter-bar';
+// Track which section's filter modal is open
+let _filterModalSection = null;
 
+function openFilterModal(section) {
+    _filterModalSection = section;
     const isAnilist = section === 'anilist';
     const stateRef = isAnilist ? appState.anilist.filters : appState.tmdb[section].filters;
+    const body = document.getElementById('filter-modal-body');
+    body.innerHTML = '';
 
-    // --- Toggle button ---
-    const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'filter-toggle-btn';
-    toggleBtn.innerHTML = `<i class="ph ph-funnel-simple"></i> Filters <span class="filter-badge" style="display:none">0</span>`;
-
-    // --- Pills panel (hidden by default) ---
-    const pillsPanel = document.createElement('div');
-    pillsPanel.className = 'filter-pills-panel';
-
-    container.append(toggleBtn, pillsPanel);
-
-    // Toggle panel open/close
-    toggleBtn.onclick = (e) => {
-        e.stopPropagation();
-        pillsPanel.classList.toggle('open');
-        toggleBtn.classList.toggle('open');
+    const defaults = {
+        sort: isAnilist ? 'TRENDING_DESC' : 'trending',
+        genre: '', status: '', country: '', upcoming: '', year: ''
     };
 
-    // Close pills panel on outside click (but not pill dropdowns)
-    document.addEventListener('click', (e) => {
-        if (!container.contains(e.target)) {
-            pillsPanel.classList.remove('open');
-            toggleBtn.classList.remove('open');
-            closeAllDropdowns();
-        }
-    }, { capture: true });
+    // Build a filter group
+    const buildGroup = (key, label, options) => {
+        const group = document.createElement('div');
 
-    // Close all pill dropdowns
-    const closeAllDropdowns = () => {
-        pillsPanel.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('open'));
-        document.querySelectorAll('.filter-dropdown.open').forEach(d => d.classList.remove('open'));
-    };
+        const lbl = document.createElement('div');
+        lbl.className = 'filter-group-label';
+        lbl.textContent = label;
+        group.appendChild(lbl);
 
-    // Update badge count
-    const updateBadge = () => {
-        const defaults = { sort: isAnilist ? 'TRENDING_DESC' : 'trending', genre: '', status: '', country: '', upcoming: '', year: '' };
-        const activeCount = Object.entries(stateRef).filter(([k, v]) => v && v !== defaults[k]).length;
-        const badge = toggleBtn.querySelector('.filter-badge');
-        if (badge) {
-            badge.textContent = activeCount;
-            badge.style.display = activeCount > 0 ? 'inline-flex' : 'none';
-        }
-        toggleBtn.classList.toggle('has-active', activeCount > 0);
-    };
-
-    // Build a filter pill with a dropdown
-    const createPill = (key, label, options, defaultVal) => {
-        const pill = document.createElement('div');
-        pill.className = 'filter-pill';
-        pill.dataset.key = key;
-
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'pill-label';
-
-        const caret = document.createElement('i');
-        caret.className = 'ph ph-caret-down pill-caret';
-
-        pill.append(labelSpan, caret);
-
-        // Dropdown appended to body so it's not clipped by overflow:hidden
-        const dropdown = document.createElement('div');
-        dropdown.className = 'filter-dropdown';
-        document.body.appendChild(dropdown);
-
-        const currentVal = stateRef[key] !== undefined ? stateRef[key] : defaultVal;
-
-        const updateLabel = (val) => {
-            const opt = options.find(o => String(o.value) === String(val));
-            const isDefault = !val || String(val) === String(defaultVal);
-            labelSpan.textContent = isDefault ? label : (opt ? opt.label : label);
-            pill.classList.toggle('active', !isDefault);
-        };
+        const grid = document.createElement('div');
+        grid.className = 'filter-options-grid';
 
         options.forEach(opt => {
-            const item = document.createElement('div');
-            item.className = 'filter-dropdown-item';
-            const dot = document.createElement('span');
-            dot.className = 'check-dot';
-            const text = document.createElement('span');
-            text.textContent = opt.label;
-            item.append(dot, text);
+            const btn = document.createElement('button');
+            btn.className = 'filter-option-btn';
+            btn.textContent = opt.label;
+            btn.dataset.value = opt.value;
+            if (String(stateRef[key] ?? '') === String(opt.value)) btn.classList.add('selected');
 
-            if (String(opt.value) === String(currentVal)) item.classList.add('selected');
-
-            item.onclick = (e) => {
-                e.stopPropagation();
+            btn.onclick = () => {
+                // Deselect siblings
+                grid.querySelectorAll('.filter-option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
                 stateRef[key] = opt.value;
-                dropdown.querySelectorAll('.filter-dropdown-item').forEach(i => i.classList.remove('selected'));
-                item.classList.add('selected');
-                updateLabel(opt.value);
-                updateBadge();
-                closeAllDropdowns();
+                updateFilterBadge(section);
                 resetAndLoad(section);
             };
 
-            dropdown.appendChild(item);
+            grid.appendChild(btn);
         });
 
-        updateLabel(currentVal);
-
-        pill.onclick = (e) => {
-            e.stopPropagation();
-            const isOpen = pill.classList.contains('open');
-            closeAllDropdowns();
-            if (!isOpen) {
-                pill.classList.add('open');
-                dropdown.classList.add('open');
-                // Position dropdown below the pill using fixed coords
-                requestAnimationFrame(() => {
-                    const rect = pill.getBoundingClientRect();
-                    dropdown.style.top = (rect.bottom + 6) + 'px';
-                    // Align right edge if near viewport edge
-                    if (rect.left + 180 > window.innerWidth - 8) {
-                        dropdown.style.left = 'auto';
-                        dropdown.style.right = (window.innerWidth - rect.right) + 'px';
-                    } else {
-                        dropdown.style.left = rect.left + 'px';
-                        dropdown.style.right = 'auto';
-                    }
-                });
-            }
-        };
-
-        return pill;
+        group.appendChild(grid);
+        return group;
     };
 
     // Sort
@@ -547,10 +460,10 @@ function renderFilters(section) {
             { value: 'vote_average.desc', label: 'Top Rated' },
             { value: section === 'movies' ? 'primary_release_date.desc' : 'first_air_date.desc', label: 'New Releases' }
           ];
-    pillsPanel.appendChild(createPill('sort', 'Sort', sortOptions, isAnilist ? 'TRENDING_DESC' : 'trending'));
+    body.appendChild(buildGroup('sort', 'Sort By', sortOptions));
 
     // Genre
-    let genreList = [{ value: '', label: 'All Genres' }];
+    let genreList = [{ value: '', label: 'All' }];
     if (isAnilist) {
         genreList = genreList.concat(ANILIST_GENRES.map(g => ({ value: g, label: g })));
     } else if (section === 'movies') {
@@ -558,34 +471,146 @@ function renderFilters(section) {
     } else {
         genreList = genreList.concat(TV_GENRES.filter(g => g.id !== '').map(g => ({ value: String(g.id), label: g.name })));
     }
-    pillsPanel.appendChild(createPill('genre', 'Genre', genreList, ''));
+    body.appendChild(buildGroup('genre', 'Genre', genreList));
 
     if (!isAnilist) {
         const statusList = section === 'movies'
-            ? [{ value: '', label: 'All Status' }].concat(MOVIE_STATUS.map(s => ({ value: s.value, label: s.name })))
-            : [{ value: '', label: 'All Status' }].concat(TV_STATUS.map(s => ({ value: s.value, label: s.name })));
-        pillsPanel.appendChild(createPill('status', 'Status', statusList, ''));
+            ? [{ value: '', label: 'All' }].concat(MOVIE_STATUS.map(s => ({ value: s.value, label: s.name })))
+            : [{ value: '', label: 'All' }].concat(TV_STATUS.map(s => ({ value: s.value, label: s.name })));
+        body.appendChild(buildGroup('status', 'Status', statusList));
 
         const countryList = COUNTRIES.map(c => ({ value: c.code, label: c.name }));
-        pillsPanel.appendChild(createPill('country', 'Country', countryList, ''));
+        body.appendChild(buildGroup('country', 'Country', countryList));
     }
 
     if (isAnilist) {
         const upcomingList = [
-            { value: '', label: 'Upcoming: Off' },
-            { value: 'POPULARITY_DESC', label: 'Upcoming: Popularity' },
-            { value: 'TRENDING_DESC', label: 'Upcoming: Trending' },
-            { value: 'START_DATE', label: 'Upcoming: Release Date' }
+            { value: '', label: 'Off' },
+            { value: 'POPULARITY_DESC', label: 'By Popularity' },
+            { value: 'TRENDING_DESC', label: 'By Trending' },
+            { value: 'START_DATE', label: 'By Release Date' }
         ];
-        pillsPanel.appendChild(createPill('upcoming', 'Upcoming', upcomingList, ''));
+        body.appendChild(buildGroup('upcoming', 'Upcoming', upcomingList));
     }
 
     const currentYear = new Date().getFullYear() + 1;
-    const yearList = [{ value: '', label: 'All Years' }];
+    const yearList = [{ value: '', label: 'All' }];
     for (let y = currentYear; y >= 1970; y--) yearList.push({ value: String(y), label: String(y) });
-    pillsPanel.appendChild(createPill('year', 'Year', yearList, ''));
+    body.appendChild(buildGroup('year', 'Year', yearList));
 
-    updateBadge();
+    document.getElementById('filter-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFilterModal(e) {
+    // Called from close button (no event) or backdrop click (event with target = overlay)
+    if (e && e.target !== document.getElementById('filter-modal')) return;
+    document.getElementById('filter-modal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function resetAllFilters() {
+    if (!_filterModalSection) return;
+    const isAnilist = _filterModalSection === 'anilist';
+    const stateRef = isAnilist ? appState.anilist.filters : appState.tmdb[_filterModalSection].filters;
+    const defaults = { sort: isAnilist ? 'TRENDING_DESC' : 'trending', genre: '', status: '', country: '', upcoming: '', year: '' };
+    Object.assign(stateRef, defaults);
+    // Re-open to refresh UI
+    openFilterModal(_filterModalSection);
+    updateFilterBadge(_filterModalSection);
+    resetAndLoad(_filterModalSection);
+}
+
+function updateFilterBadge(section) {
+    const containerId = section === 'anilist' ? 'anilist-filters' : `${section}-filters`;
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const isAnilist = section === 'anilist';
+    const stateRef = isAnilist ? appState.anilist.filters : appState.tmdb[section].filters;
+    const defaults = { sort: isAnilist ? 'TRENDING_DESC' : 'trending', genre: '', status: '', country: '', upcoming: '', year: '' };
+    const activeCount = Object.entries(stateRef).filter(([k, v]) => v && v !== defaults[k]).length;
+
+    const toggleBtn = container.querySelector('.filter-toggle-btn');
+    const badge = container.querySelector('.filter-badge');
+    const chipsRow = container.querySelector('.filter-chips-row');
+
+    if (toggleBtn) toggleBtn.classList.toggle('has-active', activeCount > 0);
+    if (badge) {
+        badge.textContent = activeCount;
+        badge.style.display = activeCount > 0 ? 'inline-flex' : 'none';
+    }
+
+    // Update active filter chips
+    if (chipsRow) {
+        chipsRow.innerHTML = '';
+        Object.entries(stateRef).forEach(([key, val]) => {
+            if (!val || val === defaults[key]) return;
+            const chip = document.createElement('span');
+            chip.className = 'filter-chip';
+            // Find label
+            let label = val;
+            const allOptions = getAllFilterOptions(section, key);
+            const found = allOptions.find(o => String(o.value) === String(val));
+            if (found) label = found.label;
+            chip.innerHTML = `${label} <i class="ph ph-x"></i>`;
+            chip.onclick = () => {
+                stateRef[key] = defaults[key] || '';
+                updateFilterBadge(section);
+                resetAndLoad(section);
+            };
+            chipsRow.appendChild(chip);
+        });
+    }
+}
+
+function getAllFilterOptions(section, key) {
+    const isAnilist = section === 'anilist';
+    if (key === 'sort') {
+        return isAnilist
+            ? [{ value: 'TRENDING_DESC', label: 'Trending' }, { value: 'POPULARITY_DESC', label: 'Popular' }, { value: 'SCORE_DESC', label: 'Top Rated' }, { value: 'RECENTLY_UPDATED', label: 'Recently Updated' }]
+            : [{ value: 'trending', label: 'Trending' }, { value: 'popularity.desc', label: 'Popular' }, { value: 'vote_average.desc', label: 'Top Rated' }];
+    }
+    if (key === 'genre') {
+        if (isAnilist) return ANILIST_GENRES.map(g => ({ value: g, label: g }));
+        if (section === 'movies') return MOVIE_GENRES.map(g => ({ value: String(g.id), label: g.name }));
+        return TV_GENRES.map(g => ({ value: String(g.id), label: g.name }));
+    }
+    if (key === 'status') {
+        return section === 'movies' ? MOVIE_STATUS.map(s => ({ value: s.value, label: s.name })) : TV_STATUS.map(s => ({ value: s.value, label: s.name }));
+    }
+    if (key === 'country') return COUNTRIES.map(c => ({ value: c.code, label: c.name }));
+    if (key === 'year') {
+        const y = new Date().getFullYear() + 1;
+        const list = [];
+        for (let i = y; i >= 1970; i--) list.push({ value: String(i), label: String(i) });
+        return list;
+    }
+    return [];
+}
+
+function renderFilters(section) {
+    const containerId = section === 'anilist' ? 'anilist-filters' : `${section}-filters`;
+    const container = document.getElementById(containerId);
+    if (!container || container.dataset.rendered === 'true') return;
+
+    container.innerHTML = '';
+    container.dataset.rendered = 'true';
+    container.className = 'filter-bar flex-wrap gap-2';
+
+    // Toggle button
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'filter-toggle-btn';
+    toggleBtn.innerHTML = `<i class="ph ph-funnel-simple"></i> Filters <span class="filter-badge" style="display:none">0</span>`;
+    toggleBtn.onclick = () => openFilterModal(section);
+    container.appendChild(toggleBtn);
+
+    // Active filter chips row
+    const chipsRow = document.createElement('div');
+    chipsRow.className = 'filter-chips-row flex flex-wrap gap-2 items-center';
+    container.appendChild(chipsRow);
+
+    updateFilterBadge(section);
 }
 
 function resetAndLoad(section) {
