@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="icon" type="image/png" href="images/G-icon.png">
+
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src * 'unsafe-inline' 'unsafe-eval' data: gap:;
+        style-src * 'unsafe-inline';
+        script-src * 'unsafe-inline' 'unsafe-eval';
+        img-src * data:;
+        font-src * data:;
+        connect-src *;
+        frame-src *;
+        media-src *;
+    ">
+
+    <title>Go Stream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+        integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: { 'nav-bp': '1024px' },
+                    colors: {
+                        'primary': 'var(--color-primary)',
+                        'dark-bg': 'var(--bg-main)',
+                        'card-bg': 'var(--bg-card)',
+                        'nav-bg': 'var(--bg-nav)',
+                        'border-color': 'var(--border-color)',
+                        'text-main': 'var(--text-main)',
+                        'text-muted': 'var(--text-muted)',
+                        'input-bg': 'var(--bg-input)'
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- ============================================================
+         GLOBAL LOADER
+         ============================================================ -->
+    <div id="global-loader" class="hidden-loader bg-dark-bg z-[9999]">
+        <!-- Navbar Skeleton (desktop) -->
+        <div class="hidden lg:flex fixed top-0 w-full h-20 bg-[#020617]/60 backdrop-blur-md border-b border-border-color items-center justify-between px-8 animate-pulse z-[10000]">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-white/5"></div>
+                <div class="w-24 h-6 bg-white/5 rounded"></div>
+            </div>
+            <div class="flex gap-6">
+                <div class="w-16 h-6 bg-white/5 rounded"></div>
+                <div class="w-16 h-6 bg-white/5 rounded"></div>
+                <div class="w-16 h-6 bg-white/5 rounded"></div>
+                <div class="w-16 h-6 bg-white/5 rounded"></div>
+            </div>
+            <div class="w-8 h-8 bg-white/5 rounded-full"></div>
+        </div>
+        <!-- Main Content Skeleton -->
+        <div class="w-full h-full flex flex-col p-4 md:p-8 gap-8 animate-pulse lg:pt-20 overflow-hidden">
+            <div class="w-full h-48 md:h-[50vh] bg-white/5 rounded-2xl flex-shrink-0"></div>
+            <div class="flex flex-col gap-4 w-full">
+                <div class="w-48 h-8 bg-white/5 rounded-md mb-2"></div>
+                <div class="flex gap-4 md:gap-6 overflow-hidden">
+                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
+                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
+                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
+                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
+                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
+                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Nav Skeleton (mobile) -->
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 h-[70px] bg-[#020617]/60 border-t border-border-color flex justify-around items-center px-4 animate-pulse z-[10000]">
+            <div class="w-10 h-10 bg-white/5 rounded-full"></div>
+            <div class="w-10 h-10 bg-white/5 rounded-full"></div>
+            <div class="w-10 h-10 bg-white/5 rounded-full"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         NAVIGATION  (loaded from html/nav.html)
+         ============================================================ -->
+    <div id="nav-mount"></div>
+
+    <!-- ============================================================
+         MODALS
+         ============================================================ -->
+
+    <!-- Filter Modal -->
+    <div id="filter-modal" class="modal-overlay z-[600] flex items-end md:items-center justify-center" onclick="closeFilterModal(event)">
+        <div class="w-full max-w-lg bg-[#0f172a] rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col max-h-[85vh]" onclick="event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex justify-between items-center px-5 py-4 border-b border-white/8 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <i class="ph ph-funnel-simple text-primary text-lg"></i>
+                    <span class="text-white font-bold text-base">Filters</span>
+                    <span id="filter-modal-badge" class="hidden px-2 py-0.5 bg-primary/20 text-primary text-xs font-bold rounded-full"></span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="filter-modal-reset" onclick="resetAllFilters()" class="text-xs text-text-muted hover:text-primary transition-colors font-medium">Reset all</button>
+                    <button onclick="document.getElementById('filter-modal').classList.remove('open'); document.body.style.overflow='';" class="text-gray-400 hover:text-white transition-colors p-1">
+                        <i class="ph ph-x text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Scrollable filter groups -->
+            <div id="filter-modal-body" class="overflow-y-auto flex-1 px-5 py-4 space-y-6"></div>
+            <!-- Footer -->
+            <div class="px-5 py-4 border-t border-white/8 flex-shrink-0">
+                <button onclick="document.getElementById('filter-modal').classList.remove('open'); document.body.style.overflow='';" class="w-full bg-primary text-black font-bold py-3 rounded-xl hover:bg-primary/90 transition-colors">
+                    Show Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Modal (TMDB + Anilist) -->
+    <div id="details-modal" class="modal-overlay z-[500] flex items-center justify-center p-4" onclick="handleDetailsModalBackdropClick(event)">
+        <div class="w-full max-w-3xl bg-[#020617] rounded overflow-hidden shadow-2xl flex flex-col" onclick="event.stopPropagation()">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-3 bg-[#1a1a1a] border-b border-gray-800 flex-shrink-0">
+                <span id="details-modal-title" class="text-white font-semibold ml-2 truncate"></span>
+                <button onclick="closeDetailsModal()" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+            <!-- Scrollable content -->
+            <div id="details-modal-content" class="overflow-y-auto max-h-[80vh] overscroll-contain"></div>
+        </div>
+    </div>
+
+    <!-- Trailer Modal -->
+    <div id="trailer-modal" class="modal-overlay z-[1100] flex items-center justify-center p-4">
+        <div class="w-full max-w-5xl bg-[#020617] rounded overflow-hidden shadow-2xl flex flex-col">
+            <div class="flex flex-col bg-[#1a1a1a] border-b border-gray-800">
+                <div class="flex justify-between items-center p-3">
+                    <span class="text-white font-semibold ml-2">
+                        <i class="ph-fill ph-youtube-logo text-red-500 mr-2"></i>Trailer
+                    </span>
+                    <button onclick="closeTrailerModal()" class="text-gray-400 hover:text-white transition-colors p-1">
+                        <i class="ph ph-x text-xl"></i>
+                    </button>
+                </div>
+                <div id="trailer-tabs" class="flex overflow-x-auto px-2 space-x-2 hidden pb-2 scrollbar-thin"></div>
+            </div>
+            <div class="aspect-video w-full bg-[#020617] relative">
+                <iframe id="trailer-iframe" class="absolute inset-0 w-full h-full" frameborder="0"
+                    allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal"
+        class="fixed inset-0 z-[1200] bg-[#020617]/80 backdrop-blur-md flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+        <div class="bg-card-bg border border-border-color p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300">
+            <h3 id="confirm-title" class="text-xl font-bold text-white mb-2">Confirm</h3>
+            <p id="confirm-msg" class="text-gray-400 mb-6 text-sm">Are you sure?</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="hideConfirmation()"
+                    class="px-5 py-2.5 rounded-full text-sm font-medium text-gray-400 hover:text-white hover:bg-white/10 transition-colors">Cancel</button>
+                <button id="confirm-yes"
+                    class="px-5 py-2.5 rounded-full text-sm font-bold bg-primary text-black hover:bg-primary/90 transition-colors shadow-[0_4px_14px_rgba(14,165,233,0.3)]">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MAIN CONTENT  (sections loaded from html/sections.html)
+         ============================================================ -->
+    <main id="main-content" class="pb-24 min-h-screen flex flex-col transition-all duration-300 w-full">
+        <div id="sections-mount"></div>
+    </main>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ============================================================
+         PARTIAL LOADER  — injects nav.html and sections.html, then
+         boots app.js once both are in the DOM.
+         ============================================================ -->
+    <script>
+        (function () {
+            const parts = [
+                { url: 'html/nav.html',      mount: 'nav-mount' },
+                { url: 'html/sections.html', mount: 'sections-mount' }
+            ];
+
+            Promise.all(
+                parts.map(p =>
+                    fetch(p.url)
+                        .then(r => { if (!r.ok) throw new Error(p.url + ' failed: ' + r.status); return r.text(); })
+                        .then(html => { document.getElementById(p.mount).innerHTML = html; })
+                )
+            )
+            .then(function () {
+                var s = document.createElement('script');
+                s.src = 'js/app.js';
+                document.body.appendChild(s);
+            })
+            .catch(function (err) {
+                console.error('Failed to load HTML partials:', err);
+                // Fallback: load app.js anyway so the error is visible
+                var s = document.createElement('script');
+                s.src = 'js/app.js';
+                document.body.appendChild(s);
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

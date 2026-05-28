@@ -1,13 +1,18 @@
 {
-  "name": "VidSrc-Embeds-NoAds",
+  "name": "gostream",
   "version": "1.0.0",
-  "description": "Simple proxy for vidsrc embeds to remove ads",
-  "main": "api/embed.js",
+  "description": "GoStream Android App",
+  "main": "index.html",
   "scripts": {
-    "start": "vercel dev"
+    "sync": "node sync-www.js && npx cap sync android",
+    "open": "npx cap open android"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12"
+    "@capacitor/android": "^7.4.0",
+    "@capacitor/cli": "^7.4.0",
+    "@capacitor/core": "^7.4.0"
   }
 }
