@@ -33,7 +33,24 @@
             <span class="text-transparent" style="-webkit-text-stroke: 1.5px #cae962;">TOP 10</span>
             <span class="ml-4 text-sm md:text-lg tracking-widest font-semibold uppercase text-white mt-1">Content Today</span>
         </h2>
-        <div id="row-top-10" class="flex overflow-x-auto gap-6 pt-4 pb-12 px-4 md:px-12 no-scrollbar overscroll-x-contain"></div>
+        <div id="row-top-10" class="horizontal-scroll-container gap-6 pt-4 pb-12 px-4 md:px-12"></div>
+    </div>
+    <div id="discover-section" class="discovery-row hidden space-y-5">
+        <h2 class="text-xl md:text-2xl font-extrabold text-white flex items-center mb-1">
+            <span class="border-l-4 border-primary h-6 mr-3"></span>Discover
+        </h2>
+        <div class="discover-block">
+            <h3 class="text-sm md:text-base font-bold text-text-muted uppercase tracking-wider mb-2">Movies by Streaming</h3>
+            <div class="discover-logo-scroll custom-scroll" role="region" aria-label="Streaming platforms">
+                <div id="discover-providers-grid" class="discover-logo-grid" role="list"></div>
+            </div>
+        </div>
+        <div class="discover-block">
+            <h3 class="text-sm md:text-base font-bold text-text-muted uppercase tracking-wider mb-2">TV by Network</h3>
+            <div class="discover-logo-scroll custom-scroll" role="region" aria-label="TV networks">
+                <div id="discover-networks-grid" class="discover-logo-grid" role="list"></div>
+            </div>
+        </div>
     </div>
     <div class="discovery-row hidden">
         <h2 class="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center">
@@ -46,6 +63,12 @@
             <span class="border-l-4 border-primary h-6 mr-3"></span>Top Rated Movies
         </h2>
         <div id="row-top-rated" class="horizontal-scroll-container pb-4 p-2"></div>
+    </div>
+    <div class="discovery-row">
+        <h2 class="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center">
+            <span class="border-l-4 border-primary h-6 mr-3"></span>Top Rated TV Shows
+        </h2>
+        <div id="row-top-rated-tv" class="horizontal-scroll-container pb-4 p-2"></div>
     </div>
     <div class="discovery-row">
         <h2 class="text-xl md:text-2xl font-extrabold text-white mb-4 flex items-center">

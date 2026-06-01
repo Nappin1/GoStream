@@ -115,24 +115,45 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <button id="filter-modal-reset" onclick="resetAllFilters()" class="text-xs text-text-muted hover:text-primary transition-colors font-medium">Reset all</button>
-                    <button onclick="document.getElementById('filter-modal').classList.remove('open'); document.body.style.overflow='';" class="text-gray-400 hover:text-white transition-colors p-1">
+                    <button onclick="closeFilterModal()" class="text-gray-400 hover:text-white transition-colors p-1">
                         <i class="ph ph-x text-xl"></i>
                     </button>
                 </div>
             </div>
             <!-- Scrollable filter groups -->
-            <div id="filter-modal-body" class="overflow-y-auto flex-1 px-5 py-4 space-y-6"></div>
+            <div id="filter-modal-body" class="custom-scroll overflow-y-auto flex-1 px-5 py-4 space-y-6"></div>
             <!-- Footer -->
             <div class="px-5 py-4 border-t border-white/8 flex-shrink-0">
-                <button onclick="document.getElementById('filter-modal').classList.remove('open'); document.body.style.overflow='';" class="w-full bg-primary text-black font-bold py-3 rounded-xl hover:bg-primary/90 transition-colors">
+                <button onclick="closeFilterModal()" class="w-full bg-primary text-black font-bold py-3 rounded-xl hover:bg-primary/90 transition-colors">
                     Show Results
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Discover Results Modal -->
+    <div id="discover-results-modal" class="modal-overlay discover-results-modal flex items-center justify-center p-4" onclick="closeDiscoverResults(event)">
+        <div class="w-full max-w-[1440px] max-h-[92vh] bg-[#020617] rounded-xl overflow-hidden shadow-2xl flex flex-col" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center gap-3 p-4 border-b border-border-color flex-shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button type="button" onclick="closeDiscoverResults()" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <h2 id="discover-results-title" class="text-white font-bold text-lg truncate"></h2>
+                </div>
+                <button type="button" onclick="closeDiscoverResults()" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
+                    <i class="ph ph-x text-xl"></i>
+                </button>
+            </div>
+            <div class="custom-scroll overflow-y-auto flex-1 p-4 sm:p-6">
+                <div id="discover-results-grid" class="results-grid"></div>
+            </div>
+            <div id="discover-results-pagination" class="pagination-controls py-4 px-4 border-t border-border-color flex justify-center gap-2 flex-shrink-0"></div>
+        </div>
+    </div>
+
     <!-- Details Modal (TMDB + Anilist) -->
-    <div id="details-modal" class="modal-overlay z-[500] flex items-center justify-center p-4" onclick="handleDetailsModalBackdropClick(event)">
+    <div id="details-modal" class="modal-overlay z-[650] flex items-center justify-center p-4" onclick="handleDetailsModalBackdropClick(event)">
         <div class="w-full max-w-4xl max-h-[92vh] bg-[#020617] rounded overflow-hidden shadow-2xl flex flex-col" onclick="event.stopPropagation()">
             <!-- Header -->
             <div class="flex justify-between items-center p-3 bg-[#1a1a1a] border-b border-gray-800 flex-shrink-0">
@@ -142,7 +163,7 @@
                 </button>
             </div>
             <!-- Scrollable content -->
-            <div id="details-modal-content" class="overflow-y-auto max-h-[calc(92vh-3rem)] overscroll-contain"></div>
+            <div id="details-modal-content" class="custom-scroll overflow-y-auto max-h-[calc(92vh-3rem)]"></div>
         </div>
     </div>
 

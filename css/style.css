@@ -11,10 +11,8 @@
     --shadow-color: rgba(0, 0, 0, 0.5);
 }
 
-/* iOS Safari: enable momentum scrolling at root level */
 html {
-    height: 100%;
-    -webkit-overflow-scrolling: touch;
+    -webkit-text-size-adjust: 100%;
 }
 
 /* Base Mobile-First Styles */
@@ -30,6 +28,15 @@ body {
     font-size: 16px;
 }
 
+/* iOS: reliable scroll lock while modals are open */
+body.scroll-locked {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
 button,
 .nav-link,
 .bottom-nav-item,
@@ -41,8 +48,7 @@ input {
     /* Accessible mobile tap target */
 }
 
-/* Prevent text selection on cards and nav — but NOT on scroll containers */
-.movie-card,
+/* Prevent text selection on controls — not on .movie-card (breaks iOS touch scroll) */
 .nav-link,
 .bottom-nav-item,
 .filter-pill,
@@ -143,8 +149,7 @@ button:focus {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    transform: translateZ(0);
-    isolation: isolate;
+    -webkit-touch-callout: none;
 }
 
 .movie-card img {
@@ -176,6 +181,85 @@ button:focus {
     }
 }
 
+/* Discover — fixed-height scroll areas + logo tiles */
+.discover-block {
+    margin-bottom: 0;
+}
+
+.discover-logo-scroll {
+    height: 188px;
+    max-height: 188px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.4);
+    padding: 10px;
+}
+
+@media (min-width: 640px) {
+    .discover-logo-scroll {
+        height: 204px;
+        max-height: 204px;
+        padding: 12px;
+    }
+}
+
+.discover-logo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 10px;
+}
+
+@media (min-width: 640px) {
+    .discover-logo-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 12px;
+    }
+}
+
+.discover-logo-btn {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 10px;
+    aspect-ratio: 1;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 72px;
+}
+
+.discover-logo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.discover-logo-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.discover-logo-btn img {
+    width: 100%;
+    height: 100%;
+    max-width: 64px;
+    max-height: 40px;
+    object-fit: contain;
+}
+
+.discover-logo-skeleton {
+    background: #ffffff;
+    border-radius: 10px;
+    aspect-ratio: 1;
+    animation: skeletonPulse 1.4s ease-in-out infinite;
+    min-height: 72px;
+}
+
 /* Grids & Containers */
 .results-grid {
     display: grid;
@@ -200,14 +284,12 @@ button:focus {
 .horizontal-scroll-container {
     display: flex;
     overflow-x: auto;
-    
+    overflow-y: hidden;
     gap: 1rem;
     padding-top: 1rem;
     padding-bottom: 1.5rem;
     padding-inline: 8px;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-    /* Let browser handle touch direction naturally — don't restrict touch-action */
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -246,7 +328,11 @@ button:focus {
 .custom-scroll {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+}
+
+/* Tailwind overflow-x-auto rows (cast, tabs, etc.) */
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
 }
 
 .mask-linear-fade {
@@ -383,7 +469,7 @@ button:focus {
 /* Each option button */
 .filter-option-btn {
     padding: 7px 14px;
-    border-radius: 9999px;
+    border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.04);
     color: var(--text-muted);
@@ -513,7 +599,7 @@ button:focus {
     font-size: 0.8rem;
     font-weight: 500;
     padding: 0.5rem 2rem 0.5rem 1rem;
-    border-radius: 9999px;
+    border-radius: 6px;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -631,9 +717,38 @@ button:focus {
     transition: opacity 0.3s;
 }
 
+.modal-overlay:not(.open) {
+    visibility: hidden;
+}
+
 .modal-overlay.open {
     opacity: 1;
     pointer-events: auto;
+    visibility: visible;
+}
+
+.discover-results-modal {
+    z-index: 550;
+}
+
+#details-modal {
+    z-index: 650;
+}
+
+/* Fullscreen player above modals (Discover → details → play) */
+#view-tmdb-player.player-active,
+#view-anilist-player.player-active {
+    position: fixed;
+    inset: 0;
+    z-index: 800;
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background-color: var(--bg-main);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .modal-content {
@@ -752,6 +867,8 @@ button:focus {
     display: flex;
     gap: 0.25rem;
     overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 1.25rem;
     padding-bottom: 0;
@@ -854,12 +971,12 @@ button:focus {
     display: inline-flex;
     align-items: center;
     padding: 0.25rem 0.625rem;
-    border-radius: 9999px;
+    border-radius: 6px;
     border: 1px solid rgba(99, 102, 241, 0.35);
     background: rgba(99, 102, 241, 0.08);
     color: var(--text-muted);
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 400;
     white-space: nowrap;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s;

@@ -6,7 +6,14 @@ const API_KEY = '3fd2be6f0c70a2a598f084ddfb75487c';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/w500';
 const NETWORK_LOGO_URL = 'https://image.tmdb.org/t/p/w185';
+const PROVIDER_LOGO_URL = 'https://image.tmdb.org/t/p/original';
 const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
+const WATCH_REGION = 'US';
+
+/** Popular TMDB network IDs for the Discover TV grid */
+const POPULAR_TV_NETWORK_IDS = [
+    213, 49, 1024, 2739, 2552, 453, 67, 174, 2, 6, 16, 19, 54, 318, 64, 43, 13, 14, 47, 34, 33, 156, 435, 332, 41, 71, 126, 4
+];
 const ANILIST_API_URL = 'https://graphql.anilist.co';
 
 const MOVIE_SOURCES = [
@@ -137,10 +144,57 @@ const appState = {
         activeTab: 'information',
         tvSeason: 1
     },
-    playerReturnView: null
+    playerReturnView: null,
+    discover: {
+        kind: null,
+        id: null,
+        name: '',
+        page: 1,
+        restoreResultsOnPlayerReturn: false
+    }
 };
 
+function isDiscoverResultsModalOpen() {
+    const modal = document.getElementById('discover-results-modal');
+    return modal?.classList.contains('open');
+}
+
 let activeCardElement = null;
+
+let scrollLockCount = 0;
+let scrollLockPosition = 0;
+
+function lockBodyScroll() {
+    scrollLockCount++;
+    if (scrollLockCount === 1) {
+        scrollLockPosition = window.scrollY;
+        document.body.classList.add('scroll-locked');
+        document.body.style.top = `-${scrollLockPosition}px`;
+    }
+}
+
+function unlockBodyScroll() {
+    if (scrollLockCount <= 0) return;
+    scrollLockCount--;
+    if (scrollLockCount === 0) {
+        document.body.classList.remove('scroll-locked');
+        document.body.style.top = '';
+        window.scrollTo(0, scrollLockPosition);
+    }
+}
+
+function clearBodyScrollLock() {
+    scrollLockCount = 0;
+    document.body.classList.remove('scroll-locked');
+    document.body.style.top = '';
+}
+
+function setPlayerViewActive(active) {
+    const tmdbView = document.getElementById('view-tmdb-player');
+    const aniView = document.getElementById('view-anilist-player');
+    if (tmdbView) tmdbView.classList.toggle('player-active', active);
+    if (aniView) aniView.classList.toggle('player-active', active);
+}
 
 function transitionToDetails(cardEl, callback) {
     activeCardElement = cardEl;
@@ -158,8 +212,17 @@ function clearDetailsTransitionName() {
     // No-op — no view-transition names used
 }
 
+function formatTmdbTvEpisodeLabel(seasonNum, episodeNum, episodeTitle) {
+    const s = Number(seasonNum) || 1;
+    const e = Number(episodeNum) || 1;
+    const safeTitle = (episodeTitle || '').replace(/"/g, '\\"').trim();
+    return safeTitle ? `S${s}:E${e} "${safeTitle}"` : `S${s}:E${e}`;
+}
+
 /** Restore the page that was visible before player/details — no router reload. */
 function showUnderlyingView() {
+    setPlayerViewActive(false);
+
     const tmdbFrame = document.getElementById('tmdb-player');
     const aniFrame = document.getElementById('anilist-iframe');
     if (tmdbFrame) tmdbFrame.src = '';
@@ -196,18 +259,30 @@ function reopenDetailsModal() {
 
 function openPlayerWithReturn(playFn) {
     appState.playerReturnView = 'details';
+    if (isDiscoverResultsModalOpen() || appState.discover.restoreResultsOnPlayerReturn) {
+        appState.discover.restoreResultsOnPlayerReturn = true;
+        document.getElementById('discover-results-modal')?.classList.remove('open');
+    }
     closeDetailsModal({ preserveDetails: true });
+    clearBodyScrollLock();
+    window.scrollTo(0, 0);
     playFn();
 }
 
 function closePlayerAndReturn() {
     const returnTo = appState.playerReturnView;
+    const restoreDiscover = appState.discover.restoreResultsOnPlayerReturn;
     appState.playerReturnView = null;
+    appState.discover.restoreResultsOnPlayerReturn = false;
+
+    showUnderlyingView();
+
     if (returnTo === 'details' && appState.details.id) {
-        showUnderlyingView();
         reopenDetailsModal();
-    } else {
-        showUnderlyingView();
+    }
+    if (restoreDiscover && appState.discover.kind) {
+        document.getElementById('discover-results-modal')?.classList.add('open');
+        lockBodyScroll();
     }
 }
 
@@ -540,14 +615,14 @@ const TMDB_SORT_TABS = {
     movies: [
         { id: 'trending', label: 'Trending' },
         { id: 'popularity.desc', label: 'Popular' },
-        { id: 'vote_average.desc', label: 'Top Rated' },
-        { id: 'primary_release_date.desc', label: 'New Release' }
+        { id: 'top_rated', label: 'Top Rated' },
+        { id: 'now_playing', label: 'Now Playing' }
     ],
     tv: [
         { id: 'trending', label: 'Trending' },
         { id: 'popularity.desc', label: 'Popular' },
-        { id: 'vote_average.desc', label: 'Top Rated' },
-        { id: 'first_air_date.desc', label: 'New Release' }
+        { id: 'top_rated', label: 'Top Rated' },
+        { id: 'on_the_air', label: 'Airing Today + On the Air' }
     ]
 };
 
@@ -694,7 +769,7 @@ function openFilterModal(section) {
     body.appendChild(buildGroup('year', 'Year', yearList));
 
     document.getElementById('filter-modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
     updateFilterBadge(section);
 }
 
@@ -702,7 +777,7 @@ function closeFilterModal(e) {
     // Called from close button (no event) or backdrop click (event with target = overlay)
     if (e && e.target !== document.getElementById('filter-modal')) return;
     document.getElementById('filter-modal').classList.remove('open');
-    document.body.style.overflow = '';
+    unlockBodyScroll();
 }
 
 function resetAllFilters() {
@@ -831,9 +906,142 @@ async function fetchTMDBLogo(id, type) {
     return null;
 }
 
+function getWatchProviderLogoUrl(logoPath) {
+    if (!logoPath) return null;
+    return logoPath.startsWith('http') ? logoPath : PROVIDER_LOGO_URL + logoPath;
+}
+
+function renderDiscoverLogoSkeletons(container, count = 12) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'discover-logo-skeleton';
+        el.setAttribute('aria-hidden', 'true');
+        container.appendChild(el);
+    }
+}
+
+function renderDiscoverLogoGrid(container, items, kind) {
+    container.innerHTML = '';
+    items.forEach(item => {
+        const id = kind === 'provider' ? item.provider_id : item.id;
+        const name = kind === 'provider' ? item.provider_name : item.name;
+        const logoUrl = getWatchProviderLogoUrl(item.logo_path);
+        if (!logoUrl) return;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'discover-logo-btn';
+        btn.title = name;
+        btn.setAttribute('aria-label', name);
+        btn.innerHTML = `<img src="${logoUrl}" alt="" loading="lazy">`;
+        btn.onclick = () => openDiscoverResults(kind, id, name);
+        container.appendChild(btn);
+    });
+}
+
+async function fetchPopularTVNetworks() {
+    const networks = await Promise.all(
+        POPULAR_TV_NETWORK_IDS.map(id => fetchTMDB(`/network/${id}`, {}, false))
+    );
+    return networks.filter(n => n && n.logo_path);
+}
+
+async function loadDiscoverSection() {
+    const section = document.getElementById('discover-section');
+    const providersGrid = document.getElementById('discover-providers-grid');
+    const networksGrid = document.getElementById('discover-networks-grid');
+    if (!providersGrid || !networksGrid) return;
+    if (providersGrid.dataset.loaded === 'true') return;
+
+    renderDiscoverLogoSkeletons(providersGrid, 14);
+    renderDiscoverLogoSkeletons(networksGrid, 14);
+
+    const providersData = await fetchTMDB('/watch/providers/movie', { watch_region: WATCH_REGION }, false);
+    const networks = await fetchPopularTVNetworks();
+
+    const providers = (providersData?.results || [])
+        .filter(p => p.logo_path && p.display_priorities?.[WATCH_REGION] != null)
+        .sort((a, b) => a.display_priorities[WATCH_REGION] - b.display_priorities[WATCH_REGION]);
+
+    renderDiscoverLogoGrid(providersGrid, providers, 'provider');
+    renderDiscoverLogoGrid(networksGrid, networks, 'network');
+
+    providersGrid.dataset.loaded = 'true';
+    if (section && (providers.length || networks.length)) {
+        section.classList.remove('hidden');
+    }
+}
+
+function openDiscoverResults(kind, id, name) {
+    appState.discover = { kind, id, name, page: 1, restoreResultsOnPlayerReturn: false };
+    const modal = document.getElementById('discover-results-modal');
+    const titleEl = document.getElementById('discover-results-title');
+    if (titleEl) {
+        titleEl.textContent = kind === 'provider' ? `${name} — Movies` : `${name} — TV Shows`;
+    }
+    document.getElementById('discover-results-grid').innerHTML = getGridSkeleton(12);
+    document.getElementById('discover-results-pagination').innerHTML = '';
+    modal.classList.add('open');
+    lockBodyScroll();
+    loadDiscoverResultsPage(1);
+}
+
+function closeDiscoverResults(e) {
+    if (e && e.target !== document.getElementById('discover-results-modal')) return;
+    const modal = document.getElementById('discover-results-modal');
+    modal.classList.remove('open');
+    unlockBodyScroll();
+    document.getElementById('discover-results-grid').innerHTML = '';
+    document.getElementById('discover-results-pagination').innerHTML = '';
+    appState.discover = { kind: null, id: null, name: '', page: 1, restoreResultsOnPlayerReturn: false };
+}
+
+async function loadDiscoverResultsPage(page) {
+    const { kind, id } = appState.discover;
+    if (!kind || !id) return;
+
+    const grid = document.getElementById('discover-results-grid');
+    grid.innerHTML = getGridSkeleton(12);
+    loader.show();
+
+    const mediaType = kind === 'provider' ? 'movie' : 'tv';
+    const endpoint = kind === 'provider' ? '/discover/movie' : '/discover/tv';
+    const params = {
+        language: 'en-US',
+        sort_by: 'popularity.desc',
+        page
+    };
+
+    if (kind === 'provider') {
+        params.with_watch_providers = String(id);
+        params.watch_region = WATCH_REGION;
+        params.with_watch_monetization_types = 'flatrate|free|ads';
+    } else {
+        params.with_networks = String(id);
+    }
+
+    const data = await fetchTMDB(endpoint, params, false);
+    loader.hide();
+
+    grid.innerHTML = '';
+    if (data?.results?.length) {
+        await renderTMDBGrid('discover-results-grid', data.results, mediaType);
+        const totalPages = Math.min(data.total_pages || 1, 500);
+        renderPagination('discover-results-pagination', page, totalPages, (p) => {
+            appState.discover.page = p;
+            loadDiscoverResultsPage(p);
+        });
+    } else {
+        grid.innerHTML = '<p class="text-gray-500 col-span-full text-center py-12">No results found.</p>';
+        document.getElementById('discover-results-pagination').innerHTML = '';
+    }
+}
+
 async function loadHomeData() {
     // Render Continue Watching first
     renderContinueWatching();
+    loadDiscoverSection();
 
     const container = document.getElementById('row-trending');
     if (container.innerHTML !== '') {
@@ -843,6 +1051,7 @@ async function loadHomeData() {
 
     document.getElementById('row-trending').innerHTML = getRowSkeleton(6);
     document.getElementById('row-top-rated').innerHTML = getRowSkeleton(6);
+    document.getElementById('row-top-rated-tv').innerHTML = getRowSkeleton(6);
     document.getElementById('row-action').innerHTML = getRowSkeleton(6);
     // Fetch TMDB Trending
     const trendingTMDBPromise = fetchTMDB('/trending/all/day');
@@ -858,13 +1067,15 @@ async function loadHomeData() {
             }`;
     const anilistPromise = fetchAnilist(anilistQuery);
 
-    const topRatedPromise = fetchTMDB('/movie/top_rated');
+    const topRatedMoviesPromise = fetchTMDB('/movie/top_rated');
+    const topRatedTvPromise = fetchTMDB('/tv/top_rated');
     const actionPromise = fetchTMDB('/discover/movie', { with_genres: 28 });
 
-    const [trendingTMDB, anilistData, topRated, action] = await Promise.all([
+    const [trendingTMDB, anilistData, topRatedMovies, topRatedTv, action] = await Promise.all([
         trendingTMDBPromise,
         anilistPromise,
-        topRatedPromise,
+        topRatedMoviesPromise,
+        topRatedTvPromise,
         actionPromise
     ]);
 
@@ -907,7 +1118,12 @@ async function loadHomeData() {
         startBannerRotation();
     }
 
-    if (topRated) renderTMDBGrid('row-top-rated', topRated.results, null, true);
+    if (topRatedMovies?.results) {
+        renderTMDBGrid('row-top-rated', topRatedMovies.results, 'movie', true);
+    }
+    if (topRatedTv?.results) {
+        renderTMDBGrid('row-top-rated-tv', topRatedTv.results, 'tv', true);
+    }
     if (action) renderTMDBGrid('row-action', action.results, null, true);
 }
 
@@ -1068,6 +1284,17 @@ function updateSharedBanner() {
     });
 }
 
+function mergeDedupeTMDBResults(items) {
+    const seen = new Set();
+    const merged = [];
+    for (const item of items) {
+        if (!item?.id || seen.has(item.id)) continue;
+        seen.add(item.id);
+        merged.push(item);
+    }
+    return merged;
+}
+
 async function loadTMDBSection(key, endpoint, extraParams = {}) {
     const stateRef = appState.tmdb[key];
     const gridId = `grid-${key}`;
@@ -1078,9 +1305,13 @@ async function loadTMDBSection(key, endpoint, extraParams = {}) {
 
     const params = {
         language: 'en-US',
-        'vote_count.gte': 0,
         ...extraParams
     };
+
+    const useTopRatedList = stateRef.filters.sort === 'top_rated';
+    const useNowPlaying = key === 'movies' && stateRef.filters.sort === 'now_playing';
+    const useTvAiring = key === 'tv' && stateRef.filters.sort === 'on_the_air';
+    const hasBrowseFilters = !!(stateRef.filters.genre || stateRef.filters.country || stateRef.filters.year || stateRef.filters.status);
 
     // Handle Sorting & Endpoints
     let finalEndpoint = endpoint;
@@ -1088,13 +1319,31 @@ async function loadTMDBSection(key, endpoint, extraParams = {}) {
     if (stateRef.filters.sort === 'trending') {
         const type = key === 'movies' ? 'movie' : 'tv';
         finalEndpoint = `/trending/${type}/day`;
+    } else if (useTopRatedList && !hasBrowseFilters) {
+        finalEndpoint = key === 'movies' ? '/movie/top_rated' : '/tv/top_rated';
+    } else if (useNowPlaying && !hasBrowseFilters) {
+        finalEndpoint = '/movie/now_playing';
+    } else if (useTvAiring && !hasBrowseFilters) {
+        finalEndpoint = null;
     } else {
-        params.sort_by = stateRef.filters.sort;
+        if (useTopRatedList) {
+            params.sort_by = 'vote_average.desc';
+            params['vote_count.gte'] = 200;
+        } else if (useNowPlaying) {
+            params.sort_by = 'primary_release_date.desc';
+            params['vote_count.gte'] = 0;
+        } else if (useTvAiring) {
+            params.sort_by = 'first_air_date.desc';
+            params['vote_count.gte'] = 0;
+        } else {
+            params.sort_by = stateRef.filters.sort;
+            params['vote_count.gte'] = 0;
+        }
     }
 
     const today = new Date().toISOString().split('T')[0];
 
-    if (stateRef.filters.status) {
+    if (finalEndpoint && finalEndpoint.includes('discover') && stateRef.filters.status) {
         if (key === 'movies') {
             if (stateRef.filters.status === 'upcoming') {
                 params['primary_release_date.gte'] = today;
@@ -1106,7 +1355,8 @@ async function loadTMDBSection(key, endpoint, extraParams = {}) {
         }
     }
 
-    if ((stateRef.filters.sort.includes('date') || stateRef.filters.sort.includes('first_air_date'))) {
+    if (finalEndpoint && finalEndpoint.includes('discover') &&
+        (stateRef.filters.sort.includes('date') || stateRef.filters.sort.includes('first_air_date'))) {
         if (stateRef.filters.status !== 'upcoming') {
             if (key === 'movies') params['primary_release_date.lte'] = today;
             else params['first_air_date.lte'] = today;
@@ -1115,32 +1365,62 @@ async function loadTMDBSection(key, endpoint, extraParams = {}) {
         params['vote_count.gte'] = 0;
     }
 
-    if (stateRef.filters.genre) params.with_genres = stateRef.filters.genre;
-    if (stateRef.filters.country) params.with_origin_country = stateRef.filters.country;
-
-    // --- ADDED YEAR FILTER LOGIC ---
-    if (stateRef.filters.year) {
-        if (key === 'movies') params.primary_release_year = stateRef.filters.year;
-        else params.first_air_date_year = stateRef.filters.year;
+    if (finalEndpoint && finalEndpoint.includes('discover')) {
+        if (stateRef.filters.genre) params.with_genres = stateRef.filters.genre;
+        if (stateRef.filters.country) params.with_origin_country = stateRef.filters.country;
+        if (stateRef.filters.year) {
+            if (key === 'movies') params.primary_release_year = stateRef.filters.year;
+            else params.first_air_date_year = stateRef.filters.year;
+        }
     }
 
     // DOUBLE FETCH LOGIC
     const tmdbPage1 = (stateRef.page - 1) * 2 + 1;
     const tmdbPage2 = tmdbPage1 + 1;
 
-    const p1 = { ...params, page: tmdbPage1 };
-    const p2 = { ...params, page: tmdbPage2 };
+    const isCuratedList = !hasBrowseFilters && (useTopRatedList || useNowPlaying);
+    const curatedParams = { language: 'en-US' };
 
-    const [d1, d2] = await Promise.all([
-        fetchTMDB(finalEndpoint, p1, false),
-        fetchTMDB(finalEndpoint, p2, false)
-    ]);
+    let results = [];
+    let totalPagesRef = 0;
 
-    const results = [];
-    if (d1 && d1.results) results.push(...d1.results);
-    if (d2 && d2.results) results.push(...d2.results);
+    if (useTvAiring && !hasBrowseFilters) {
+        const [airing1, onAir1, airing2, onAir2] = await Promise.all([
+            fetchTMDB('/tv/airing_today', { ...curatedParams, page: tmdbPage1 }, false),
+            fetchTMDB('/tv/on_the_air', { ...curatedParams, page: tmdbPage1 }, false),
+            fetchTMDB('/tv/airing_today', { ...curatedParams, page: tmdbPage2 }, false),
+            fetchTMDB('/tv/on_the_air', { ...curatedParams, page: tmdbPage2 }, false)
+        ]);
+        results = mergeDedupeTMDBResults([
+            ...(airing1?.results || []),
+            ...(onAir1?.results || []),
+            ...(airing2?.results || []),
+            ...(onAir2?.results || [])
+        ]);
+        totalPagesRef = Math.max(
+            airing1?.total_pages || 0,
+            onAir1?.total_pages || 0,
+            airing2?.total_pages || 0,
+            onAir2?.total_pages || 0
+        );
+    } else {
+        const p1 = isCuratedList
+            ? { ...curatedParams, page: tmdbPage1 }
+            : { ...params, page: tmdbPage1 };
+        const p2 = isCuratedList
+            ? { ...curatedParams, page: tmdbPage2 }
+            : { ...params, page: tmdbPage2 };
 
-    const totalPagesRef = d1 ? d1.total_pages : (d2 ? d2.total_pages : 0);
+        const [d1, d2] = await Promise.all([
+            fetchTMDB(finalEndpoint, p1, false),
+            fetchTMDB(finalEndpoint, p2, false)
+        ]);
+
+        if (d1?.results) results.push(...d1.results);
+        if (d2?.results) results.push(...d2.results);
+        totalPagesRef = d1?.total_pages || d2?.total_pages || 0;
+    }
+
     const totalUIPages = Math.ceil(totalPagesRef / 2);
 
     grid.innerHTML = '';
@@ -1703,12 +1983,12 @@ async function openAnilistDetails(id) {
     if (hasRecs) visibleTabs.push('recommendations');
 
     const historyItem = appState.continueWatching.find(i => i.id === id && i.type === 'anime');
-    const btnText = historyItem && historyItem.episode ? `RESUME EP ${historyItem.episode}` : 'PLAY NOW';
+    const btnText = historyItem && historyItem.episode ? `RESUME EP ${historyItem.episode}` : 'Play';
 
     const detailsSecondaryBtnClass = 'flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors';
     const trailerBtnHtml = trailerId
-        ? `<button type="button" id="anilist-details-trailer-btn" class="${detailsSecondaryBtnClass}" title="Trailer"><i class="ph ph-youtube-logo text-lg"></i></button>`
-        : `<button type="button" disabled class="flex-1 bg-white/10 border border-white/15 text-gray-500 font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md opacity-50 cursor-not-allowed" title="No trailer"><i class="ph ph-youtube-logo text-lg text-gray-500"></i></button>`;
+        ? `<button type="button" id="anilist-details-trailer-btn" class="${detailsSecondaryBtnClass}" title="Trailer"><i class="ph ph-youtube-logo text-2xl"></i></button>`
+        : `<button type="button" disabled class="flex-1 bg-white/10 border border-white/15 text-gray-500 font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md opacity-50 cursor-not-allowed" title="No trailer"><i class="ph ph-youtube-logo text-2xl text-gray-500"></i></button>`;
 
     content.innerHTML = bgHtml + `
     <div class="px-4 md:px-6 pb-6 -mt-12 relative z-10">
@@ -1727,12 +2007,12 @@ async function openAnilistDetails(id) {
             </div>
         </div>
         <div class="mt-4 space-y-2">
-            <button type="button" id="anilist-details-play-btn" class="w-full bg-white text-black font-bold py-3 px-6 rounded hover:bg-primary transition-all flex items-center justify-center gap-2">
-                <i class="ph-fill ph-play text-lg"></i> ${btnText}
+            <button type="button" id="anilist-details-play-btn" class="w-full bg-white text-black font-bold text-xl py-3 px-6 rounded hover:bg-primary transition-all flex items-center justify-center gap-2">
+                <i class="ph-fill ph-play text-2xl"></i> ${btnText}
             </button>
             <div class="flex gap-2">
                 <button type="button" id="anilist-details-watchlist-btn" class="wl-btn flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors">
-                    <i class="ph ph-plus text-lg"></i>
+                    <i class="ph ph-plus text-2xl"></i>
                 </button>
                 ${trailerBtnHtml}
             </div>
@@ -1745,7 +2025,6 @@ async function openAnilistDetails(id) {
         infoPanel.innerHTML = `
             <p class="text-text-muted text-sm mb-6 leading-relaxed">${descriptionHtml}</p>
             <div class="bg-card-bg p-4 rounded border border-border-color text-sm space-y-3">
-                <h4 class="font-bold text-text-main border-b border-border-color pb-2">Information</h4>
                 <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs">
                     <div><span class="text-text-muted">Status</span><p class="text-primary font-medium mt-0.5">${anilistStatus}</p></div>
                     <div><span class="text-text-muted">Episodes</span><p class="text-text-main font-medium mt-0.5">${currentAired} / ${totalEps}</p></div>
@@ -1906,6 +2185,8 @@ function renderEpisodeList(containerId, episodes, type, currentEp, onPlayClick, 
 // Updated for separated view (player only — episodes/relations/recs live in details)
 async function openAnilistPlayer(id, startEpisode = 1) {
     router('anilist-player');
+    setPlayerViewActive(true);
+    window.scrollTo(0, 0);
     const state = appState.anilist;
     const targetId = parseInt(id, 10);
 
@@ -2154,15 +2435,18 @@ function openDetailsModal(title) {
     const modal = document.getElementById('details-modal');
     const titleEl = document.getElementById('details-modal-title');
     if (titleEl) titleEl.textContent = title || '';
+    if (isDiscoverResultsModalOpen()) {
+        appState.discover.restoreResultsOnPlayerReturn = true;
+    }
     modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
 }
 
 function closeDetailsModal(options = {}) {
     const preserveDetails = options.preserveDetails === true;
     const modal = document.getElementById('details-modal');
     modal.classList.remove('open');
-    document.body.style.overflow = '';
+    unlockBodyScroll();
 
     const bgPlayer = modal.querySelector('iframe[id$="-bg-player"]');
     if (bgPlayer) bgPlayer.src = '';
@@ -2658,7 +2942,7 @@ async function openTMDBDetails(id, type) {
         }
 
         const historyItem = appState.continueWatching.find(i => i.id === id && i.type === type);
-        let resumeSeason = 1, resumeEp = 1, btnText = 'PLAY NOW', hasPlayed = false;
+        let resumeSeason = 1, resumeEp = 1, btnText = 'Play', hasPlayed = false;
         if (historyItem && historyItem.season) {
             resumeSeason = historyItem.season; resumeEp = historyItem.episode;
             btnText = type === 'tv' ? `RESUME S${resumeSeason} E${resumeEp}` : 'RESUME';
@@ -2711,12 +2995,12 @@ async function openTMDBDetails(id, type) {
 
         const playBtnHtml = isUnreleased
             ? `<button type="button" disabled class="w-full bg-gray-600 text-gray-300 font-bold py-3 px-6 rounded flex items-center justify-center gap-2 cursor-not-allowed"><i class="fas fa-clock"></i> Not yet released</button>`
-            : `<button type="button" id="tmdb-details-play-btn" class="w-full bg-white text-black font-bold py-3 px-6 rounded hover:bg-primary transition-all flex items-center justify-center gap-2"><i class="ph-fill ph-play text-lg"></i> ${btnText}</button>`;
+            : `<button type="button" id="tmdb-details-play-btn" class="w-full bg-white text-black font-bold text-xl py-3 px-6 rounded hover:bg-primary transition-all flex items-center justify-center gap-2"><i class="ph-fill ph-play text-2xl"></i> ${btnText}</button>`;
 
         const detailsSecondaryBtnClass = 'flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors';
         const trailerBtnHtml = trailers.length > 0
-            ? `<button type="button" id="tmdb-details-trailer-btn" class="${detailsSecondaryBtnClass}" title="Trailer"><i class="ph ph-youtube-logo text-lg"></i></button>`
-            : `<button type="button" disabled class="flex-1 bg-white/10 border border-white/15 text-gray-500 font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md opacity-50 cursor-not-allowed" title="No trailer"><i class="ph ph-youtube-logo text-lg"></i></button>`;
+            ? `<button type="button" id="tmdb-details-trailer-btn" class="${detailsSecondaryBtnClass}" title="Trailer"><i class="ph ph-youtube-logo text-2xl"></i></button>`
+            : `<button type="button" disabled class="flex-1 bg-white/10 border border-white/15 text-gray-500 font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md opacity-50 cursor-not-allowed" title="No trailer"><i class="ph ph-youtube-logo text-2xl"></i></button>`;
 
         const hasCollection = collectionData && collectionData.parts && collectionData.parts.length > 0;
         const hasRecs = (recommendations && recommendations.results && recommendations.results.length > 0)
@@ -2764,7 +3048,7 @@ async function openTMDBDetails(id, type) {
                     <button type="button" id="tmdb-details-watchlist-btn"
                         onclick="toggleWatchlist(${id},'${type}','${safeTitle}','${details.poster_path}','tmdb-details-watchlist-btn',${details.vote_average},'${releaseDate.split('-')[0]}','${overview.replace(/'/g, "\\'").replace(/"/g, '&quot;')}','${status}','${genresHtml.replace(/'/g, "\\'")}')"
                         class="wl-btn flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors">
-                        <i class="ph ph-plus text-lg"></i>
+                        <i class="ph ph-plus text-2xl"></i>
                     </button>
                     ${trailerBtnHtml}
                 </div>
@@ -2878,6 +3162,8 @@ function closeTrailerModal() {
 async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
     try {
         router('tmdb-player');
+        setPlayerViewActive(true);
+        window.scrollTo(0, 0);
         const container = document.getElementById('tmdb-player-content');
         container.innerHTML = '<div class="container mx-auto px-6 py-24"><p class="text-text-muted">Loading player...</p></div>';
         loader.show();
@@ -2907,7 +3193,7 @@ async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
                     <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
                         <div class="flex items-center gap-2 flex-wrap"><img src="../images/G-icon.png" alt="Go Stream" class="w-4 h-4 object-cover mr-1">
                             ${showSeasonSelect ? `<select id="player-season-select" class="player-season-select" title="Season"></select>` : ''}
-                            ${type === 'tv' ? `<span id="tv-player-info" class="text-primary font-bold text-sm whitespace-nowrap">S${startSeason} E${startEpisode}</span>` : ''}
+                            ${type === 'tv' ? `<span id="tv-player-info" class="text-primary font-bold text-sm whitespace-nowrap">${formatTmdbTvEpisodeLabel(startSeason, startEpisode, '')}</span>` : ''}
                         </div>
                         <div id="server-buttons" class="flex flex-wrap gap-2"></div>
                     </div>
@@ -2945,7 +3231,12 @@ async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
                 iframe.src = sourceObj.url(id, season, ep);
                 addToHistory(id, type, title, details.poster_path, details.backdrop_path, season, ep, overview, vote, year);
                 const info = document.getElementById('tv-player-info');
-                if (info) info.innerHTML = `Episode ${ep}`;
+                if (info) {
+                    const epObj = window.currentTMDBEpisodes
+                        ? window.currentTMDBEpisodes.find(e => e.episode_number === ep)
+                        : null;
+                    info.textContent = formatTmdbTvEpisodeLabel(season, ep, epObj?.name || '');
+                }
                 updateTvNavButtons();
             }
         };
