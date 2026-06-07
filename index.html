@@ -19,7 +19,9 @@
 
     <title>Go Stream</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orienta:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Color Thief: extract dominant color from poster images -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js" integrity="sha512-ME5tehS+aSNMNTGIQkGMWV0p0WT+bKlDvqHmKfM0XNaLm/1cNt3Uo8p/m9V2rFpG8iYEeU9QdpS5gGVHk/Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -53,12 +55,16 @@
 
 <body>
 
+    <!-- Dynamic ambient background gradient (color-thief driven) -->
+    <div id="dynamic-bg-overlay"></div>
+
     <!-- ============================================================
          GLOBAL LOADER
          ============================================================ -->
     <div id="global-loader" class="hidden-loader bg-dark-bg z-[9999]">
         <!-- Navbar Skeleton (desktop) -->
-        <div class="hidden lg:flex fixed top-0 w-full h-20 bg-[#020617]/60 backdrop-blur-md border-b border-border-color items-center justify-between px-8 animate-pulse z-[10000]">
+        <div
+            class="hidden lg:flex fixed top-0 w-full h-20 bg-[#020617]/60 backdrop-blur-md border-b border-border-color items-center justify-between px-8 animate-pulse z-[10000]">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-full bg-white/5"></div>
                 <div class="w-24 h-6 bg-white/5 rounded"></div>
@@ -77,17 +83,30 @@
             <div class="flex flex-col gap-4 w-full">
                 <div class="w-48 h-8 bg-white/5 rounded-md mb-2"></div>
                 <div class="flex gap-4 md:gap-6 overflow-hidden">
-                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
-                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
-                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
-                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
-                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
-                    <div class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0"></div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
+                    <div
+                        class="w-[130px] sm:w-[160px] lg:w-[200px] h-[195px] sm:h-[240px] lg:h-[300px] bg-white/5 rounded-xl flex-shrink-0">
+                    </div>
                 </div>
             </div>
         </div>
         <!-- Bottom Nav Skeleton (mobile) -->
-        <div class="lg:hidden fixed bottom-0 left-0 right-0 h-[70px] bg-[#020617]/60 border-t border-border-color flex justify-around items-center px-4 animate-pulse z-[10000]">
+        <div
+            class="lg:hidden fixed bottom-0 left-0 right-0 h-[70px] bg-[#020617]/60 border-t border-border-color flex justify-around items-center px-4 animate-pulse z-[10000]">
             <div class="w-10 h-10 bg-white/5 rounded-full"></div>
             <div class="w-10 h-10 bg-white/5 rounded-full"></div>
             <div class="w-10 h-10 bg-white/5 rounded-full"></div>
@@ -104,17 +123,22 @@
          ============================================================ -->
 
     <!-- Filter Modal -->
-    <div id="filter-modal" class="modal-overlay z-[600] flex items-end md:items-center justify-center" onclick="closeFilterModal(event)">
-        <div class="w-full max-w-lg bg-[#0f172a] rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col max-h-[85vh]" onclick="event.stopPropagation()">
+    <div id="filter-modal" class="modal-overlay z-[600] flex items-end md:items-center justify-center"
+        onclick="closeFilterModal(event)">
+        <div class="w-full max-w-lg bg-[#0f172a] rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col max-h-[85vh]"
+            onclick="event.stopPropagation()">
             <!-- Header -->
             <div class="flex justify-between items-center px-5 py-4 border-b border-white/8 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <i class="ph ph-funnel-simple text-primary text-lg"></i>
                     <span class="text-white font-bold text-base">Filters</span>
-                    <span id="filter-modal-badge" class="hidden px-2 py-0.5 bg-primary/20 text-primary text-xs font-bold rounded-full"></span>
+                    <span id="filter-modal-badge"
+                        class="hidden px-2 py-0.5 bg-primary/20 text-primary text-xs font-bold rounded-full"></span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button id="filter-modal-reset" onclick="resetAllFilters()" class="text-xs text-text-muted hover:text-primary transition-colors font-medium">Reset all</button>
+                    <button id="filter-modal-reset" onclick="resetAllFilters()"
+                        class="text-xs text-text-muted hover:text-primary transition-colors font-medium">Reset
+                        all</button>
                     <button onclick="closeFilterModal()" class="text-gray-400 hover:text-white transition-colors p-1">
                         <i class="ph ph-x text-xl"></i>
                     </button>
@@ -124,7 +148,8 @@
             <div id="filter-modal-body" class="custom-scroll overflow-y-auto flex-1 px-5 py-4 space-y-6"></div>
             <!-- Footer -->
             <div class="px-5 py-4 border-t border-white/8 flex-shrink-0">
-                <button onclick="closeFilterModal()" class="w-full bg-primary text-black font-bold py-3 rounded-xl hover:bg-primary/90 transition-colors">
+                <button onclick="closeFilterModal()"
+                    class="w-full bg-primary text-black font-bold py-3 rounded-xl hover:bg-primary/90 transition-colors">
                     Show Results
                 </button>
             </div>
@@ -132,33 +157,42 @@
     </div>
 
     <!-- Discover Results Modal -->
-    <div id="discover-results-modal" class="modal-overlay discover-results-modal flex items-center justify-center p-4" onclick="closeDiscoverResults(event)">
-        <div class="w-full max-w-[1440px] max-h-[92vh] bg-[#020617] rounded-xl overflow-hidden shadow-2xl flex flex-col" onclick="event.stopPropagation()">
+    <div id="discover-results-modal" class="modal-overlay discover-results-modal flex items-center justify-center p-4"
+        onclick="closeDiscoverResults(event)">
+        <div class="w-full max-w-[1440px] max-h-[92vh] bg-[#020617] rounded-xl overflow-hidden shadow-2xl flex flex-col"
+            onclick="event.stopPropagation()">
             <div class="flex justify-between items-center gap-3 p-4 border-b border-border-color flex-shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
-                    <button type="button" onclick="closeDiscoverResults()" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
+                    <button type="button" onclick="closeDiscoverResults()"
+                        class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
                         <i class="ph ph-arrow-left text-xl"></i>
                     </button>
                     <h2 id="discover-results-title" class="text-white font-bold text-lg truncate"></h2>
                 </div>
-                <button type="button" onclick="closeDiscoverResults()" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
+                <button type="button" onclick="closeDiscoverResults()"
+                    class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
                     <i class="ph ph-x text-xl"></i>
                 </button>
             </div>
             <div class="custom-scroll overflow-y-auto flex-1 p-4 sm:p-6">
                 <div id="discover-results-grid" class="results-grid"></div>
             </div>
-            <div id="discover-results-pagination" class="pagination-controls py-4 px-4 border-t border-border-color flex justify-center gap-2 flex-shrink-0"></div>
+            <div id="discover-results-pagination"
+                class="pagination-controls py-4 px-4 border-t border-border-color flex justify-center gap-2 flex-shrink-0">
+            </div>
         </div>
     </div>
 
     <!-- Details Modal (TMDB + Anilist) -->
-    <div id="details-modal" class="modal-overlay z-[650] flex items-center justify-center p-4" onclick="handleDetailsModalBackdropClick(event)">
-        <div class="w-full max-w-4xl max-h-[92vh] bg-[#020617] rounded overflow-hidden shadow-2xl flex flex-col" onclick="event.stopPropagation()">
+    <div id="details-modal" class="modal-overlay z-[650] flex items-center justify-center p-4"
+        onclick="handleDetailsModalBackdropClick(event)">
+        <div class="w-full max-w-4xl max-h-[92vh] bg-[#020617] rounded overflow-hidden shadow-2xl flex flex-col"
+            onclick="event.stopPropagation()">
             <!-- Header -->
             <div class="flex justify-between items-center p-3 bg-[#1a1a1a] border-b border-gray-800 flex-shrink-0">
                 <span id="details-modal-title" class="text-white font-semibold ml-2 truncate"></span>
-                <button onclick="closeDetailsModal()" class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
+                <button onclick="closeDetailsModal()"
+                    class="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0" aria-label="Close">
                     <i class="ph ph-x text-xl"></i>
                 </button>
             </div>
@@ -191,7 +225,8 @@
     <!-- Confirmation Modal -->
     <div id="confirmation-modal"
         class="fixed inset-0 z-[1200] bg-[#020617]/80 backdrop-blur-md flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
-        <div class="bg-card-bg border border-border-color p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300">
+        <div
+            class="bg-card-bg border border-border-color p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300">
             <h3 id="confirm-title" class="text-xl font-bold text-white mb-2">Confirm</h3>
             <p id="confirm-msg" class="text-gray-400 mb-6 text-sm">Are you sure?</p>
             <div class="flex justify-end gap-3">
@@ -217,32 +252,38 @@
          boots app.js once both are in the DOM.
          ============================================================ -->
     <script>
-        (function () {
-            const parts = [
-                { url: 'html/nav.html',      mount: 'nav-mount' },
-                { url: 'html/sections.html', mount: 'sections-mount' }
-            ];
+            (function () {
+                const parts = [
+                    { url: 'html/nav.html', mount: 'nav-mount' },
+                    { url: 'html/sections.html', mount: 'sections-mount' }
+                ];
 
-            Promise.all(
-                parts.map(p =>
-                    fetch(p.url)
-                        .then(r => { if (!r.ok) throw new Error(p.url + ' failed: ' + r.status); return r.text(); })
-                        .then(html => { document.getElementById(p.mount).innerHTML = html; })
+                Promise.all(
+                    parts.map(p =>
+                        fetch(p.url)
+                            .then(r => { if (!r.ok) throw new Error(p.url + ' failed: ' + r.status); return r.text(); })
+                            .then(html => { document.getElementById(p.mount).innerHTML = html; })
+                    )
                 )
-            )
-            .then(function () {
-                var s = document.createElement('script');
-                s.src = 'js/app.js';
-                document.body.appendChild(s);
-            })
-            .catch(function (err) {
-                console.error('Failed to load HTML partials:', err);
-                // Fallback: load app.js anyway so the error is visible
-                var s = document.createElement('script');
-                s.src = 'js/app.js';
-                document.body.appendChild(s);
-            });
-        })();
+                    .then(function () {
+                        // Load enhancements first so functions are available to app.js
+                        var enh = document.createElement('script');
+                        enh.src = 'js/ui/enhancements.js';
+                        enh.onload = function () {
+                            var s = document.createElement('script');
+                            s.src = 'js/app.js';
+                            document.body.appendChild(s);
+                        };
+                        document.body.appendChild(enh);
+                    })
+                    .catch(function (err) {
+                        console.error('Failed to load HTML partials:', err);
+                        // Fallback: load app.js anyway so the error is visible
+                        var s = document.createElement('script');
+                        s.src = 'js/app.js';
+                        document.body.appendChild(s);
+                    });
+            })();
     </script>
 
 </body>

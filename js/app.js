@@ -179,7 +179,13 @@ function unlockBodyScroll() {
     if (scrollLockCount === 0) {
         document.body.classList.remove('scroll-locked');
         document.body.style.top = '';
-        window.scrollTo(0, scrollLockPosition);
+        // Use requestAnimationFrame so the browser reflows the unfixed body
+        // before restoring scroll position (important on iOS where scrollTo
+        // can be silently ignored if called synchronously after unfixing).
+        const pos = scrollLockPosition;
+        requestAnimationFrame(() => {
+            window.scrollTo(0, pos);
+        });
     }
 }
 
@@ -339,6 +345,77 @@ window.toggleVolume = function (iframeId, btnId) {
         icon.innerText = 'volume_up';
     }
 };
+
+/**
+ * YouTube availability check — uses the oEmbed endpoint which is CORS-safe
+ * and returns a non-OK status for geo-blocked or embedding-disabled videos.
+ * Falls back to true (optimistic) on network failure so slow connections
+ * don't always show the backdrop.
+ * Result is cached per video ID for the session.
+ */
+const _ytAvailabilityCache = {};
+async function checkYouTubeAvailable(videoId) {
+    if (videoId in _ytAvailabilityCache) return _ytAvailabilityCache[videoId];
+    try {
+        const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}&format=json`;
+        const res = await fetch(url, { method: 'GET', mode: 'cors' });
+        // 200 = video is embeddable and available in this region
+        // 401 = embedding disabled by owner
+        // 404 = video not found / removed
+        // Other non-200 = region-blocked or otherwise unavailable
+        const available = res.ok; // true only for HTTP 200
+        _ytAvailabilityCache[videoId] = available;
+        return available;
+    } catch (e) {
+        // Network error — be optimistic so normal connections still get trailers
+        _ytAvailabilityCache[videoId] = true;
+        return true;
+    }
+}
+
+/**
+ * Post-load iframe fallback: listens for YouTube postMessage events.
+ * If the player reports an error (codes 2, 5, 100, 101, 150 = unavailable/
+ * blocked) after the iframe loads, the container is swapped to the backdrop.
+ */
+(function initYouTubeFallbackListener() {
+    window.addEventListener('message', (event) => {
+        if (!event.origin.includes('youtube.com')) return;
+        let data;
+        try { data = JSON.parse(event.data); } catch (e) { return; }
+
+        // YouTube sends {event:"infoDelivery", info:{playerState, ...}}
+        // Error event: {event:"onError", info: errorCode}
+        if (data.event !== 'onError' && data.event !== 'infoDelivery') return;
+
+        const errorCode = data.event === 'onError' ? data.info : null;
+        // Error codes that mean unavailable/blocked: 2, 5, 100, 101, 150
+        const isFatal = errorCode !== null && [2, 5, 100, 101, 150].includes(errorCode);
+        if (!isFatal) return;
+
+        // Find the iframe that sent this message by matching source
+        document.querySelectorAll('iframe[id$="-bg-player"]').forEach(iframe => {
+            try {
+                // Can't directly match iframe to event.source cross-origin,
+                // so fall back to swapping all bg-player iframes that have a
+                // fallback-bg attribute if an error fires.
+                const fallbackBg = iframe.dataset.fallbackBg;
+                if (!fallbackBg) return;
+                const container = iframe.closest('div');
+                if (!container) return;
+
+                // Swap: remove iframe + unmute btn, set backdrop image
+                iframe.remove();
+                const unmuteBtn = container.querySelector('button[id$="-unmute-btn"]');
+                if (unmuteBtn) unmuteBtn.remove();
+                container.style.backgroundImage = `url('${fallbackBg}')`;
+                container.style.backgroundSize  = 'cover';
+                container.style.backgroundPosition = 'center';
+                container.style.backgroundColor = '';
+            } catch (e) { /* ignore */ }
+        });
+    });
+})();
 
 /**
  * CORE UTILITIES
@@ -1253,7 +1330,7 @@ function updateSharedBanner() {
         contentDiv.innerHTML = `
                     ${titleHtml}
                     <div class="flex items-center gap-3 text-sm font-medium text-white mb-4 drop-shadow-md">
-                        <span class="text-yellow-500 font-bold"><i class="ph-fill ph-star text-xs"></i> ${vote.toFixed(1)}</span>
+                        <span class="text-yellow-400 font-bold"><i class="ph-fill ph-star text-xs"></i> ${vote.toFixed(1)}</span>
                         <span class="text-gray-500">|</span>
                         <span>${year}</span>
                         <span class="text-gray-500">|</span>
@@ -1963,12 +2040,16 @@ async function openAnilistDetails(id) {
     const titleEl = document.getElementById('details-modal-title');
     if (titleEl) titleEl.textContent = title;
 
-    let bgHtml = `<div class="w-full h-40 md:h-52 relative overflow-hidden flex-shrink-0" style="${trailerId ? 'background-color:#000' : `background-image:url('${bannerUrl}');background-size:cover;background-position:center`}">
+    // Check if the YouTube trailer is actually playable before embedding it
+    const aniTrailerAvailable = trailerId ? await checkYouTubeAvailable(trailerId) : false;
+    const showAniTrailer = trailerId && aniTrailerAvailable;
+
+        let bgHtml = `<div class="w-full h-40 md:h-52 relative overflow-hidden flex-shrink-0" style="${showAniTrailer ? 'background-color:#000' : `background-image:url('${bannerUrl}');background-size:cover;background-position:center`}">
         <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent z-10 pointer-events-none"></div>`;
-    if (trailerId) {
+    if (showAniTrailer) {
         bgHtml += `<iframe id="anilist-bg-player" class="absolute w-[200%] md:w-full aspect-video top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"
             src="https://www.youtube.com/embed/${trailerId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${trailerId}&modestbranding=1&enablejsapi=1"
-            frameborder="0" allow="autoplay; encrypted-media" data-muted="true" allowfullscreen></iframe>
+            frameborder="0" allow="autoplay; encrypted-media" data-muted="true" data-fallback-bg="${bannerUrl}" allowfullscreen></iframe>
         <button id="anilist-unmute-btn" type="button" onclick="toggleVolume('anilist-bg-player','anilist-unmute-btn')" class="absolute top-3 right-3 z-50 p-2 text-white transition-colors">
             <i class="material-icons text-sm flex items-center justify-center w-4 h-4">volume_off</i>
         </button>`;
@@ -1983,7 +2064,7 @@ async function openAnilistDetails(id) {
     if (hasRecs) visibleTabs.push('recommendations');
 
     const historyItem = appState.continueWatching.find(i => i.id === id && i.type === 'anime');
-    const btnText = historyItem && historyItem.episode ? `RESUME EP ${historyItem.episode}` : 'Play';
+    const btnText = historyItem && historyItem.episode ? `Resume EP ${historyItem.episode}` : 'Play';
 
     const detailsSecondaryBtnClass = 'flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors';
     const trailerBtnHtml = trailerId
@@ -2007,9 +2088,10 @@ async function openAnilistDetails(id) {
             </div>
         </div>
         <div class="mt-4 space-y-2">
-            <button type="button" id="anilist-details-play-btn" class="w-full bg-white text-black font-bold text-xl py-3 px-6 rounded hover:bg-primary transition-all flex items-center justify-center gap-2">
-                <i class="ph-fill ph-play text-2xl"></i> ${btnText}
-            </button>
+            ${anime.status === 'NOT_YET_RELEASED'
+                ? `<button type="button" disabled class="w-full bg-gray-600 text-gray-300 font-bold text-xl py-3 px-6 rounded flex items-center justify-center gap-2 cursor-not-allowed opacity-70"><i class="fas fa-clock"></i> Not yet released</button>`
+                : `<button type="button" id="anilist-details-play-btn" class="w-full bg-white text-black font-bold text-xl py-3 px-6 rounded hover:bg-primary transition-all flex items-center justify-center gap-2"><i class="ph-fill ph-play text-2xl"></i> ${btnText}</button>`
+            }
             <div class="flex gap-2">
                 <button type="button" id="anilist-details-watchlist-btn" class="wl-btn flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors">
                     <i class="ph ph-plus text-2xl"></i>
@@ -2033,10 +2115,10 @@ async function openAnilistDetails(id) {
                     <div><span class="text-text-muted">Studios</span><p class="text-text-main font-medium mt-0.5">${studios.join(', ') || 'N/A'}</p></div>
                     <div><span class="text-text-muted">Genres</span><p class="text-text-main font-medium mt-0.5">${genresStr}</p></div>
                     ${tagsArr.length ? `<div class="col-span-2">
-                        <span class="text-text-muted">Tags</span>
+                        <span class="text-text-muted">Tags<i class="ph ph-tag ml-1"></i></span>
                         <div class="anime-tag-chips mt-1.5">${tagsArr.slice(0, 10).map(t =>
-                            `<button type="button" class="anime-tag-chip" onclick="browseByAnilistTag('${t.replace(/'/g, "\\'")}')">${t}</button>`
-                        ).join('')}</div>
+            `<button type="button" class="anime-tag-chip" onclick="browseByAnilistTag('${t.replace(/'/g, "\\'")}')">${t}</button>`
+        ).join('')}</div>
                     </div>` : ''}
                 </div>
                 ${castHtml ? `<div class="mt-5 border-t border-border-color pt-2"><h3 class="text-base font-bold text-text-main mb-3">Cast & Voice Actors</h3>${castHtml}</div>` : ''}
@@ -2054,17 +2136,19 @@ async function openAnilistDetails(id) {
     );
     updateWatchlistButtonState(anime.id, 'anilist-details-watchlist-btn');
 
-    document.getElementById('anilist-details-play-btn').onclick = () => {
-        openPlayerWithReturn(() => openAnilistPlayer(id, resumeEp));
-    };
+    // Only wire play button if anime is not unreleased
+    const playBtn = document.getElementById('anilist-details-play-btn');
+    if (playBtn) {
+        playBtn.onclick = () => {
+            openPlayerWithReturn(() => openAnilistPlayer(id, resumeEp));
+        };
+    }
 
     if (trailerId) {
         document.getElementById('anilist-details-trailer-btn').onclick = () =>
             openTrailerModal([{ key: trailerId, name: 'Main Trailer', site: 'YouTube' }]);
     }
 }
-
-// EPISODE LIST HELPERS
 function toggleEpisodeSort() {
     appState.episodeSort = appState.episodeSort === 'asc' ? 'desc' : 'asc';
     const btn = document.getElementById('ep-sort-btn');
@@ -2209,9 +2293,15 @@ async function openAnilistPlayer(id, startEpisode = 1) {
     const title = anime.title.english || anime.title.romaji;
     document.getElementById('anilist-player-title').innerText = title;
 
-    // Server Buttons
+    // ── Server selector (Anime player) ─────────────────────────────
+    // Panel is rendered inline inside a relative-positioned wrapper so it
+    // doesn't need body-appending, getBoundingClientRect, or stored IDs.
     const serverBtnContainer = document.getElementById('anime-server-buttons');
     serverBtnContainer.innerHTML = '';
+
+    // Build wrapper → toggle button + inline panel
+    const srvWrapper = document.createElement('div');
+    srvWrapper.style.position = 'relative';
 
     const activeSrcIdx = state.currentServerIdx;
     const activeSrc = ANIME_SOURCES[activeSrcIdx];
@@ -2223,14 +2313,6 @@ async function openAnilistPlayer(id, startEpisode = 1) {
 
     const srvPanel = document.createElement('div');
     srvPanel.className = 'server-panel';
-    document.body.appendChild(srvPanel);
-
-    const positionSrvPanel = () => {
-        const rect = srvToggleBtn.getBoundingClientRect();
-        srvPanel.style.top = (rect.bottom + 6) + 'px';
-        srvPanel.style.right = (window.innerWidth - rect.right) + 'px';
-        srvPanel.style.left = 'auto';
-    };
 
     const closeSrvPanel = () => {
         srvPanel.classList.remove('open');
@@ -2245,13 +2327,13 @@ async function openAnilistPlayer(id, startEpisode = 1) {
         if (!isOpen) {
             srvPanel.classList.add('open');
             srvToggleBtn.classList.add('open');
-            requestAnimationFrame(positionSrvPanel);
         }
     };
 
-    document.addEventListener('click', (e) => {
-        if (!srvToggleBtn.contains(e.target) && !srvPanel.contains(e.target)) closeSrvPanel();
-    }, { capture: true });
+    const srvOutsideClick = (e) => {
+        if (!srvWrapper.contains(e.target)) closeSrvPanel();
+    };
+    document.addEventListener('click', srvOutsideClick);
 
     ANIME_SOURCES.forEach((src, idx) => {
         const item = document.createElement('div');
@@ -2273,7 +2355,9 @@ async function openAnilistPlayer(id, startEpisode = 1) {
         srvPanel.appendChild(item);
     });
 
-    serverBtnContainer.appendChild(srvToggleBtn);
+    srvWrapper.appendChild(srvToggleBtn);
+    srvWrapper.appendChild(srvPanel);
+    serverBtnContainer.appendChild(srvWrapper);
 
     let maxEps = anime.episodes || 12;
     if (anime.nextAiringEpisode) maxEps = anime.nextAiringEpisode.episode - 1;
@@ -2383,33 +2467,55 @@ function getListSkeleton(count = 10) {
     // Update Header
     document.getElementById('search-header').innerText = `Search Results for '${query}'`;
 
-    // searchInput.value = ''; // Keep the text
     grid.innerHTML = '';
 
     let hasResults = false;
     let maxPages = 1;
 
-    if (anilistRes && anilistRes.Page.media) {
-        const animeItems = anilistRes.Page.media.map(mapAnilistToShared);
-        renderAnilistGrid('grid-search', animeItems, false, true);
-        if (animeItems.length > 0) hasResults = true;
-        if (anilistRes.Page.pageInfo.lastPage > maxPages) maxPages = anilistRes.Page.pageInfo.lastPage;
-    }
+    const animeItems = (anilistRes && anilistRes.Page.media)
+        ? anilistRes.Page.media.map(mapAnilistToShared)
+        : [];
 
-    if (tmdbRes && tmdbRes.results) {
-        // Modified filter: allow Person, Movie, TV, but EXCLUDE Anime from TMDB results
-        const filtered = tmdbRes.results.filter(i => {
+    const filteredTmdb = (tmdbRes && tmdbRes.results)
+        ? tmdbRes.results.filter(i => {
             const isMedia = i.media_type === 'movie' || i.media_type === 'tv' || i.media_type === 'person';
-            // TMDB Anime Detection: Genre 16 (Animation) + Country JP
             const isAnime = i.genre_ids && i.genre_ids.includes(16) && i.origin_country && i.origin_country.includes('JP');
-
-            // Allow everything that is Media/Person, BUT if it is anime, block it (unless it's a person, people aren't 'anime')
             if (i.media_type === 'person') return true;
             return isMedia && !isAnime;
-        });
-        await renderTMDBGrid('grid-search', filtered, null, false, true);
-        if (filtered.length > 0) hasResults = true;
-        if (tmdbRes.total_pages > maxPages) maxPages = tmdbRes.total_pages;
+        })
+        : [];
+
+    // Determine whether the query is anime-dominant:
+    // Anime comes first when AniList returned results AND either:
+    //   - the top AniList result's title closely matches the query (direct anime search), OR
+    //   - AniList returned more results than TMDB filtered results (query is anime-heavy)
+    const queryLower = query.toLowerCase().trim();
+    const topAnimeTitle = animeItems.length > 0
+        ? ((animeItems[0].title || animeItems[0].name || '').toLowerCase())
+        : '';
+    const isDirectAnimeMatch = topAnimeTitle && (
+        topAnimeTitle.includes(queryLower) || queryLower.includes(topAnimeTitle.split(' ')[0])
+    );
+    const animeIsDominant = animeItems.length > 0 && (isDirectAnimeMatch || animeItems.length >= filteredTmdb.length);
+
+    if (animeIsDominant) {
+        // Anime-first order
+        renderAnilistGrid('grid-search', animeItems, false, true);
+        if (animeItems.length > 0) hasResults = true;
+        if (anilistRes && anilistRes.Page.pageInfo.lastPage > maxPages) maxPages = anilistRes.Page.pageInfo.lastPage;
+
+        await renderTMDBGrid('grid-search', filteredTmdb, null, false, true);
+        if (filteredTmdb.length > 0) hasResults = true;
+        if (tmdbRes && tmdbRes.total_pages > maxPages) maxPages = tmdbRes.total_pages;
+    } else {
+        // TMDB-first order (movies/TV dominant)
+        await renderTMDBGrid('grid-search', filteredTmdb, null, false, true);
+        if (filteredTmdb.length > 0) hasResults = true;
+        if (tmdbRes && tmdbRes.total_pages > maxPages) maxPages = tmdbRes.total_pages;
+
+        renderAnilistGrid('grid-search', animeItems, false, true);
+        if (animeItems.length > 0) hasResults = true;
+        if (anilistRes && anilistRes.Page.pageInfo.lastPage > maxPages) maxPages = anilistRes.Page.pageInfo.lastPage;
     }
 
     if (!hasResults) {
@@ -2431,6 +2537,13 @@ function getListSkeleton(count = 10) {
 // DETAILS MODAL — open / close helpers
 // ============================================================
 
+// Track whether the details modal itself holds a scroll lock.
+// This avoids relying on the shared scrollLockCount for details-modal state,
+// which can get out of sync when recommendation cards are opened multiple times
+// within an already-open modal (each navigation would re-enter openDetailsModal
+// and potentially mis-count locks, leaving the body scroll-locked after close).
+let detailsModalOwnsLock = false;
+
 function openDetailsModal(title) {
     const modal = document.getElementById('details-modal');
     const titleEl = document.getElementById('details-modal-title');
@@ -2438,15 +2551,36 @@ function openDetailsModal(title) {
     if (isDiscoverResultsModalOpen()) {
         appState.discover.restoreResultsOnPlayerReturn = true;
     }
+
+    // Reset modal content scroll to top when navigating to a new item
+    // (recommendation tap while the modal is already open)
+    const content = document.getElementById('details-modal-content');
+    if (content) content.scrollTop = 0;
+
+    const isAlreadyOpen = modal.classList.contains('open');
     modal.classList.add('open');
-    lockBodyScroll();
+
+    // Only acquire a scroll lock once — no matter how many recommendations
+    // the user opens in a row while the modal stays open.
+    if (!isAlreadyOpen && !detailsModalOwnsLock) {
+        detailsModalOwnsLock = true;
+        lockBodyScroll();
+    }
 }
 
 function closeDetailsModal(options = {}) {
     const preserveDetails = options.preserveDetails === true;
     const modal = document.getElementById('details-modal');
     modal.classList.remove('open');
-    unlockBodyScroll();
+
+    // Release the scroll lock only if this modal actually acquired one.
+    // This prevents over-decrementing scrollLockCount when the modal was
+    // closed and re-opened (e.g. via player return) without going through
+    // the full open flow.
+    if (detailsModalOwnsLock) {
+        detailsModalOwnsLock = false;
+        unlockBodyScroll();
+    }
 
     const bgPlayer = modal.querySelector('iframe[id$="-bg-player"]');
     if (bgPlayer) bgPlayer.src = '';
@@ -2460,7 +2594,11 @@ function closeDetailsModal(options = {}) {
 
     modal.addEventListener('transitionend', () => {
         if (!modal.classList.contains('open')) {
-            document.getElementById('details-modal-content').innerHTML = '';
+            const contentEl = document.getElementById('details-modal-content');
+            if (contentEl) {
+                contentEl.scrollTop = 0;
+                contentEl.innerHTML = '';
+            }
             if (!preserveDetails) {
                 const titleEl = document.getElementById('details-modal-title');
                 if (titleEl) titleEl.textContent = '';
@@ -2513,7 +2651,7 @@ function openDetailsWrapper(id, type, season, ep, cardElement) {
             else openTMDBDetails(id, type);
         }
     };
-    
+
     if (cardElement && season === undefined && ep === undefined) {
         transitionToDetails(cardElement, doOpen);
     } else {
@@ -2545,8 +2683,8 @@ function renderTop10List(containerId, items) {
 
         html += `
                 <div class="relative flex items-end shrink-0 cursor-pointer group w-[220px] sm:w-[260px] md:w-[300px]" onclick="openDetailsWrapper(${item.id}, '${type}', undefined, undefined, this)">
-                    <span class="absolute -left-6 md:-left-10 -bottom-4 md:-bottom-6 text-[100px] sm:text-[140px] md:text-[160px] font-black leading-none z-0 select-none group-hover:scale-105 transition-transform" style="color: transparent; -webkit-text-stroke: 2px #cae962;">${num}</span>
                     <img src="${posterUrl}" class="w-40 sm:w-48 md:w-56 rounded md:rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.8)] z-10 transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-105 ml-8" />
+                    <span class="absolute -left-6 md:-left-10 -bottom-4 md:-bottom-6 text-[100px] sm:text-[140px] md:text-[160px] font-black leading-none z-10 select-none group-hover:scale-105 transition-transform" style="color: transparent; -webkit-text-stroke: 2px #cae962;">${num}</span>
                 </div>
                 `;
     });
@@ -2634,7 +2772,21 @@ async function renderTMDBGrid(containerId, items, typeOverride, isHorizontal = f
         const genreList = type === 'tv' ? TV_GENRES : MOVIE_GENRES;
         const genres = item.genre_ids ? item.genre_ids.map(id => genreList.find(g => g.id === id)?.name).filter(Boolean).slice(0, 3).join(', ') : '';
 
-        const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, displayStatus);
+        // Rank badge for Popular and Top Rated tabs (top 100 only)
+        let tmdbRank = null;
+        const tmdbSort = containerId === 'grid-movies' ? appState.tmdb.movies.filters.sort
+                       : containerId === 'grid-tv'     ? appState.tmdb.tv.filters.sort
+                       : null;
+        if (tmdbSort && ['popularity.desc', 'top_rated'].includes(tmdbSort)) {
+            const sectionKey = containerId === 'grid-movies' ? 'movies' : 'tv';
+            const currentPage = appState.tmdb[sectionKey].page;
+            const itemsPerPage = 40; // double-fetch gives ~40 items per UI page
+            const itemIndex = Array.from(container.children).length; // position in current grid
+            const rankNum = (currentPage - 1) * itemsPerPage + itemIndex + 1;
+            if (rankNum <= 100) tmdbRank = rankNum;
+        }
+
+        const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, displayStatus, tmdbRank);
         const isDuplicate = Array.from(container.children).some(c => c.dataset.id == item.id && c.dataset.type == type);
         if (!isDuplicate) container.appendChild(card);
     }
@@ -2653,7 +2805,7 @@ function renderAnilistGrid(containerId, items, isHorizontal = false, append = fa
         });
     }
 
-    items.forEach(item => {
+    items.forEach((item, index) => {
         const type = 'anime';
         const uniqueKey = item.id + '-' + type;
         if (seenIds.has(uniqueKey)) return;
@@ -2682,15 +2834,26 @@ function renderAnilistGrid(containerId, items, isHorizontal = false, append = fa
 
         const genres = item.genres ? item.genres.slice(0, 3).join(', ') : '';
 
-        const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, aniStatus);
+        // Compute rank if on the Popular, Top Rated, or Top Anime Movies tab and it is within top 100
+        let rank = null;
+        if (containerId === 'grid-anilist' &&
+            ['POPULARITY_DESC', 'SCORE_DESC', 'TOP_ANIME_MOVIES'].includes(appState.anilist.filters.sort)) {
+            rank = (appState.anilist.page - 1) * 24 + index + 1;
+            if (rank > 100) {
+                rank = null;
+            }
+        }
+
+        const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, aniStatus, rank);
         container.appendChild(card);
     });
 }
 
-function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview, genres, statusText) {
+function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview, genres, statusText, rank = null) {
     const card = document.createElement('div');
     const widthClass = isHorizontal ? 'landscape-card' : '';
-    card.className = `movie-card rounded-md cursor-pointer relative group ${widthClass}`;
+    const hasRankClass = rank ? 'has-rank' : '';
+    card.className = `movie-card rounded-md cursor-pointer relative group ${widthClass} ${hasRankClass}`;
     card.dataset.id = id;
     card.dataset.type = type;
 
@@ -2710,6 +2873,14 @@ function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isH
     const btnId = `wl-${id}-${Math.random().toString(36).substr(2, 6)}`;
 
     card.innerHTML = `
+                <!-- RANKING BADGE -->
+                ${rank ? `
+                <div class="absolute -top-2.5 -left-2.5 z-30 flex items-center justify-center w-9 h-9 anime-rank-badge">
+                    <i class="ph-fill ph-bookmark-simple text-[#cae962] text-[45px] drop-shadow-md"></i>
+                    <span class="absolute text-dark-bg font-extrabold ${rank >= 100 ? 'text-[9px]' : 'text-[11px]'} leading-none mt-[-1px]">#${rank}</span>
+                </div>
+                ` : ''}
+
                 <div class="${aspectClass} overflow-hidden relative">
                     <img src="${posterUrl}" class="w-full h-full object-cover">
                     
@@ -2721,25 +2892,16 @@ function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isH
                          <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300"></i>
                     </div>` : ''}
 
-                     ${type !== 'actor' ? ` <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-yellow-400 text-[10px] md:text-xs font-bold px-2 py-1 rounded flex items-center gap-1 z-10">
+                     ${type !== 'actor' ? ` <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-yellow-400 text-[10px] md:text-xs font-bold px-2 py-1 rounded flex items-center gap-1 z-10">
                     ${type === 'season' ? '' : ''} <i class="ph-fill ph-star"></i> ${voteDisplay} </div> ` : `
                     <div class="absolute top-1.5 left-1.5 bg-[#020617]/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10">
                         <i class="ph ph-user"></i>
                     </div> ` }
-                    <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-yellow-400 text-[10px] md:text-xs font-bold px-2 py-1 rounded flex items-center gap-1 z-10">
-                        <span class="uppercase rounded text-[10px] truncate max-w-[80px]">${statusText || type}</span>
-                    </div>
 
                     <div class="absolute bottom-0 left-0 w-full p-3 card-info">
                         <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors ${(isHorizontal || type === 'anime' || type === 'season') ? '' : 'hidden'}" title="${title}">
-                            ${title}
+                            ${title} 
                         </h3>
-                        <div class="flex justify-between items-center text-xs text-text-muted mt-1">
-                            <span>${safeYear}</span>
-                            <span class="uppercase border border-border-color px-1 rounded text-[10px] truncate max-w-[80px]">
-                            ${type}
-                            </span>
-                        </div>
                     </div>
                 </div> `;
 
@@ -2945,9 +3107,9 @@ async function openTMDBDetails(id, type) {
         let resumeSeason = 1, resumeEp = 1, btnText = 'Play', hasPlayed = false;
         if (historyItem && historyItem.season) {
             resumeSeason = historyItem.season; resumeEp = historyItem.episode;
-            btnText = type === 'tv' ? `RESUME S${resumeSeason} E${resumeEp}` : 'RESUME';
+            btnText = type === 'tv' ? `Resume S${resumeSeason} E${resumeEp}` : 'Resume';
             hasPlayed = true;
-        } else if (historyItem) { btnText = 'RESUME'; hasPlayed = true; }
+        } else if (historyItem) { btnText = 'Resume'; hasPlayed = true; }
 
         const title = details.title || details.name;
         const backdrop = getBackdropUrl(details.backdrop_path);
@@ -3013,12 +3175,15 @@ async function openTMDBDetails(id, type) {
         const titleEl = document.getElementById('details-modal-title');
         if (titleEl) titleEl.textContent = title;
 
-        let bgHtml = `<div class="w-full h-40 md:h-52 bg-cover bg-center relative overflow-hidden flex-shrink-0" style="${trailerKey ? 'background-color:#000' : `background-image:url('${backdrop}')`}">
+        // Check if the YouTube trailer is actually playable before embedding it
+        const tmdbTrailerAvailable = trailerKey ? await checkYouTubeAvailable(trailerKey) : false;
+        const showTmdbTrailer = trailerKey && tmdbTrailerAvailable;
+
+        let bgHtml = `<div class="w-full h-40 md:h-52 bg-cover bg-center relative overflow-hidden flex-shrink-0" style="${showTmdbTrailer ? 'background-color:#000' : `background-image:url('${backdrop}')`}">
             <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent z-10 pointer-events-none"></div>`;
-        if (trailerKey) {
+        if (showTmdbTrailer) {
             bgHtml += `<iframe id="tmdb-bg-player" class="absolute w-[200%] md:w-full aspect-video top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"
-        src="https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${trailerKey}&modestbranding=1&iv_load_policy=3&enablejsapi=1"
-        frameborder="0" allow="autoplay; encrypted-media" data-muted="true" allowfullscreen></iframe>
+        src="https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&autohide=1&controls=0&showinfo=0&loop=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" data-muted="true" data-fallback-bg="${backdrop}" allowfullscreen></iframe>
             <button type="button" id="tmdb-unmute-btn" onclick="toggleVolume('tmdb-bg-player','tmdb-unmute-btn')" class="absolute top-3 right-3 z-50 p-2 text-white transition-colors">
                 <i class="material-icons text-sm flex items-center justify-center w-4 h-4">volume_off</i>
             </button>`;
@@ -3029,7 +3194,7 @@ async function openTMDBDetails(id, type) {
         <div class="px-4 md:px-6 pb-6 -mt-12 relative z-10">
             <div class="flex gap-4 md:gap-5">
                 <div class="flex-shrink-0 w-24 md:w-32">
-                    <img src="${poster}" alt="${safeTitle}" class="w-full rounded-xl shadow-2xl border border-white/10">
+                    <img src="${poster}" alt="${safeTitle}" class="w-full rounded shadow-2xl border border-white/10">
                 </div>
                 <div class="flex-1 min-w-0 pt-12 md:pt-14">
                     <div class="flex flex-wrap items-center gap-2 text-xs font-medium text-text-muted mb-2">
@@ -3127,7 +3292,7 @@ function openTrailerModal(videos) {
 
             btn.onclick = () => {
                 // Switch video
-                iframe.src = `https://www.youtube.com/embed/${video.key}?autoplay=1`;
+                iframe.src = `https://www.youtube.com/embed/${video.key}?autoplay=1&autohide=1&controls=0&showinfo=0&rel=0&modestbranding=1`;
                 // Update active state
                 Array.from(tabsContainer.children).forEach(c => {
                     c.className = `${baseClass} ${inactiveClass}`;
@@ -3143,7 +3308,7 @@ function openTrailerModal(videos) {
 
     // Play first video
     if (firstVideo) {
-        iframe.src = `https://www.youtube.com/embed/${firstVideo.key}?autoplay=1`;
+        iframe.src = `https://www.youtube.com/embed/${firstVideo.key}?autoplay=1&autohide=1&controls=0&showinfo=0&rel=0&modestbranding=1`;
         modal.classList.add('open');
 
     }
@@ -3184,10 +3349,10 @@ async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
             <div class="container mx-auto px-6 sm:px-8 lg:px-12 pt-4 md:pt-24 pb-12">
                 <div class="flex items-center gap-3 mb-4">
                     <button type="button" onclick="closePlayerAndReturn()"
-                        class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-border-color bg-card-bg text-text-main hover:border-primary hover:text-primary transition-colors text-sm font-semibold shrink-0">
-                        <i class="ph ph-arrow-left"></i> Back
+                        class="inline-flex items-center gap-2 text-text-main hover:border-primary hover:text-primary transition-colors text-sm font-semibold shrink-0 min-w-0 w-full">
+                        <i class="ph-bold ph-caret-left text-xl shrink-0"></i> <h2 class="text-xl md:text-2xl font-extrabold text-white leading-none truncate flex-1 text-left">${title}</h2>
                     </button>
-                    <h2 class="text-xl md:text-2xl font-extrabold text-white leading-none truncate">${title}</h2>
+                    
                 </div>
                 <div class="w-full rounded overflow-hidden border border-border-color bg-[#020617] shadow-xl">
                     <div class="bg-card-bg px-4 py-3 flex flex-wrap gap-3 items-center border-b border-border-color justify-between">
@@ -3241,34 +3406,57 @@ async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
             }
         };
 
+        // ── Server selector (TMDB player) ──────────────────────────────
+        // The panel is rendered inline as a child of a relative-positioned
+        // wrapper div so it doesn't need body-appending or getBoundingClientRect
+        // gymnastics.  renderServerButtons() rebuilds everything each call and
+        // removes the previous outside-click listener first.
+        let _serverOutsideClick = null;
+
         const renderServerButtons = () => {
+            // Clean up the previous outside-click listener before wiping the DOM
+            if (_serverOutsideClick) {
+                document.removeEventListener('click', _serverOutsideClick);
+                _serverOutsideClick = null;
+            }
             serverContainer.innerHTML = '';
+
             const activeSrc = SOURCES[activeSourceIndex];
             const activeLabel = activeSrc ? `Server ${activeSrc.name}` : 'Server';
+
+            // Wrapper gives the panel a position:relative anchor
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+
             const toggleBtn = document.createElement('button');
             toggleBtn.type = 'button';
             toggleBtn.className = 'server-toggle-btn';
             toggleBtn.innerHTML = `<i class="ph ph-hard-drives"></i> ${activeLabel} <i class="ph ph-caret-down" style="font-size:0.65rem;opacity:0.7"></i>`;
+
             const panel = document.createElement('div');
             panel.className = 'server-panel';
-            document.body.appendChild(panel);
-            const positionPanel = () => {
-                const rect = toggleBtn.getBoundingClientRect();
-                panel.style.top = (rect.bottom + 6) + 'px';
-                panel.style.right = (window.innerWidth - rect.right) + 'px';
-                panel.style.left = 'auto';
+
+            const closePanel = () => {
+                panel.classList.remove('open');
+                toggleBtn.classList.remove('open');
             };
-            const closePanel = () => { panel.classList.remove('open'); toggleBtn.classList.remove('open'); };
+
             toggleBtn.onclick = (e) => {
                 e.stopPropagation();
                 const isOpen = panel.classList.contains('open');
                 document.querySelectorAll('.server-panel.open').forEach(p => p.classList.remove('open'));
                 document.querySelectorAll('.server-toggle-btn.open').forEach(b => b.classList.remove('open'));
-                if (!isOpen) { panel.classList.add('open'); toggleBtn.classList.add('open'); requestAnimationFrame(positionPanel); }
+                if (!isOpen) {
+                    panel.classList.add('open');
+                    toggleBtn.classList.add('open');
+                }
             };
-            document.addEventListener('click', (e) => {
-                if (!toggleBtn.contains(e.target) && !panel.contains(e.target)) closePanel();
-            }, { capture: true });
+
+            _serverOutsideClick = (e) => {
+                if (!wrapper.contains(e.target)) closePanel();
+            };
+            document.addEventListener('click', _serverOutsideClick);
+
             SOURCES.forEach((src, idx) => {
                 const item = document.createElement('div');
                 item.className = `server-panel-item${idx === activeSourceIndex ? ' active' : ''}`;
@@ -3288,7 +3476,10 @@ async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
                 };
                 panel.appendChild(item);
             });
-            serverContainer.appendChild(toggleBtn);
+
+            wrapper.appendChild(toggleBtn);
+            wrapper.appendChild(panel);
+            serverContainer.appendChild(wrapper);
         };
 
         const loadPlayerSeasonEpisodes = async (seasonNum, keepEp) => {
@@ -3956,3 +4147,164 @@ function renderHistory() {
     });
 }
 
+
+
+/* ============================================================
+   CINEMATIC UI INTEGRATION PATCH
+   Hooks enhancements.js features into existing app.js flows.
+   ============================================================ */
+
+/**
+ * Override/extend updateSharedBanner to:
+ * 1. Use cinematic HTML layout with new button styles
+ * 2. Trigger dynamic background color extraction via Color Thief
+ */
+(function patchUpdateSharedBanner() {
+    // Store a reference to the original function
+    const _originalUpdateBanner = window.updateSharedBanner || updateSharedBanner;
+
+    // We override via a MutationObserver on banner-content to inject color thief
+    // rather than replacing the function (to preserve all existing logic cleanly).
+    const observer = new MutationObserver(() => {
+        const item = appState.bannerItems[appState.bannerIndex];
+        if (!item) return;
+
+        // Trigger dynamic bg color extraction from the backdrop image
+        if (typeof updateDynamicBgColor === 'function') {
+            const backdropUrl = getBackdropUrl(item.backdrop_path);
+            updateDynamicBgColor(backdropUrl);
+        }
+
+        // Upgrade the existing Play Now / More Info buttons to cinematic style
+        const contentDiv = document.getElementById('banner-content');
+        if (!contentDiv) return;
+
+        // Replace old-style white play button with cinematic button (only if not already upgraded)
+        if (contentDiv.querySelector('.banner-btn-play')) return; // already upgraded
+        const oldPlayBtn = contentDiv.querySelector('button');
+        if (oldPlayBtn) {
+            oldPlayBtn.className = 'banner-btn-play';
+            // Ensure icon is present
+            if (!oldPlayBtn.querySelector('i')) {
+                oldPlayBtn.insertAdjacentHTML('afterbegin', '<i class="ph-fill ph-play"></i> ');
+            }
+        }
+
+        // Upgrade watchlist button to info style
+        const wlBtn = contentDiv.querySelector('.wl-btn');
+        if (wlBtn) {
+            wlBtn.className = 'banner-btn-info wl-btn';
+        }
+
+        // Upgrade title element
+        const titleEl = contentDiv.querySelector('h1');
+        if (titleEl && !titleEl.classList.contains('banner-title-logo')) {
+            titleEl.className = 'banner-title-logo';
+        }
+
+        // Upgrade synopsis paragraph
+        const synopsisEl = contentDiv.querySelector('p');
+        if (synopsisEl && !synopsisEl.classList.contains('banner-synopsis')) {
+            synopsisEl.className = 'banner-synopsis';
+        }
+
+        // Upgrade the meta row
+        const metaDiv = contentDiv.querySelector('.flex.items-center.gap-3');
+        if (metaDiv) {
+            metaDiv.className = 'banner-meta-row';
+        }
+    });
+
+    const contentDiv = document.getElementById('banner-content');
+    if (contentDiv) {
+        observer.observe(contentDiv, { childList: true, subtree: false });
+    } else {
+        // Wait for DOM if banner not yet available
+        document.addEventListener('DOMContentLoaded', () => {
+            const el = document.getElementById('banner-content');
+            if (el) observer.observe(el, { childList: true, subtree: false });
+        });
+    }
+})();
+
+
+/**
+ * Patch toggleWatchlist to add micro-animation on the button that was clicked.
+ */
+(function patchToggleWatchlist() {
+    if (typeof toggleWatchlist !== 'function') return;
+    const _orig = toggleWatchlist;
+    window.toggleWatchlist = function (id, type, title, poster, btnId, vote, year, desc, status, genres) {
+        _orig(id, type, title, poster, btnId, vote, year, desc, status, genres);
+        // Animate
+        if (typeof animateWatchlistBtn === 'function') {
+            const btn = document.getElementById(btnId);
+            const isNowInList = appState.watchlist.some(i => i.id === id);
+            animateWatchlistBtn(btn, isNowInList);
+        }
+    };
+})();
+
+
+/**
+ * Patch openTMDBDetails / openAnilistDetails to start idle play-pulse timer.
+ */
+(function patchDetailsOpen() {
+    let _cleanupPulse = null;
+
+    // Run when details modal opens
+    const startPulseOnDetailsOpen = () => {
+        if (typeof stopIdlePlayPulse === 'function') stopIdlePlayPulse();
+        if (_cleanupPulse) { _cleanupPulse(); _cleanupPulse = null; }
+
+        // Give the modal content time to render
+        setTimeout(() => {
+            const detailsContent = document.getElementById('details-modal-content');
+            if (!detailsContent) return;
+            // Find the primary play/watch button
+            const playBtn = detailsContent.querySelector('.banner-btn-play, button[class*="bg-primary"], button[class*="bg-white"]');
+            if (playBtn && typeof startIdlePlayPulse === 'function') {
+                _cleanupPulse = startIdlePlayPulse(playBtn);
+            }
+        }, 800);
+    };
+
+    // Observe the details modal for when it opens
+    const detailsModal = document.getElementById('details-modal');
+    if (detailsModal) {
+        const modalObserver = new MutationObserver(() => {
+            if (detailsModal.classList.contains('open')) {
+                startPulseOnDetailsOpen();
+            } else {
+                if (typeof stopIdlePlayPulse === 'function') stopIdlePlayPulse();
+                if (_cleanupPulse) { _cleanupPulse(); _cleanupPulse = null; }
+            }
+        });
+        modalObserver.observe(detailsModal, { attributes: true, attributeFilter: ['class'] });
+    }
+})();
+
+
+/**
+ * Trigger row entrance animations after home data loads.
+ * Patches renderHomeRows-style containers.
+ */
+(function patchCarouselRows() {
+    // Watch for any new horizontal-scroll-container rows added to discovery-rows
+    const scanNewRows = () => {
+        if (typeof observeCarouselRow !== 'function') return;
+        document.querySelectorAll('.discovery-row').forEach(row => {
+            if (!row.dataset.observerRegistered) {
+                row.dataset.observerRegistered = '1';
+                observeCarouselRow(row);
+            }
+        });
+    };
+
+    // Poll periodically during initial load, then back off
+    let scanCount = 0;
+    const interval = setInterval(() => {
+        scanNewRows();
+        if (++scanCount > 20) clearInterval(interval);
+    }, 500);
+})();

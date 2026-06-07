@@ -21,7 +21,8 @@
         <a onclick="router('movies')" data-target="movies"
             class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">Movies</a>
         <a onclick="router('tv')" data-target="tv"
-            class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">TV Shows</a>
+            class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">TV
+            Shows</a>
         <a onclick="router('anime-anilist')" data-target="anime-anilist"
             class="nav-link px-4 py-2 text-sm font-bold rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer">Anime</a>
         <a onclick="router('watchlist')" data-target="watchlist"
@@ -32,8 +33,16 @@
 
     <!-- Utilities -->
     <div class="flex items-center space-x-4">
+        <!-- Inline search bar (desktop) -->
+        <div id="nav-search-wrap" class="relative hidden lg:block">
+            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm pointer-events-none"></i>
+            <input id="nav-search-input" type="text" placeholder="Search..." autocomplete="off"
+                oninput="handleNavSearch(this.value)"
+                onfocus="handleNavSearch(this.value)"
+                onblur="setTimeout(()=>closeInstantSearch(),200)">
+        </div>
         <a onclick="router('search')" data-target="search" title="Search"
-            class="cursor-pointer text-gray-300 hover:text-white hover:bg-white/10 rounded-full h-10 w-10 flex items-center justify-center transition-colors">
+            class="cursor-pointer text-gray-300 hover:text-white hover:bg-white/10 rounded-full h-10 w-10 lg:hidden flex items-center justify-center transition-colors">
             <i class="ph ph-magnifying-glass text-lg"></i>
         </a>
         <a onclick="router('legal')" data-target="legal" title="Legal/DMCA"
@@ -41,7 +50,11 @@
             <i class="ph ph-scales text-lg"></i>
         </a>
     </div>
+
 </nav>
+
+<!-- Instant search results overlay (portal, outside nav for proper z-index stacking) -->
+<div id="search-instant-overlay"></div>
 
 <!-- MOBILE BOTTOM NAV -->
 <div id="bottom-nav"
@@ -49,12 +62,14 @@
     <button onclick="router('home')" data-target="home" title="Home"
         class="bottom-nav-item flex flex-col items-center justify-center gap-1.5 w-full h-full text-gray-400 hover:text-white transition-all group">
         <i class="ph ph-house group-[.active]:text-primary transition-colors"></i>
-        <span class="text-[10px] font-bold tracking-wide opacity-70 group-[.active]:opacity-100 group-[.active]:text-primary">Home</span>
+        <span
+            class="text-[10px] font-bold tracking-wide opacity-70 group-[.active]:opacity-100 group-[.active]:text-primary">Home</span>
     </button>
     <button onclick="router('search')" data-target="search" title="Search"
         class="bottom-nav-item flex flex-col items-center justify-center gap-1.5 w-full h-full text-gray-400 hover:text-white transition-all group">
         <i class="ph ph-magnifying-glass group-[.active]:text-primary transition-colors"></i>
-        <span class="text-[10px] font-bold tracking-wide opacity-70 group-[.active]:opacity-100 group-[.active]:text-primary">Search</span>
+        <span
+            class="text-[10px] font-bold tracking-wide opacity-70 group-[.active]:opacity-100 group-[.active]:text-primary">Search</span>
     </button>
     <button onclick="toggleMoreMenu()" id="more-btn" title="More"
         class="bottom-nav-item flex flex-col items-center justify-center gap-1.5 w-full h-full text-gray-400 hover:text-white transition-all group">
@@ -71,37 +86,43 @@
         id="more-menu-content" onclick="event.stopPropagation()">
         <div class="p-4 grid grid-cols-4 gap-4">
             <button onclick="router('movies'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
-                <div class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                <div
+                    class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                     <i class="ph ph-film-strip text-white group-hover:text-primary text-xl"></i>
                 </div>
                 <span class="text-xs text-gray-300 group-hover:text-white">Movies</span>
             </button>
             <button onclick="router('tv'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
-                <div class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                <div
+                    class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                     <i class="ph ph-television text-white group-hover:text-primary text-xl"></i>
                 </div>
                 <span class="text-xs text-gray-300 group-hover:text-white">TV Shows</span>
             </button>
             <button onclick="router('anime-anilist'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
-                <div class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                <div
+                    class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                     <i class="ph ph-mask-happy text-white group-hover:text-primary text-xl"></i>
                 </div>
                 <span class="text-xs text-gray-300 group-hover:text-white">Anime</span>
             </button>
             <button onclick="router('watchlist'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
-                <div class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                <div
+                    class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                     <i class="ph ph-books text-white group-hover:text-primary text-xl"></i>
                 </div>
                 <span class="text-xs text-gray-300 group-hover:text-white">Library</span>
             </button>
             <button onclick="router('history'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
-                <div class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                <div
+                    class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                     <i class="ph ph-clock-counter-clockwise text-white group-hover:text-primary text-xl"></i>
                 </div>
                 <span class="text-xs text-gray-300 group-hover:text-white">History</span>
             </button>
             <button onclick="router('legal'); toggleMoreMenu()" class="flex flex-col items-center gap-2 group">
-                <div class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
+                <div
+                    class="w-12 h-12 rounded-full bg-white/5 group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                     <i class="ph ph-scales text-white group-hover:text-primary text-xl"></i>
                 </div>
                 <span class="text-xs text-gray-300 group-hover:text-white">Legal</span>
