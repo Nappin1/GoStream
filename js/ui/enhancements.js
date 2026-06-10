@@ -194,42 +194,9 @@ window.animateWatchlistBtn = function (btnEl, added) {
    ============================================================ */
 let _idlePulseTimer = null;
 
-window.startIdlePlayPulse = function (playBtnEl) {
-    if (!playBtnEl) return;
-    clearTimeout(_idlePulseTimer);
-    playBtnEl.classList.remove('btn-pulse-idle');
+window.startIdlePlayPulse = function () { return () => {}; };
 
-    const resetIdle = () => {
-        clearTimeout(_idlePulseTimer);
-        playBtnEl.classList.remove('btn-pulse-idle');
-        _idlePulseTimer = setTimeout(() => {
-            playBtnEl.classList.add('btn-pulse-idle');
-        }, 5000);
-    };
-
-    const modal = document.getElementById('details-modal');
-    if (modal) {
-        modal.addEventListener('mousemove', resetIdle, { passive: true });
-        modal.addEventListener('touchstart', resetIdle, { passive: true });
-    }
-
-    resetIdle();
-
-    return () => {
-        // Cleanup function
-        clearTimeout(_idlePulseTimer);
-        playBtnEl.classList.remove('btn-pulse-idle');
-        if (modal) {
-            modal.removeEventListener('mousemove', resetIdle);
-            modal.removeEventListener('touchstart', resetIdle);
-        }
-    };
-};
-
-window.stopIdlePlayPulse = function () {
-    clearTimeout(_idlePulseTimer);
-    document.querySelectorAll('.btn-pulse-idle').forEach(el => el.classList.remove('btn-pulse-idle'));
-};
+window.stopIdlePlayPulse = function () {};
 
 
 /* ============================================================

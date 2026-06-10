@@ -21,20 +21,20 @@ const MOVIE_SOURCES = [
     { name: '0', url: (id) => `https://vaplayer.ru/embed/movie/${id}?skin=netflix&color=cae962&secondaryColor=cae962&iconColor=cae962` },
     { name: '1', url: (id) => `https://vidsrc-embed.ru/embed/movie/${id}?ds_lang=en` },
     { name: '2', url: (id) => `https://vidrock.net/movie/${id}?autoplay=true&download=false&lang=en` },
-    { name: '3', url: (id) => `https://vidsrc.icu/embed/movie/${id}` },
+    { name: '3', url: (id) => `https://vidsrc.fyi/embed/movie/${id}` },
     { name: '4', url: (id) => `https://vidlink.pro/movie/${id}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&title=true&poster=true&autoplay=true` },
     { name: '5', url: (id) => `https://111movies.com/movie/${id}` },
-    { name: '6', url: (id) => `https://player.videasy.net/movie/${id}?color=B20710&colour=B20710&autoPlay=true&primarycolor=B20710&autoNext=true&nextButton=true&poster=true&autoplayNextEpisode=true&nextEpisode=true&adFree=true` }
+    { name: '6', url: (id) => `https://player.videasy.net/movie/${id}?poster=true&adFree=true&overlay=true` }
 ];
 
 const TV_SOURCES = [
     { name: '0', url: (id, s, e) => `https://vaplayer.ru/embed/tv/${id}/${s}/${e}?skin=netflix&color=cae962&secondaryColor=cae962&iconColor=cae962` },
     { name: '1', url: (id, s, e) => `https://vidsrc-embed.ru/embed/tv/${id}/${s}/${e}?autoplay=1&ds_lang=en` },
     { name: '2', url: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}?autoplay=true&download=false&episodeselector=false&lang=en` },
-    { name: '3', url: (id, s, e) => `https://vidsrc.icu/embed/tv/${id}/${s}/${e}` },
+    { name: '3', url: (id, s, e) => `https://vidsrc.fyi/embed/tv/${id}/${s}/${e}` },
     { name: '4', url: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=63b8bc&secondaryColor=a2a2a2&iconColor=eefdec&icons=vid&player=jw&title=true&poster=true&autoplay=true&nextbutton=false` },
     { name: '5', url: (id, s, e) => `https://111movies.com/tv/${id}/${s}/${e}` },
-    { name: '6', url: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}?color=B20710&colour=B20710&autoPlay=true&primarycolor=B20710&autoNext=true&nextButton=true&poster=true&autoplayNextEpisode=true&nextEpisode=true&adFree=true` }
+    { name: '6', url: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}?poster=true&adFree=true&overlay=true` }
 ];
 
 const ANIME_SOURCES = [
@@ -760,6 +760,14 @@ let _filterModalSection = null;
 
 function openFilterModal(section) {
     _filterModalSection = section;
+    refreshFilterModalBody(section);
+    document.getElementById('filter-modal').classList.add('open');
+    lockBodyScroll();
+    updateFilterBadge(section);
+}
+
+function refreshFilterModalBody(section) {
+    _filterModalSection = section;
     const isAnilist = section === 'anilist';
     const stateRef = isAnilist ? appState.anilist.filters : appState.tmdb[section].filters;
     const body = document.getElementById('filter-modal-body');
@@ -844,10 +852,6 @@ function openFilterModal(section) {
     const yearList = [{ value: '', label: 'All' }];
     for (let y = currentYear; y >= 1970; y--) yearList.push({ value: String(y), label: String(y) });
     body.appendChild(buildGroup('year', 'Year', yearList));
-
-    document.getElementById('filter-modal').classList.add('open');
-    lockBodyScroll();
-    updateFilterBadge(section);
 }
 
 function closeFilterModal(e) {
@@ -865,7 +869,9 @@ function resetAllFilters() {
     Object.assign(stateRef, defaults);
     if (_filterModalSection === 'anilist') renderBrowseSortTabs('anilist');
     else renderBrowseSortTabs(_filterModalSection);
-    openFilterModal(_filterModalSection);
+    // Rebuild modal UI in-place — do NOT call openFilterModal() as that would
+    // add another lockBodyScroll() call and break the scroll lock counter.
+    refreshFilterModalBody(_filterModalSection);
     updateFilterBadge(_filterModalSection);
     resetAndLoad(_filterModalSection);
 }
@@ -1341,10 +1347,10 @@ function updateSharedBanner() {
                     <p class="text-white text-sm md:text-base mb-8 drop-shadow-md line-clamp-3 md:line-clamp-4 max-w-2xl font-medium leading-relaxed">${desc}</p>
                     
                     <div class="flex gap-4 mt-2">
-                        <button class="bg-white text-black font-semibold py-2.5 px-6 rounded-md hover:bg-gray-200 transition-colors flex items-center gap-2" onclick="openDetailsWrapper(${playParams})">
+                        <button class="bg-white text-black font-semibold py-2.5 px-6 rounded-md md:hover:bg-gray-200 transition-colors flex items-center gap-2" onclick="openDetailsWrapper(${playParams})">
                             <i class="ph-fill ph-play text-lg"></i> <span class="capitalize">${btnText}</span>
                         </button>
-                        <button id="banner-watchlist-btn-${item.id}" class="wl-btn bg-white/10 border border-white/15 text-white font-semibold py-2.5 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors flex items-center justify-center" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/ /g, ' ')}', '${status}', '${genresStr}')">
+                        <button id="banner-watchlist-btn-${item.id}" class="wl-btn bg-white/10 border border-white/15 text-white font-semibold py-2.5 px-4 rounded-md md:hover:bg-white/20 md:hover:border-primary transition-colors flex items-center justify-center" onclick="toggleWatchlist(${item.id}, '${type}', '${safeTitle}', '${item.poster_path}', 'banner-watchlist-btn-${item.id}', ${vote}, '${year}', '${desc.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/ /g, ' ')}', '${status}', '${genresStr}')">
                            <i class="ph ph-plus text-lg"></i>
                         </button>
                     </div>
@@ -1461,7 +1467,97 @@ async function loadTMDBSection(key, endpoint, extraParams = {}) {
     let results = [];
     let totalPagesRef = 0;
 
-    if (useTvAiring && !hasBrowseFilters) {
+    // TV SECTION: ALL tabs use /discover/tv with with_type=4 (Scripted) + with_type=2
+    // (Miniseries) so that non-scripted formats (Reality, Talk, News, Documentary, etc.)
+    // are always hidden. Two parallel fetches (one per type, two pages each) are merged
+    // and re-sorted to match the intent of each tab as closely as possible.
+    //
+    // EXCEPTION — Trending tab: uses the real /trending/tv/day endpoint for accurate
+    // TMDB trending order, then post-filters by show type (Scripted=4, Miniseries=2)
+    // via batch detail calls so the result matches TMDB's own Trending TV page.
+    if (key === 'tv') {
+
+        if (stateRef.filters.sort === 'trending') {
+            // Fetch two pages of real trending TV
+            const trendParams = { language: 'en-US' };
+            const [t1, t2] = await Promise.all([
+                fetchTMDB('/trending/tv/day', { ...trendParams, page: tmdbPage1 }, false),
+                fetchTMDB('/trending/tv/day', { ...trendParams, page: tmdbPage2 }, false),
+            ]);
+            const trendingRaw = mergeDedupeTMDBResults([
+                ...(t1?.results || []),
+                ...(t2?.results || []),
+            ]);
+            totalPagesRef = t1?.total_pages || t2?.total_pages || 0;
+
+            // Batch-fetch show details to get the `type` field.
+            // TMDB detail endpoint returns type as a string: "Scripted", "Miniseries", etc.
+            const ALLOWED_TYPES = new Set(['Scripted', 'Miniseries']);
+            const detailFetches = trendingRaw.map(item =>
+                fetchTMDB(`/tv/${item.id}`, { language: 'en-US' }, false)
+            );
+            const details = await Promise.all(detailFetches);
+
+            // Keep items whose `type` is Scripted or Miniseries, preserving trending order
+            results = trendingRaw.filter((item, i) => {
+                const d = details[i];
+                return d && ALLOWED_TYPES.has(d.type);
+            });
+
+        } else {
+        // Build the discover params for the active tab
+        const tvBase = { language: 'en-US' };
+
+        if (stateRef.filters.sort === 'popularity.desc') {
+            tvBase.sort_by = 'popularity.desc';
+            tvBase['vote_count.gte'] = 0;
+        } else if (useTopRatedList) {
+            tvBase.sort_by = 'vote_average.desc';
+            tvBase['vote_count.gte'] = 200;
+        } else if (useTvAiring) {
+            const todayStr  = new Date().toISOString().split('T')[0];
+            const weekAhead = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            tvBase.sort_by = 'popularity.desc';
+            tvBase['air_date.gte'] = todayStr;
+            tvBase['air_date.lte'] = weekAhead;
+        } else {
+            tvBase.sort_by = stateRef.filters.sort || 'popularity.desc';
+            tvBase['vote_count.gte'] = 0;
+        }
+
+        // Apply any active browse filters
+        if (stateRef.filters.genre)   tvBase.with_genres         = stateRef.filters.genre;
+        if (stateRef.filters.country) tvBase.with_origin_country = stateRef.filters.country;
+        if (stateRef.filters.year)    tvBase.first_air_date_year = stateRef.filters.year;
+        if (stateRef.filters.status)  tvBase.with_status         = stateRef.filters.status;
+
+        // Fetch Scripted (4) + Miniseries (2) across two TMDB pages each, all in parallel
+        const [s1, s2, m1, m2] = await Promise.all([
+            fetchTMDB('/discover/tv', { ...tvBase, with_type: 4, page: tmdbPage1 }, false),
+            fetchTMDB('/discover/tv', { ...tvBase, with_type: 4, page: tmdbPage2 }, false),
+            fetchTMDB('/discover/tv', { ...tvBase, with_type: 2, page: tmdbPage1 }, false),
+            fetchTMDB('/discover/tv', { ...tvBase, with_type: 2, page: tmdbPage2 }, false),
+        ]);
+
+        results = mergeDedupeTMDBResults([
+            ...(s1?.results || []), ...(s2?.results || []),
+            ...(m1?.results || []), ...(m2?.results || []),
+        ]);
+
+        // Re-sort the merged pool to match the tab's intended ordering
+        if (tvBase.sort_by === 'vote_average.desc') {
+            results.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+        } else {
+            results.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+        }
+
+        totalPagesRef = Math.max(
+            s1?.total_pages || 0, s2?.total_pages || 0,
+            m1?.total_pages || 0, m2?.total_pages || 0,
+        );
+        } // end non-trending branch
+
+    } else if (useTvAiring && !hasBrowseFilters) {
         const [airing1, onAir1, airing2, onAir2] = await Promise.all([
             fetchTMDB('/tv/airing_today', { ...curatedParams, page: tmdbPage1 }, false),
             fetchTMDB('/tv/on_the_air', { ...curatedParams, page: tmdbPage1 }, false),
@@ -1551,7 +1647,8 @@ function mapAnilistToShared(anime) {
         release_date: anime.seasonYear ? String(anime.seasonYear) : (anime.startDate && anime.startDate.year ? String(anime.startDate.year) : 'N/A'),
         status: anime.status,
         format: anime.format,
-        genres: anime.genres || []
+        genres: anime.genres || [],
+        recentEpisode: anime.recentEpisode || null
     };
 }
 
@@ -1667,7 +1764,8 @@ async function loadAnilistSection() {
             data.Page.airingSchedules.filter(s => s.media && !s.media.isAdult).forEach(schedule => {
                 if (!seen.has(schedule.media.id)) {
                     seen.add(schedule.media.id);
-                    uniqueData.push(schedule.media);
+                    // Attach the aired episode number so cards can display it
+                    uniqueData.push({ ...schedule.media, recentEpisode: schedule.episode });
                 }
             });
             state.data = uniqueData;
@@ -1878,7 +1976,7 @@ function populateAnilistDetailsEpisodesTab(anime, startEp) {
         <div class="details-episodes-toolbar">
             <h3 class="text-base font-bold text-text-main">Episodes</h3>
             <div class="flex gap-2">
-                <button id="ep-sort-btn" type="button" onclick="toggleEpisodeSort()" class="px-3 py-1.5 text-xs rounded-lg border border-border-color bg-input-bg text-text-main hover:border-primary transition-colors">
+                <button id="ep-sort-btn" type="button" onclick="toggleEpisodeSort()" class="px-3 py-1.5 text-xs rounded-lg border border-border-color bg-input-bg text-text-main md:hover:border-primary transition-colors">
                     <i class="ph ph-sort-ascending mr-1"></i> ${appState.episodeSort === 'asc' ? 'Oldest' : 'Newest'}
                 </button>
             </div>
@@ -2025,10 +2123,10 @@ async function openAnilistDetails(id) {
             if (charEdge.voiceActors && charEdge.voiceActors.length > 0) {
                 charEdge.voiceActors.forEach(va => {
                     castHtml += `<div class="flex flex-col gap-1 min-w-[72px] cursor-pointer group" onclick="closeDetailsModal(); openVoiceActorDetails(${va.id})">
-                        <div class="w-16 h-16 rounded-full overflow-hidden border border-border-color mx-auto group-hover:border-primary transition-colors">
+                        <div class="w-16 h-16 rounded-full overflow-hidden border border-border-color mx-auto md:group-hover:border-primary transition-colors">
                             <img src="${va.image.medium}" alt="" class="w-full h-full object-cover">
                         </div>
-                        <p class="text-[10px] text-text-main font-semibold truncate text-center group-hover:text-primary transition-colors">${va.name.full}</p>
+                        <p class="text-[10px] text-text-main font-semibold truncate text-center md:group-hover:text-primary transition-colors">${va.name.full}</p>
                         <p class="text-[9px] text-text-muted truncate text-center">${charEdge.node.name.userPreferred}</p>
                     </div>`;
                 });
@@ -2040,16 +2138,16 @@ async function openAnilistDetails(id) {
     const titleEl = document.getElementById('details-modal-title');
     if (titleEl) titleEl.textContent = title;
 
-    // Check if the YouTube trailer is actually playable before embedding it
-    const aniTrailerAvailable = trailerId ? await checkYouTubeAvailable(trailerId) : false;
-    const showAniTrailer = trailerId && aniTrailerAvailable;
+    // Embed the trailer optimistically — the postMessage error listener will
+    // fall back to the backdrop image if YouTube rejects the video at runtime.
+    const showAniTrailer = !!trailerId;
 
         let bgHtml = `<div class="w-full h-40 md:h-52 relative overflow-hidden flex-shrink-0" style="${showAniTrailer ? 'background-color:#000' : `background-image:url('${bannerUrl}');background-size:cover;background-position:center`}">
         <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent z-10 pointer-events-none"></div>`;
     if (showAniTrailer) {
         bgHtml += `<iframe id="anilist-bg-player" class="absolute w-[200%] md:w-full aspect-video top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"
-            src="https://www.youtube.com/embed/${trailerId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${trailerId}&modestbranding=1&enablejsapi=1"
-            frameborder="0" allow="autoplay; encrypted-media" data-muted="true" data-fallback-bg="${bannerUrl}" allowfullscreen></iframe>
+            src="https://www.youtube.com/embed/${trailerId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${trailerId}&modestbranding=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}"
+            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" data-muted="true" data-fallback-bg="${bannerUrl}" allowfullscreen></iframe>
         <button id="anilist-unmute-btn" type="button" onclick="toggleVolume('anilist-bg-player','anilist-unmute-btn')" class="absolute top-3 right-3 z-50 p-2 text-white transition-colors">
             <i class="material-icons text-sm flex items-center justify-center w-4 h-4">volume_off</i>
         </button>`;
@@ -2066,7 +2164,7 @@ async function openAnilistDetails(id) {
     const historyItem = appState.continueWatching.find(i => i.id === id && i.type === 'anime');
     const btnText = historyItem && historyItem.episode ? `Resume EP ${historyItem.episode}` : 'Play';
 
-    const detailsSecondaryBtnClass = 'flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors';
+    const detailsSecondaryBtnClass = 'flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md md:hover:bg-white/20 md:hover:border-primary transition-colors';
     const trailerBtnHtml = trailerId
         ? `<button type="button" id="anilist-details-trailer-btn" class="${detailsSecondaryBtnClass}" title="Trailer"><i class="ph ph-youtube-logo text-2xl"></i></button>`
         : `<button type="button" disabled class="flex-1 bg-white/10 border border-white/15 text-gray-500 font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md opacity-50 cursor-not-allowed" title="No trailer"><i class="ph ph-youtube-logo text-2xl text-gray-500"></i></button>`;
@@ -2090,10 +2188,10 @@ async function openAnilistDetails(id) {
         <div class="mt-4 space-y-2">
             ${anime.status === 'NOT_YET_RELEASED'
                 ? `<button type="button" disabled class="w-full bg-gray-600 text-gray-300 font-bold text-xl py-3 px-6 rounded flex items-center justify-center gap-2 cursor-not-allowed opacity-70"><i class="fas fa-clock"></i> Not yet released</button>`
-                : `<button type="button" id="anilist-details-play-btn" class="w-full bg-white text-black font-bold text-xl py-3 px-6 rounded hover:bg-primary transition-all flex items-center justify-center gap-2"><i class="ph-fill ph-play text-2xl"></i> ${btnText}</button>`
+                : `<button type="button" id="anilist-details-play-btn" class="w-full bg-white text-black font-bold md:text-xl py-3 px-6 rounded border-2 border-transparent md:hover:border-main transition-colors flex items-center justify-center gap-2"><i class="ph-fill ph-play text-2xl"></i> ${btnText}</button>`
             }
             <div class="flex gap-2">
-                <button type="button" id="anilist-details-watchlist-btn" class="wl-btn flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors">
+                <button type="button" id="anilist-details-watchlist-btn" class="wl-btn flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md md:hover:bg-white/20 md:hover:border-primary transition-colors">
                     <i class="ph ph-plus text-2xl"></i>
                 </button>
                 ${trailerBtnHtml}
@@ -2219,7 +2317,7 @@ function renderEpisodeList(containerId, episodes, type, currentEp, onPlayClick, 
         wrapper.className = 'relative group w-full';
 
         if (isThumbMode) {
-            wrapper.className = `w-full relative group cursor-pointer flex flex-col rounded-lg border transition-colors ${isCurrent ? 'border-primary bg-primary/10' : 'border-border-color bg-card-bg hover:border-primary/50'}`;
+            wrapper.className = `w-full relative group cursor-pointer flex flex-col rounded-lg border transition-colors ${isCurrent ? 'border-primary bg-primary/10' : 'border-border-color bg-card-bg md:hover:border-primary/50'}`;
             wrapper.onclick = () => onPlayClick(ep.number);
 
             const imgUrl = ep.still
@@ -2240,8 +2338,8 @@ function renderEpisodeList(containerId, episodes, type, currentEp, onPlayClick, 
             wrapper.innerHTML = `
                 <div class="flex flex-col sm:flex-row gap-3 p-3 items-start">
                     <div class="w-full sm:w-40 aspect-video flex-shrink-0 relative rounded overflow-hidden shadow-sm bg-[#020617]">
-                        <img src="${imgUrl}" alt="" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity">
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-[#020617]/30">
+                        <img src="${imgUrl}" alt="" class="w-full h-full object-cover opacity-90 md:group-hover:opacity-100 transition-opacity">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity z-10 bg-[#020617]/30">
                             <i class="ph-fill ph-play text-white text-3xl drop-shadow-lg"></i>
                         </div>
                         ${isCurrent ? '<div class="absolute top-1 left-1 bg-primary text-black text-[10px] font-bold px-1.5 py-0.5 rounded z-20">Now playing</div>' : ''}
@@ -2256,7 +2354,7 @@ function renderEpisodeList(containerId, episodes, type, currentEp, onPlayClick, 
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.onclick = () => onPlayClick(ep.number);
-            btn.className = `w-full p-2 rounded border border-border-color text-xs transition-colors truncate ${isCurrent ? 'bg-primary text-white font-bold border-primary' : 'bg-input-bg text-white hover:border-primary hover:text-primary'}`;
+            btn.className = `w-full p-2 rounded border border-border-color text-xs transition-colors truncate ${isCurrent ? 'bg-primary text-white font-bold border-primary' : 'bg-input-bg text-white md:hover:border-primary md:hover:text-primary'}`;
             btn.innerText = ep.number;
             btn.title = ep.title;
             wrapper.appendChild(btn);
@@ -2683,8 +2781,8 @@ function renderTop10List(containerId, items) {
 
         html += `
                 <div class="relative flex items-end shrink-0 cursor-pointer group w-[220px] sm:w-[260px] md:w-[300px]" onclick="openDetailsWrapper(${item.id}, '${type}', undefined, undefined, this)">
-                    <img src="${posterUrl}" class="w-40 sm:w-48 md:w-56 rounded md:rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.8)] z-10 transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-105 ml-8" />
-                    <span class="absolute -left-6 md:-left-10 -bottom-4 md:-bottom-6 text-[100px] sm:text-[140px] md:text-[160px] font-black leading-none z-10 select-none group-hover:scale-105 transition-transform" style="color: transparent; -webkit-text-stroke: 2px #cae962;">${num}</span>
+                    <img src="${posterUrl}" class="w-40 sm:w-48 md:w-56 rounded md:rounded-md shadow-[0_8px_30px_rgb(0,0,0,0.8)] z-10 transition-transform duration-300 md:group-hover:-translate-y-2 md:group-hover:scale-105 ml-8" />
+                    <span class="absolute -left-6 md:-left-10 -bottom-4 md:-bottom-6 text-[100px] sm:text-[140px] md:text-[160px] font-black leading-none z-10 select-none md:group-hover:scale-105 transition-transform" style="color: transparent; -webkit-text-stroke: 2px #cae962;">${num}</span>
                 </div>
                 `;
     });
@@ -2766,7 +2864,8 @@ async function renderTMDBGrid(containerId, items, typeOverride, isHorizontal = f
         if (type === 'movie' && displayStatus === 'Released') displayStatus = 'Released';
         if (type === 'tv' && displayStatus === 'Returning Series') displayStatus = 'Releasing';
 
-        const statusBadge = displayStatus ? `<div class="absolute top-1.5 right-1.5 bg-[#020617]/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${displayStatus.replace(/_/g, ' ')}</div>` : '';
+        // Status badge removed — only rating/popularity badges are shown on cards
+        const statusBadge = '';
 
         // Genre Mapping
         const genreList = type === 'tv' ? TV_GENRES : MOVIE_GENRES;
@@ -2786,7 +2885,15 @@ async function renderTMDBGrid(containerId, items, typeOverride, isHorizontal = f
             if (rankNum <= 100) tmdbRank = rankNum;
         }
 
-        const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, displayStatus, tmdbRank);
+        // Show popularity percentage badge on the Popular tab
+        const popularityScore = (tmdbSort === 'popularity.desc' && item.vote_average)
+            ? Math.round(item.vote_average * 10)
+            : null;
+
+        // Show star rating badge only on the Top Rated tab
+        const showRatingBadge = tmdbSort === 'top_rated';
+
+        const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, displayStatus, tmdbRank, popularityScore, showRatingBadge);
         const isDuplicate = Array.from(container.children).some(c => c.dataset.id == item.id && c.dataset.type == type);
         if (!isDuplicate) container.appendChild(card);
     }
@@ -2830,7 +2937,16 @@ function renderAnilistGrid(containerId, items, isHorizontal = false, append = fa
             aniStatus = item.status.replace(/_/g, ' ');
             if (item.status === 'RELEASING') aniStatus = 'Releasing';
         }
-        const statusBadge = aniStatus ? `<div class="absolute top-1.5 right-1.5 bg-[#020617]/60 text-white text-[10px] px-2 py-1 font-bold rounded border border-primary uppercase shadow-md z-10">${aniStatus}</div>` : '';
+
+        // Only show a badge for "Episode N added" (Recently Updated tab).
+        // All other status badges (Releasing, Movie, etc.) are hidden.
+        const recentEpBadge = item.recentEpisode != null
+            ? `<div class="absolute -top-2.5 -left-2.5 z-30 flex items-left justify-left w-auto h-9 anime-rank-badge">
+                    <span class="absolute w-fit whitespace-nowrap px-2.5 py-2.5 flex bg-text-main rounded text-dark-bg font-extrabold text-[10px] leading-none mt-[-1px]">
+                    EP ${item.recentEpisode} Added</span>
+               </div>`
+            : '';
+        const statusBadge = '';
 
         const genres = item.genres ? item.genres.slice(0, 3).join(', ') : '';
 
@@ -2844,15 +2960,23 @@ function renderAnilistGrid(containerId, items, isHorizontal = false, append = fa
             }
         }
 
-        const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, aniStatus, rank);
+        // Show popularity percentage badge on the Popular tab
+        const popularityScore = (containerId === 'grid-anilist' && appState.anilist.filters.sort === 'POPULARITY_DESC' && item.vote_average)
+            ? Math.round(item.vote_average * 10)
+            : null;
+
+        // Show star rating badge only on the Top Rated tab
+        const showRatingBadge = containerId === 'grid-anilist' && appState.anilist.filters.sort === 'SCORE_DESC';
+
+        const card = createCardHTML(item.id, type, title, posterUrl, item.vote_average, year, statusBadge, isHorizontal, item.overview, genres, aniStatus, rank, popularityScore, showRatingBadge, recentEpBadge);
         container.appendChild(card);
     });
 }
 
-function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview, genres, statusText, rank = null) {
+function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isHorizontal, overview, genres, statusText, rank = null, popularityScore = null, showRatingBadge = false, recentEpBadge = '') {
     const card = document.createElement('div');
     const widthClass = isHorizontal ? 'landscape-card' : '';
-    const hasRankClass = rank ? 'has-rank' : '';
+    const hasRankClass = (rank || recentEpBadge) ? 'has-rank' : '';
     card.className = `movie-card rounded-md cursor-pointer relative group ${widthClass} ${hasRankClass}`;
     card.dataset.id = id;
     card.dataset.type = type;
@@ -2873,33 +2997,42 @@ function createCardHTML(id, type, title, posterUrl, vote, year, statusBadge, isH
     const btnId = `wl-${id}-${Math.random().toString(36).substr(2, 6)}`;
 
     card.innerHTML = `
-                <!-- RANKING BADGE -->
+                <!-- RANKING / EPISODE BADGE -->
                 ${rank ? `
                 <div class="absolute -top-2.5 -left-2.5 z-30 flex items-center justify-center w-9 h-9 anime-rank-badge">
-                    <i class="ph-fill ph-bookmark-simple text-[#cae962] text-[45px] drop-shadow-md"></i>
+                    <i class="ph-fill ph-bookmark-simple text-main text-[45px] drop-shadow-md"></i>
                     <span class="absolute text-dark-bg font-extrabold ${rank >= 100 ? 'text-[9px]' : 'text-[11px]'} leading-none mt-[-1px]">#${rank}</span>
                 </div>
-                ` : ''}
+                ` : (recentEpBadge || '')}
 
                 <div class="${aspectClass} overflow-hidden relative">
-                    <img src="${posterUrl}" class="w-full h-full object-cover">
+                    <img src="${posterUrl}" class="w-full h-full rounded object-cover">
                     
                     ${type !== 'actor' || ''}
+
+                    <!-- STATUS / EPISODE BADGE -->
+                    ${statusBadge || ''}
 
                     <!-- HOVER PLAY ICON OVERLAY -->
                     ${type !== 'actor' ? `
                     <div class="absolute inset-0 bg-[#020617]/40 opacity-0 md:group-hover:opacity-100 flex items-center justify-center transition-opacity z-20 pointer-events-none">
-                         <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300"></i>
+                         <i class="mdi mdi-play-circle text-primary text-5xl drop-shadow-lg transform scale-90 md:group-hover:scale-100 transition-transform duration-300"></i>
                     </div>` : ''}
 
-                     ${type !== 'actor' ? ` <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-yellow-400 text-[10px] md:text-xs font-bold px-2 py-1 rounded flex items-center gap-1 z-10">
-                    ${type === 'season' ? '' : ''} <i class="ph-fill ph-star"></i> ${voteDisplay} </div> ` : `
+                     ${type !== 'actor' ? `
+                    ${(popularityScore !== null || showRatingBadge) ? `
+                    <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-yellow-400 text-[10px] md:text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 z-30">
+                    ${popularityScore !== null
+                        ? `<i class="ph-fill ph-fire text-orange-400"></i> ${popularityScore}%`
+                        : `<i class="ph-fill ph-star"></i> ${voteDisplay}`
+                    }
+                    </div>` : ''}` : `
                     <div class="absolute top-1.5 left-1.5 bg-[#020617]/60 text-white text-[10px] px-2 py-1 border border-primary rounded font-bold z-10">
                         <i class="ph ph-user"></i>
                     </div> ` }
 
                     <div class="absolute bottom-0 left-0 w-full p-3 card-info">
-                        <h3 class="text-text-main text-sm font-semibold truncate md:hover:text-primary transition-colors ${(isHorizontal || type === 'anime' || type === 'season') ? '' : 'hidden'}" title="${title}">
+                        <h3 class="text-text-main text-sm font-semibold truncate transition-colors" title="${title}">
                             ${title} 
                         </h3>
                     </div>
@@ -2965,7 +3098,7 @@ async function populateTMDBDetailsEpisodesTab(mediaId, details, startSeason, sta
             <h3 class="text-base font-bold text-text-main">Episodes</h3>
             <div class="flex flex-wrap items-center gap-2">
                 ${tvSeasons.length > 1 ? `<select id="details-season-select" class="details-season-select" onchange="onDetailsSeasonChange(this.value)">${seasonOptions}</select>` : ''}
-                <button type="button" id="ep-sort-btn" onclick="toggleEpisodeSort()" class="px-3 py-1.5 text-xs rounded-lg border border-border-color bg-input-bg text-text-main hover:border-primary transition-colors">
+                <button type="button" id="ep-sort-btn" onclick="toggleEpisodeSort()" class="px-3 py-1.5 text-xs rounded-lg border border-border-color bg-input-bg text-text-main md:hover:border-primary transition-colors">
                     <i class="ph ph-sort-ascending mr-1"></i> ${appState.episodeSort === 'asc' ? 'Oldest' : 'Newest'}
                 </button>
             </div>
@@ -3145,8 +3278,8 @@ async function openTMDBDetails(id, type) {
                 const safeName = c.name.replace(/['"]/g, '');
                 const safeChar = c.character ? c.character.replace(/['"]/g, '') : '';
                 return `<div class="flex-shrink-0 w-20 text-center cursor-pointer group" onclick="closeDetailsModal(); openActorDetails(${c.id})">
-                    <img src="${profile}" alt="${safeName}" class="w-16 h-16 rounded-full object-cover mx-auto mb-1 border-2 border-border-color group-hover:border-primary transition-colors">
-                    <p class="text-xs font-semibold text-text-main truncate group-hover:text-primary transition-colors" title="${safeName}">${safeName}</p>
+                    <img src="${profile}" alt="${safeName}" class="w-16 h-16 rounded-full object-cover mx-auto mb-1 border-2 border-border-color md:group-hover:border-primary transition-colors">
+                    <p class="text-xs font-semibold text-text-main truncate md:group-hover:text-primary transition-colors" title="${safeName}">${safeName}</p>
                     <p class="text-[10px] text-text-muted truncate" title="${safeChar}">${safeChar}</p>
                 </div>`;
             }).join('');
@@ -3157,9 +3290,9 @@ async function openTMDBDetails(id, type) {
 
         const playBtnHtml = isUnreleased
             ? `<button type="button" disabled class="w-full bg-gray-600 text-gray-300 font-bold py-3 px-6 rounded flex items-center justify-center gap-2 cursor-not-allowed"><i class="fas fa-clock"></i> Not yet released</button>`
-            : `<button type="button" id="tmdb-details-play-btn" class="w-full bg-white text-black font-bold text-xl py-3 px-6 rounded hover:bg-primary transition-all flex items-center justify-center gap-2"><i class="ph-fill ph-play text-2xl"></i> ${btnText}</button>`;
+            : `<button type="button" id="tmdb-details-play-btn" class="w-full bg-white text-black font-bold md:text-xl py-3 px-6 rounded border-2 border-transparent md:hover:border-main transition-colors flex items-center justify-center gap-2"><i class="ph-fill ph-play text-2xl"></i> ${btnText}</button>`;
 
-        const detailsSecondaryBtnClass = 'flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors';
+        const detailsSecondaryBtnClass = 'flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md md:hover:bg-white/20 md:hover:border-primary transition-colors';
         const trailerBtnHtml = trailers.length > 0
             ? `<button type="button" id="tmdb-details-trailer-btn" class="${detailsSecondaryBtnClass}" title="Trailer"><i class="ph ph-youtube-logo text-2xl"></i></button>`
             : `<button type="button" disabled class="flex-1 bg-white/10 border border-white/15 text-gray-500 font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md opacity-50 cursor-not-allowed" title="No trailer"><i class="ph ph-youtube-logo text-2xl"></i></button>`;
@@ -3175,15 +3308,15 @@ async function openTMDBDetails(id, type) {
         const titleEl = document.getElementById('details-modal-title');
         if (titleEl) titleEl.textContent = title;
 
-        // Check if the YouTube trailer is actually playable before embedding it
-        const tmdbTrailerAvailable = trailerKey ? await checkYouTubeAvailable(trailerKey) : false;
-        const showTmdbTrailer = trailerKey && tmdbTrailerAvailable;
+        // Embed the trailer optimistically — the postMessage error listener will
+        // fall back to the backdrop image if YouTube rejects the video at runtime.
+        const showTmdbTrailer = !!trailerKey;
 
         let bgHtml = `<div class="w-full h-40 md:h-52 bg-cover bg-center relative overflow-hidden flex-shrink-0" style="${showTmdbTrailer ? 'background-color:#000' : `background-image:url('${backdrop}')`}">
             <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent z-10 pointer-events-none"></div>`;
         if (showTmdbTrailer) {
             bgHtml += `<iframe id="tmdb-bg-player" class="absolute w-[200%] md:w-full aspect-video top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"
-        src="https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&autohide=1&controls=0&showinfo=0&loop=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" data-muted="true" data-fallback-bg="${backdrop}" allowfullscreen></iframe>
+        src="https://www.youtube.com/embed/${trailerKey}?autoplay=1&mute=1&autohide=1&controls=0&showinfo=0&loop=1&playlist=${trailerKey}&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(location.origin)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" data-muted="true" data-fallback-bg="${backdrop}" allowfullscreen></iframe>
             <button type="button" id="tmdb-unmute-btn" onclick="toggleVolume('tmdb-bg-player','tmdb-unmute-btn')" class="absolute top-3 right-3 z-50 p-2 text-white transition-colors">
                 <i class="material-icons text-sm flex items-center justify-center w-4 h-4">volume_off</i>
             </button>`;
@@ -3212,7 +3345,7 @@ async function openTMDBDetails(id, type) {
                 <div class="flex gap-2">
                     <button type="button" id="tmdb-details-watchlist-btn"
                         onclick="toggleWatchlist(${id},'${type}','${safeTitle}','${details.poster_path}','tmdb-details-watchlist-btn',${details.vote_average},'${releaseDate.split('-')[0]}','${overview.replace(/'/g, "\\'").replace(/"/g, '&quot;')}','${status}','${genresHtml.replace(/'/g, "\\'")}')"
-                        class="wl-btn flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md hover:bg-white/20 hover:border-primary transition-colors">
+                        class="wl-btn flex-1 bg-white/10 border border-white/15 text-white font-semibold flex items-center justify-center gap-2 py-3 px-4 rounded-md md:hover:bg-white/20 md:hover:border-primary transition-colors">
                         <i class="ph ph-plus text-2xl"></i>
                     </button>
                     ${trailerBtnHtml}
@@ -3284,7 +3417,7 @@ function openTrailerModal(videos) {
             const btn = document.createElement('button');
             // Style for active/inactive
             const baseClass = "px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors border border-transparent";
-            const inactiveClass = "text-gray-400 hover:text-white hover:bg-white/10";
+            const inactiveClass = "text-gray-400 md:hover:text-white md:hover:bg-white/10";
             const activeClass = "bg-primary text-black border-primary";
 
             btn.className = `${baseClass} ${index === 0 ? activeClass : inactiveClass}`;
@@ -3292,7 +3425,7 @@ function openTrailerModal(videos) {
 
             btn.onclick = () => {
                 // Switch video
-                iframe.src = `https://www.youtube.com/embed/${video.key}?autoplay=1&autohide=1&controls=0&showinfo=0&rel=0&modestbranding=1`;
+                iframe.src = `https://www.youtube.com/embed/${video.key}?autoplay=1&rel=0&modestbranding=1&origin=${encodeURIComponent(location.origin)}`;
                 // Update active state
                 Array.from(tabsContainer.children).forEach(c => {
                     c.className = `${baseClass} ${inactiveClass}`;
@@ -3308,7 +3441,7 @@ function openTrailerModal(videos) {
 
     // Play first video
     if (firstVideo) {
-        iframe.src = `https://www.youtube.com/embed/${firstVideo.key}?autoplay=1&autohide=1&controls=0&showinfo=0&rel=0&modestbranding=1`;
+        iframe.src = `https://www.youtube.com/embed/${firstVideo.key}?autoplay=1&rel=0&modestbranding=1&origin=${encodeURIComponent(location.origin)}`;
         modal.classList.add('open');
 
     }
@@ -3349,8 +3482,8 @@ async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
             <div class="container mx-auto px-6 sm:px-8 lg:px-12 pt-4 md:pt-24 pb-12">
                 <div class="flex items-center gap-3 mb-4">
                     <button type="button" onclick="closePlayerAndReturn()"
-                        class="inline-flex items-center gap-2 text-text-main hover:border-primary hover:text-primary transition-colors text-sm font-semibold shrink-0 min-w-0 w-full">
-                        <i class="ph-bold ph-caret-left text-xl shrink-0"></i> <h2 class="text-xl md:text-2xl font-extrabold text-white leading-none truncate flex-1 text-left">${title}</h2>
+                        class="inline-flex items-center gap-2 text-text-main md:hover:border-primary md:hover:text-primary transition-colors text-sm font-semibold shrink-0 min-w-0 w-full">
+                        <i class="ph-bold ph-caret-left md:text-2xl text-xl shrink-0"></i> <h2 class="text-xl md:text-2xl font-extrabold text-white md:hover:border-primary md:hover:text-primary leading-none truncate flex-1 text-left">${title}</h2>
                     </button>
                     
                 </div>
@@ -3367,8 +3500,8 @@ async function openTMDBPlayer(id, type, startSeason = 1, startEpisode = 1) {
                     </div>
                     ${type === 'tv' ? `
                     <div class="bg-card-bg px-4 py-3 flex justify-between items-center border-t border-border-color">
-                        <button type="button" id="btn-tv-prev" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700 text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"><i class="ph-fill ph-skip-back"></i> Prev ep.</button>
-                        <button type="button" id="btn-tv-next" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700 text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed">Next ep. <i class="ph-fill ph-skip-forward"></i></button>
+                        <button type="button" id="btn-tv-prev" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-700 rounded md:hover:bg-gray-700 text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"><i class="ph-fill ph-skip-back"></i> Prev ep.</button>
+                        <button type="button" id="btn-tv-next" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-700 rounded md:hover:bg-gray-700 text-sm transition font-medium disabled:opacity-50 disabled:cursor-not-allowed">Next ep. <i class="ph-fill ph-skip-forward"></i></button>
                     </div>` : ''}
                 </div>
             </div>`;
@@ -3594,7 +3727,7 @@ async function openActorDetails(id) {
 
     // Changed 'h-50 w-50' to 'h-10 w-10' for a standard size, adjust as needed.
     // Changed 'rounded' to 'rounded-full' for a circular shape.
-    const socialBtnClass = 'text-white border-2 border-border-color hover:border-primary text-center mt-2 inline-flex items-center justify-center m-0.5 px-3 py-2 h-10 w-10 rounded-full bg-card-bg text-xs font-bold transition-colors';
+    const socialBtnClass = 'text-white border-2 border-border-color md:hover:border-primary text-center mt-2 inline-flex items-center justify-center m-0.5 px-3 py-2 h-10 w-10 rounded-full bg-card-bg text-xs font-bold transition-colors';
 
     if (externalIds) {
         if (externalIds.imdb_id) {
@@ -3726,7 +3859,7 @@ async function openVoiceActorDetails(id) {
         else if (lowerUrl.includes('ameblo.jp') || lowerUrl.includes('blog')) iconClass = 'fas fa-blog';
         else if (lowerUrl.includes('website')) iconClass = 'fas fa-globe';
 
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-white inline-flex items-center gap-1 mx-1 font-semibold transition-colors"><i class="${iconClass}"></i> ${label}</a>`;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-primary md:hover:text-white inline-flex items-center gap-1 mx-1 font-semibold transition-colors"><i class="${iconClass}"></i> ${label}</a>`;
     });
 
     // Basic Markdown formatting
@@ -3862,7 +3995,7 @@ function renderWatchlist() {
 
         // Remove Button
         const removeBtn = document.createElement('button');
-        removeBtn.className = "absolute top-1.5 right-1.5 z-30 w-11 p-2 text-red flex bg-black/60 rounded-full items-center justify-center hover:text-red-600 transition-colors";
+        removeBtn.className = "absolute top-1.5 right-1.5 z-30 w-11 p-2 text-red flex bg-black/60 rounded-full items-center justify-center md:hover:text-red-600 transition-colors";
         removeBtn.innerHTML = '<i class="ph-bold ph-x-circle text-xl"></i>';
         removeBtn.title = "Remove from Library";
         removeBtn.onclick = (e) => {
@@ -4035,7 +4168,7 @@ function renderHistory() {
             if (t === appState.historyTab) {
                 btn.className = 'text-sm md:text-lg font-bold text-primary border-b-2 border-primary pb-2 transition-colors whitespace-nowrap';
             } else {
-                btn.className = 'text-sm md:text-lg font-bold text-text-muted hover:text-white pb-2 transition-colors whitespace-nowrap';
+                btn.className = 'text-sm md:text-lg font-bold text-text-muted md:hover:text-white pb-2 transition-colors whitespace-nowrap';
             }
         }
     });
@@ -4060,7 +4193,7 @@ function renderHistory() {
     controlsConfig.className = 'flex justify-end mb-4';
     if (history.length > 0) {
         const clearBtn = document.createElement('button');
-        clearBtn.className = 'flex items-center text-xs font-bold text-red-500 hover:text-red-400 border border-red-500 hover:border-red-400 rounded px-3 py-1.5 transition-colors';
+        clearBtn.className = 'flex items-center text-xs font-bold text-red-500 md:hover:text-red-400 border border-red-500 md:hover:border-red-400 rounded px-3 py-1.5 transition-colors';
         clearBtn.innerHTML = '<i class="fas fa-trash-alt mr-2"></i> Clear History';
         clearBtn.onclick = clearHistory;
         controlsConfig.appendChild(clearBtn);
@@ -4122,7 +4255,7 @@ function renderHistory() {
 
 
                             <!-- Remove Button -->
-                            <button onclick="removeFromHistory(${item.id}, event)" class="absolute top-1.5 right-1.5 z-30 w-11 p-2 text-red flex bg-black/60 rounded-full items-center justify-center hover:text-red-600 transition-colors" title="Remove from History">
+                            <button onclick="removeFromHistory(${item.id}, event)" class="absolute top-1.5 right-1.5 z-30 w-11 p-2 text-red flex bg-black/60 rounded-full items-center justify-center md:hover:text-red-600 transition-colors" title="Remove from History">
                                 <i class="ph-bold ph-x-circle text-xl"></i>
                             </button>
 

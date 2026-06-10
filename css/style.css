@@ -161,6 +161,15 @@ button:focus {
 .card-info {
     background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0));
     pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.movie-card:hover .card-info,
+.movie-card:focus-within .card-info {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 @media (hover: hover) and (min-width: 1025px) {
@@ -1221,19 +1230,7 @@ body {
     transform: scale(1.04) translateY(-2px);
 }
 
-/* Play button — idle pulse animation (triggered after 5s on details page) */
-.btn-pulse-idle {
-    animation: playPulse 2.2s ease-in-out infinite;
-}
-
-@keyframes playPulse {
-    0%, 100% {
-        box-shadow: 0 4px 20px rgba(202, 233, 98, 0.35);
-    }
-    50% {
-        box-shadow: 0 4px 40px rgba(202, 233, 98, 0.75), 0 0 0 8px rgba(202, 233, 98, 0.1);
-    }
-}
+/* Play button — idle pulse animation removed */
 
 /* --- Enhanced Movie Card Hover --- */
 @media (hover: hover) and (min-width: 1025px) {
